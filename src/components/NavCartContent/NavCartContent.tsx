@@ -13,6 +13,7 @@ export default function NavCartContent() {
 
   const currentLang = (params.lang as string) || "en";
 
+
   const getPathForLang = (lang: string) =>
     pathname.replace(`/${currentLang}`, `/${lang}`);
 
