@@ -8,11 +8,9 @@ import Container from "../Container/Container";
 
 export default function Navbar() {
   return (
-    <header
-      className="shadow-sm sticky bg-white top-0 z-50"
-    >
+    <header className="shadow-sm sticky bg-white top-0 z-50">
       <Container className="grid grid-rows-[auto_1px_auto]">
-        <div className="grid grid-cols-[auto_1fr_auto] items-center py-2 gap-4">
+        <div className="grid grid-cols-[auto_1fr_auto] items-center py-2 gap-4 min-h-[56px]">
           <Link href="/" className="flex-shrink-0">
             <Image
               src="/assets/logo.svg"
@@ -34,9 +32,9 @@ export default function Navbar() {
           </div>
         </div>
 
-        <span className="h-[1px] w-full bg-[#F4F4F5] block"></span>
+        <span className="h-[1px] w-full bg-[#F4F4F5] block" />
 
-        <div className="grid grid-cols-[1fr_auto] items-center py-2">
+        <div className="grid grid-cols-[1fr_auto] items-center py-2 min-h-[40px]">
           <NavLinks />
           <NavLocationBadge />
         </div>

@@ -11,11 +11,13 @@ export default function NavCartContent() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
-  const currentLang = (params.lang as string) || "en";
-
+  const currentLang =
+    (params?.lang as string | undefined) && typeof params.lang === "string"
+      ? (params.lang as string)
+      : "en";
 
   const getPathForLang = (lang: string) =>
-    pathname.replace(`/${currentLang}`, `/${lang}`);
+    pathname ? pathname.replace(`/${currentLang}`, `/${lang}`) : `/${lang}`;
 
   return (
     <div className="flex items-center space-x-5">

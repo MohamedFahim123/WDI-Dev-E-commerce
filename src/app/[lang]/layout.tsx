@@ -1,4 +1,6 @@
 import "@/src/app/globals.css";
+import Footer from "@/src/components/Footer/Footer";
+import Navbar from "@/src/components/NavBar/NavBar";
 import "@/src/i18n/settings";
 
 export default async function LangLayout({
@@ -11,12 +13,17 @@ export default async function LangLayout({
   const { lang } = await params;
 
   return (
-    <main
-      lang={lang}
-      className={`min-h-screen`}
-      dir={lang === "ar" ? "rtl" : "ltr"}
-    >
-      {children}
-    </main>
+    <>
+      <Navbar />
+
+      <main
+        lang={lang}
+        className={`flex-1`}
+        dir={lang === "ar" ? "rtl" : "ltr"}
+      >
+        {children}
+      </main>
+      <Footer />
+    </>
   );
 }

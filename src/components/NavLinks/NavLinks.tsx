@@ -6,14 +6,14 @@ import { useParams, usePathname } from "next/navigation";
 export default function NavLinks() {
   const pathname = usePathname();
   const params = useParams();
-  const lang = params.lang || "en";
+  const lang = (params?.lang as string) || "en";
 
   const navLinks = [
     { label: "Home", href: `/${lang}` },
     { label: "Categories", href: `/${lang}/products/categories` },
     { label: "Flash Deals", href: `/${lang}/flash-deals` },
     { label: "New Arrivals", href: `/${lang}/new-arrivals` },
-    { label: "Track Order", href: `${lang}/track-order` },
+    { label: "Track Order", href: `/${lang}/track-order` },
   ];
 
   return (

@@ -1,11 +1,10 @@
 "use client";
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
-import Image from "next/image";
 import { SearchFormValues, searchSchema } from "@/src/schemas/Search.schema";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Search } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 export default function GlobalSearchBar() {
   const {
@@ -29,7 +28,10 @@ export default function GlobalSearchBar() {
 
   return (
     <div className="flex-1">
-      <form onSubmit={handleSubmit(onSubmit, onError)} className="relative">
+      <form
+        onSubmit={handleSubmit(onSubmit, onError)}
+        className="relative h-10 md:h-11"
+      >
         <input
           type="text"
           {...register("query")}

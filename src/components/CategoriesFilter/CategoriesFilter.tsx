@@ -1,7 +1,7 @@
 "use client";
 
 import useEmblaCarousel from "embla-carousel-react";
-import { useState, useEffect, useCallback } from "react";
+import { useCallback, useState } from "react";
 
 const categories = [
   "Cameras",
@@ -30,7 +30,6 @@ export default function CategoriesFilter() {
     [emblaApi]
   );
 
-  // center active item when clicked
   const handleClick = (cat: string, index: number) => {
     setActiveCategory(cat);
     scrollTo(index);
