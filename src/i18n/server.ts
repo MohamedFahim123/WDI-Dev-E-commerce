@@ -12,7 +12,7 @@ export async function useTranslation(
   lang: string,
   ns: string
 ): Promise<UseTranslationResult> {
-  if (!languages.includes(lang)) lang = defaultLang;
+  if (!languages.some((l) => l.code === lang)) lang = defaultLang;
 
   await i18next
     .use(initReactI18next)
