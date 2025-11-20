@@ -2,7 +2,6 @@
 
 import { languages } from "@/src/i18n/settings";
 import { ChevronDown, Heart, ShoppingCart, User } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
 import { useState } from "react";
@@ -12,7 +11,7 @@ export default function NavCartContent() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
-  const currentLang = params.lang as string;
+  const currentLang = (params.lang as string) || "en";
 
   const getPathForLang = (lang: string) =>
     pathname.replace(`/${currentLang}`, `/${lang}`);
@@ -44,7 +43,7 @@ export default function NavCartContent() {
       </div>
 
       <Link href={`/${currentLang}/wishlist`} className="relative w-6">
-            <Heart size={20} />
+        <Heart size={20} />
         <span className="absolute -top-1 -right-2 w-[18px] h-[18px] text-xs bg-red-500 text-white rounded-full flex items-center justify-center">
           0
         </span>

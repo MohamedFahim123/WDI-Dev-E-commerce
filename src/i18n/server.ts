@@ -12,13 +12,14 @@ export async function useTranslation(
   lang: string,
   ns: string
 ): Promise<UseTranslationResult> {
-  if (!languages.some((l) => l.code === lang)) lang = defaultLang;
+  const safeLang =
+    lang && languages.some((l) => l.code === lang) ? lang : defaultLang;
 
   await i18next
     .use(initReactI18next)
     .use(Backend)
     .init({
-      lng: lang,
+      lng: safeLang,
       fallbackLng: defaultLang,
       ns: [ns],
       backend: {

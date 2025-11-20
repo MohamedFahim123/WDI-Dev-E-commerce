@@ -10,7 +10,6 @@ export default function Navbar() {
   return (
     <header
       className="shadow-sm sticky bg-white top-0 z-50"
-      // style={{ minHeight: "102px" }}
     >
       <Container className="grid grid-rows-[auto_1px_auto]">
         <div className="grid grid-cols-[auto_1fr_auto] items-center py-2 gap-4">
