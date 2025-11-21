@@ -5,9 +5,9 @@ export default function Footer() {
     <footer className="border-t border-[#E4E4E7] py-4">
       <Container>
         <div className="text-center h-full flex items-center justify-center">
-          <h6 className="text-[#71717A] font-semibold text-sm leading-6">
+          <h4 className="text-[#71717A] font-semibold text-sm leading-6">
             © 2025 WDI. All rights reserved.
-          </h6>
+          </h4>
         </div>
       </Container>
     </footer>

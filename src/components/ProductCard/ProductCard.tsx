@@ -27,6 +27,9 @@ export default function ProductCard({ product }: { product: Product }) {
         </Link>
 
         <button
+          name={"Add To Wishlist"}
+          title={"Add To Wishlist"}
+          type="button"
           onClick={toggleWishlist}
           className="absolute cursor-pointer top-3 right-3 bg-white rounded-full p-2 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110"
         >
@@ -40,11 +43,11 @@ export default function ProductCard({ product }: { product: Product }) {
         </button>
 
         {product.badge === "OFF" ? (
-          <div className="absolute top-3 left-3 bg-[#F97415] text-white text-xs font-medium px-2 py-1 rounded">
+          <div className="absolute top-3 left-3 bg-[#BF5910] text-white text-xs font-medium px-2 py-1 rounded">
             -{product.discountCount}%
           </div>
         ) : product.badge === "HOT" ? (
-          <div className="absolute top-3 left-3 bg-[#EF4343] text-white text-xs font-medium px-2 py-1 rounded">
+          <div className="absolute top-3 left-3 bg-[#D93C3C] text-white text-xs font-medium px-2 py-1 rounded">
             {product.badge}
           </div>
         ) : (
@@ -91,7 +94,12 @@ export default function ProductCard({ product }: { product: Product }) {
           )}
         </div>
 
-        <button className="w-full border-1 cursor-pointer border-[#7C3BED] bg-[#7C3BED] hover:bg-white text-white hover:text-[#7C3BED] py-2 px-4 rounded-md text-sm font-medium transition-all duration-300">
+        <button
+          name={"Add To Wishlist"}
+          title={"Add To Wishlist"}
+          type="button"
+          className="w-full border-1 cursor-pointer border-[#7C3BED] bg-[#7C3BED] hover:bg-white text-white hover:text-[#7C3BED] py-2 px-4 rounded-md text-sm font-medium transition-all duration-300"
+        >
           Add to Cart
         </button>
       </div>

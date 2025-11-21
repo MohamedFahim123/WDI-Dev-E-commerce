@@ -1,0 +1,5 @@
+User-agent: *
+Disallow:
+
+# Optional but recommended
+Sitemap: https://wdi-dev-e-commerce.vercel.app/sitemap.xml

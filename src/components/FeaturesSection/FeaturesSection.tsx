@@ -132,7 +132,7 @@ function Feature({
         {icon}
       </div>
       <div className="flex flex-col">
-        <span className="font-semibold text-[#009152]">{title}</span>
+        <span className="font-semibold text-[#008249]">{title}</span>
         <span className="text-sm text-[#5F5D5D]">{subtitle}</span>
       </div>
     </div>

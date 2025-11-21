@@ -39,6 +39,8 @@ export default function GlobalSearchBar() {
           className="pl-16 w-full h-full py-2 bg-[#F4F4F5] rounded-3xl text-sm focus:outline-none"
         />
         <button
+          name={"Search"}
+          title={"Search"}
           type="submit"
           className="absolute left-0 top-0 h-full px-2 flex items-center justify-center"
         >

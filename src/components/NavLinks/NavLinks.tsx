@@ -22,8 +22,8 @@ export default function NavLinks() {
         <Link
           key={link.href}
           href={link.href}
-          className={`inline-block max-w-[100px] text-center text-sm hover:text-[#F97415] transition-all duration-300 ${
-            pathname === link.href ? "text-[#F97415]" : ""
+          className={`inline-block max-w-[100px] text-center text-sm hover:text-[#BF5910] transition-all duration-300 ${
+            pathname === link.href ? "text-[#BF5910]" : ""
           }`}
         >
           {link.label}

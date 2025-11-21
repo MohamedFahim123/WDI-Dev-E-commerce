@@ -7,6 +7,7 @@ import { Toaster } from "sonner";
 const inter = Inter({
   subsets: ["latin"],
   display: "swap",
+  weight: ["400", "600", "700"],
 });
 export const metadata: Metadata = {
   title: "WDI Market",

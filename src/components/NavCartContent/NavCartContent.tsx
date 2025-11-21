@@ -23,6 +23,9 @@ export default function NavCartContent() {
     <div className="flex items-center space-x-5">
       <div className="relative">
         <button
+          name={currentLang}
+          title={currentLang}
+          type="button"
           onClick={() => setOpen(!open)}
           className="border px-2 py-1 rounded text-sm font-medium flex items-center gap-1 bg-white min-w-[60px]"
         >
@@ -33,6 +36,7 @@ export default function NavCartContent() {
           <div className="absolute right-0 mt-2 w-32 bg-white shadow-lg border rounded z-50 py-1">
             {languages.map((lang) => (
               <Link
+                title={lang.name}
                 key={lang.code}
                 href={getPathForLang(lang.code)}
                 className="block px-3 py-2 text-sm hover:bg-gray-100"
@@ -45,21 +49,21 @@ export default function NavCartContent() {
         )}
       </div>
 
-      <Link href={`/${currentLang}/wishlist`} className="relative w-6">
+      <Link title="Show Wishlist Page" href={`/${currentLang}/wishlist`} className="relative w-6">
         <Heart size={20} />
         <span className="absolute -top-1 -right-2 w-[18px] h-[18px] text-xs bg-red-500 text-white rounded-full flex items-center justify-center">
           0
         </span>
       </Link>
 
-      <Link href={`/${currentLang}/cart`} className="relative w-6">
+      <Link title="Show Cart Page" href={`/${currentLang}/cart`} className="relative w-6">
         <ShoppingCart size={20} />
         <span className="absolute -top-1 -right-2 w-[18px] h-[18px] text-xs bg-red-500 text-white rounded-full flex items-center justify-center">
           0
         </span>
       </Link>
 
-      <Link href={`/${currentLang}/profile`} className="relative w-6">
+      <Link title="Show Profile Page" href={`/${currentLang}/profile`} className="relative w-6">
         <User size={20} />
       </Link>
     </div>

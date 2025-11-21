@@ -183,7 +183,7 @@ html {
 .jimu-primary-loading:before,
 .jimu-primary-loading:after,
 .jimu-primary-loading {
-  background: #f97415;
+  background: #BF5910;
   -webkit-animation: loading-keys-app-loading 0.8s infinite ease-in-out;
   animation: loading-keys-app-loading 0.8s infinite ease-in-out;
   width: 13.6px;
@@ -205,13 +205,13 @@ html {
   80%,
   100% {
     opacity: 0.75;
-    box-shadow: 0 0 #f97415;
+    box-shadow: 0 0 #BF5910;
     height: 32px;
   }
 
   40% {
     opacity: 1;
-    box-shadow: 0 -8px #f97415;
+    box-shadow: 0 -8px #BF5910;
     height: 40px;
   }
 }
@@ -221,13 +221,13 @@ html {
   80%,
   100% {
     opacity: 0.75;
-    box-shadow: 0 0 #f97415;
+    box-shadow: 0 0 #BF5910;
     height: 32px;
   }
 
   40% {
     opacity: 1;
-    box-shadow: 0 -8px #f97415;
+    box-shadow: 0 -8px #BF5910;
     height: 40px;
   }
 }

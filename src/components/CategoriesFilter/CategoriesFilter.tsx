@@ -56,14 +56,17 @@ export default function CategoriesFilter() {
 
             return (
               <button
+                name={category}
+                title={category}
+                type="button"
                 key={index}
                 onClick={() => handleClick(category, index)}
                 className={`
                   flex-shrink-0 px-4 py-1 rounded-full transition cursor-pointer
                   ${
                     active
-                      ? "text-[#F97415] border border-[#F97415]"
-                      : "text-[#707070] bg-white border border-white hover:text-[#F97415]"
+                      ? "text-[#BF5910] border border-[#BF5910]"
+                      : "text-[#707070] bg-white border border-white hover:text-[#BF5910]"
                   }
                 `}
                 style={{ minWidth: 100 }}
