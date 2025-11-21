@@ -47,10 +47,11 @@ export default function CategoriesFilter() {
           max-w-fit
           cursor-grab
           active:cursor-grabbing
+          overFlowHidden
         "
         ref={emblaRef}
       >
-        <div className="embla__container flex gap-4">
+        <div className="embla__container flex xl:gap-4 md:gap-3">
           {categories.map((category, index) => {
             const active = activeCategory === category;
 
@@ -62,7 +63,7 @@ export default function CategoriesFilter() {
                 key={index}
                 onClick={() => handleClick(category, index)}
                 className={`
-                  flex-shrink-0 px-4 py-1 rounded-full transition cursor-pointer
+                  flex-shrink-0 xl:px-4 md:px-2 py-1 rounded-full transition cursor-pointer
                   ${
                     active
                       ? "text-[#BF5910] border border-[#BF5910]"

@@ -6,7 +6,11 @@ import { Search } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-export default function GlobalSearchBar() {
+export default function GlobalSearchBar({
+  isInSideBar,
+}: {
+  isInSideBar?: boolean;
+}) {
   const {
     register,
     handleSubmit,
@@ -30,13 +34,15 @@ export default function GlobalSearchBar() {
     <div className="flex-1">
       <form
         onSubmit={handleSubmit(onSubmit, onError)}
-        className="relative h-10 md:h-11"
+        className="relative h-10"
       >
         <input
           type="text"
           {...register("query")}
           placeholder="Search for products, brands and more..."
-          className="pl-16 w-full h-full py-2 bg-[#F4F4F5] rounded-3xl text-sm focus:outline-none"
+          className={`${
+            isInSideBar ? "pl-8" : "pl-16"
+          } w-full h-full py-2 bg-[#F4F4F5] rounded-3xl text-sm focus:outline-none`}
         />
         <button
           name={"Search"}
@@ -44,7 +50,7 @@ export default function GlobalSearchBar() {
           type="submit"
           className="absolute left-0 top-0 h-full px-2 flex items-center justify-center"
         >
-          <Search size={20} />
+          <Search size={isInSideBar ? 16 : 20} />
         </button>
       </form>
     </div>

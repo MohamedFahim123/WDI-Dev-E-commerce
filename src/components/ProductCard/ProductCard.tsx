@@ -1,7 +1,7 @@
 "use client";
 
 import { Product } from "@/src/types/product.types";
-import { Star, Heart } from "lucide-react";
+import { Star, Heart, ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -98,8 +98,9 @@ export default function ProductCard({ product }: { product: Product }) {
           name={"Add To Wishlist"}
           title={"Add To Wishlist"}
           type="button"
-          className="w-full border-1 cursor-pointer border-[#7C3BED] bg-[#7C3BED] hover:bg-white text-white hover:text-[#7C3BED] py-2 px-4 rounded-md text-sm font-medium transition-all duration-300"
+          className="w-full flex gap-4 justify-center items-center border-1 cursor-pointer border-[#7C3BED] bg-[#7C3BED] hover:bg-white text-white hover:text-[#7C3BED] py-2 px-4 rounded-md text-sm font-medium transition-all duration-300"
         >
+          <ShoppingCart size={18} />
           Add to Cart
         </button>
       </div>

@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "../ui/carousel";
+import { Carousel, CarouselContent, CarouselItem } from "../ui/carousel";
 import Image from "next/image";
 import Autoplay from "embla-carousel-autoplay";
 import Container from "../Container/Container";
@@ -48,7 +42,7 @@ export default function ImagesBanner() {
                 className="
                 pl-2
                 flex-shrink-0
-                basis-1/1
+                basis-1/2
                 sm:basis-1/2 
                 md:basis-1/3 
                 lg:basis-1/5 
@@ -67,9 +61,6 @@ export default function ImagesBanner() {
               </CarouselItem>
             ))}
           </CarouselContent>
-
-          <CarouselPrevious />
-          <CarouselNext />
         </Carousel>
       </Container>
     </section>

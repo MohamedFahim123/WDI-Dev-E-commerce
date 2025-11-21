@@ -6,17 +6,33 @@ import ProductsGrid from "../ProductsGrid/ProductsGrid";
 
 export default function FlashDeals() {
   return (
-    <section>
+    <section className="w-full">
+      {/* --- Flash Deals Header --- */}
       <div className="bg-[#BF5910] py-8">
-        <Container className="flex items-center justify-between">
-          <h2 className="text-white font-bold text-2xl flex items-center gap-2">
-            <span className="text-yellow-300 text-xl">⚡</span>
+        <Container
+          className="
+            flex flex-col items-center justify-center gap-4
+            text-center
+            sm:gap-5
+            md:flex-row md:justify-between md:text-left
+          "
+        >
+          <h2
+            className="
+              text-white font-bold text-2xl sm:text-3xl
+              flex items-center justify-center md:justify-start gap-2
+            "
+          >
+            <span className="text-yellow-300 text-2xl sm:text-3xl">⚡</span>
             Flash Deals
           </h2>
 
-          <FullTimerBox />
+          <div className="w-full max-w-[260px] md:max-w-none">
+            <FullTimerBox />
+          </div>
         </Container>
       </div>
+
       <Container className="py-10">
         <ProductsGrid />
       </Container>
