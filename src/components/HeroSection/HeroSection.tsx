@@ -6,7 +6,7 @@ export default function HeroSection() {
     <section className="w-full">
       <div className="relative w-full h-[320px] sm:h-[380px] md:h-[430px] lg:h-[460px] xl:h-[450px]">
         <Image
-          src="/assets/home/152767e83a91bdde7d70a524884a1dc185c4a39d.png"
+          src="/assets/home/hero_banner_full.webp"
           alt="Hero Banner"
           fill
           priority
