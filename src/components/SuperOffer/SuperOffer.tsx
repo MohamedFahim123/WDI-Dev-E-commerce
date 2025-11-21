@@ -8,15 +8,15 @@ export default function SuperOffer() {
       <div
         className="
           bg-[#BF5910] text-white 
-          px-4 sm:px-6 py-10 sm:py-14
+          px-4 sm:px-6 py-10
           flex flex-col items-center justify-center text-center
         "
       >
-        <div className="max-w-2xl mx-auto space-y-3 sm:space-y-4">
+        <div className="max-w-2xl mx-auto space-y-3">
           <h2
             className="
               font-bold uppercase tracking-wide
-              text-3xl sm:text-4xl md:text-5xl
+              text-3xl sm:text-4xl md:text-4xl
               drop-shadow-sm
             "
           >
@@ -25,7 +25,7 @@ export default function SuperOffer() {
 
           <p
             className="
-              text-base sm:text-lg md:text-xl 
+              text-base sm:text-lg md:text-lg 
               text-white/90 leading-relaxed
             "
           >

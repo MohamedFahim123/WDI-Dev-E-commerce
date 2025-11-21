@@ -27,7 +27,7 @@ export default function FlashDeals() {
             Flash Deals
           </h2>
 
-          <div className="w-full max-w-[260px] md:max-w-none">
+          <div className="w-full max-w-[260px] ">
             <FullTimerBox />
           </div>
         </Container>
