@@ -22,6 +22,7 @@ export default function ProductCard({ product }: { product: Product }) {
             alt={product.name}
             width={325}
             height={325}
+            loading="eager"
             className="w-full h-full object-cover"
           />
         </Link>

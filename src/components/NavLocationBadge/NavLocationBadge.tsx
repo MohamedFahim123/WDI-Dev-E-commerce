@@ -5,7 +5,7 @@ export default function NavLocationBadge() {
     <div
       className="
         flex items-center justify-center text-sm bg-gray-100
-        px-3 py-2 rounded-sm
+        px-2 py-2 rounded-sm
         w-full max-w-sm mx-auto
         sm:max-w-md md:min-w-[400px]
       "

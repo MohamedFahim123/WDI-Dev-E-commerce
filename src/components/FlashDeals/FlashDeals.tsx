@@ -7,7 +7,6 @@ import ProductsGrid from "../ProductsGrid/ProductsGrid";
 export default function FlashDeals() {
   return (
     <section className="w-full">
-      {/* --- Flash Deals Header --- */}
       <div className="bg-[#BF5910] py-8">
         <Container
           className="

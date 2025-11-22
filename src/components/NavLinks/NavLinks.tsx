@@ -19,10 +19,8 @@ export default function NavLinks({
 
   const navLinks = [
     { label: "Home", href: `/${lang}` },
-    { label: "Categories", href: `/${lang}/products/categories` },
-    { label: "Flash Deals", href: `/${lang}/products/flash-deals` },
-    { label: "New Arrivals", href: `/${lang}/products/new-arrivals` },
-    { label: "Track Order", href: `/${lang}/track-order` },
+    { label: "Shop", href: `/${lang}/shop` },
+    { label: "Categories", href: `/${lang}/categories` },
   ];
 
   const isRow = direction === "row";
