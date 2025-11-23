@@ -1,10 +1,10 @@
-import React from "react";
 type OrderSummaryCardProps = {
   subtotal: number;
   shipping: number;
   vat: number;
   total: number;
 };
+
 export default function OrderSummaryCard({
   subtotal,
   shipping,
@@ -14,7 +14,7 @@ export default function OrderSummaryCard({
   return (
     <section
       aria-label="Order summary"
-      className="space-y-4 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm"
+      className="space-y-4 rounded-2xl border border-[#E4E4E7] bg-white p-4 shadow-[0_1px_2px_rgba(0,0,0,0.04)]"
     >
       <h2 className="text-sm font-semibold text-zinc-900">Order Summary</h2>
 
@@ -44,11 +44,11 @@ export default function OrderSummaryCard({
       <div className="border-t border-zinc-100 pt-3">
         <div className="flex items-baseline justify-between">
           <span className="text-sm font-semibold text-zinc-900">Total</span>
-          <span className="text-xl font-bold text-[#7C3BED]">
+          <span className="text-2xl font-bold text-[#7C3BED]">
             AED {total.toFixed(2)}
           </span>
         </div>
-        <p className="mt-1 text-[11px] text-zinc-500">
+        <p className="mt-1 text-center text-[11px] text-zinc-500">
           VAT included in total price
         </p>
       </div>
