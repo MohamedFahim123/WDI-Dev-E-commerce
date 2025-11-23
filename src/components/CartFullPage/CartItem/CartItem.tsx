@@ -102,7 +102,7 @@ function CartItem({
           </div>
         </div>
 
-        <div className="flex flex-col items-end justify-between text-right">
+        <div className="flex flex-col sm:items-end items-center justify-between sm:text-right text-center">
           <div>
             <p className="text-sm font-semibold text-violet-600">
               AED {(product.price * quantity).toFixed(2)}

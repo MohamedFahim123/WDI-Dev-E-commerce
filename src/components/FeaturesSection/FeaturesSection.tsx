@@ -35,8 +35,8 @@ export default function FeaturesSection() {
   ];
 
   return (
-    <section className="py-6 md:py-10 bg-white">
-      <Container className="overflow-hidden cursor-grab">
+    <section className="bg-white py-6 md:py-10">
+      <Container className="overflow-hidden">
         <Carousel
           opts={{
             align: "start",
@@ -57,8 +57,8 @@ export default function FeaturesSection() {
                 className="
                   pl-2
                   flex-shrink-0
-                  basis-1/2
-                  sm:basis-1/2
+                  basis-[90%] 
+                  sm:basis-[60%]
                   md:basis-1/3
                   lg:basis-1/4
                   xl:basis-1/5
@@ -74,7 +74,7 @@ export default function FeaturesSection() {
   );
 }
 
-function FeatureCard({
+export function FeatureCard({
   icon,
   title,
   subtitle,
@@ -86,38 +86,29 @@ function FeatureCard({
   return (
     <div
       className="
-        flex items-center gap-3 
-        bg-[#FFF5EE] hover:bg-[#FFF0E5] transition-colors
-        px-3 sm:px-4 py-3 sm:py-4
-        rounded-md shadow-sm hover:shadow-md
-        w-full h-full
+        flex items-start gap-3
+        w-full min-w-[220px]
+        rounded-md bg-[#FFF5EE]
+        px-3 py-3 shadow-sm
+        transition-colors hover:bg-[#FFF0E5] hover:shadow-md
+        sm:px-4 sm:py-4
       "
     >
-      <div
-        className="
-          p-2 sm:p-3 bg-green-100 rounded-full 
-          flex items-center justify-center flex-shrink-0
-        "
-      >
+      <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-green-100 p-2 sm:h-12 sm:w-12 sm:p-3">
         <Image
           src={icon}
           alt={title}
           width={36}
           height={36}
-          className="object-contain w-6 h-6 sm:w-8 sm:h-8"
+          className="h-6 w-6 object-contain sm:h-8 sm:w-8"
         />
       </div>
-      <div className="flex flex-col overflow-hidden">
-        <span
-          title={title}
-          className="font-semibold text-[#008249] text-sm sm:text-base truncate"
-        >
+
+      <div className="flex flex-col">
+        <span className="text-sm font-semibold leading-snug text-[#008249] sm:text-base whitespace-normal">
           {title}
         </span>
-        <span
-          title={subtitle}
-          className="text-xs sm:text-sm text-[#5F5D5D] truncate"
-        >
+        <span className="mt-0.5 text-xs leading-snug text-[#5F5D5D] sm:text-sm whitespace-normal">
           {subtitle}
         </span>
       </div>

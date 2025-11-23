@@ -27,8 +27,8 @@ export default function FlashDeals() {
             Flash Deals
           </h2>
 
-          <div className="w-full max-w-[260px] ">
-            <div className="flex items-center gap-3 border border-white/40 py-1 rounded-lg text-white min-w-70 justify-center">
+          <div className="w-full max-w-[260px]">
+            <div className="flex items-center gap-3 border border-white/40 py-1 rounded-lg text-white min-w-64 justify-center">
               <span className="flex items-center gap-1 text-sm">
                 <Clock size={14} /> Ends in:
               </span>

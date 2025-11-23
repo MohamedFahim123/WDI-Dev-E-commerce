@@ -9,7 +9,7 @@ import { useCartStore } from "@/src/stores/cartStore";
 import { products } from "@/src/stores/products";
 import { useWishlistStore } from "@/src/stores/wishlistStore";
 import type { Product } from "@/src/types/product.types";
-import { toast } from "sonner";
+import EmptyWishlist from "./EmptyWishlist/EmptyWishlist";
 import WishlistItemRow from "./WishlistItemRow/WishlistItemRow";
 import WishlistSummarySidebar from "./WishlistSummarySidebar/WishlistSummarySidebar";
 
@@ -85,10 +85,6 @@ export default function WishlistFullPage() {
       quantity: 1,
       variantId: undefined,
     });
-
-    toast.success("Added to cart", {
-      description: product.name,
-    });
   };
 
   const handleMoveAllToCart = () => {
@@ -104,48 +100,29 @@ export default function WishlistFullPage() {
         toggleWishlist(product.id);
       });
     });
-
-    toast.success("All wishlist items moved to cart");
   };
 
   const handleRemoveFromWishlist = (productId: string) => {
     toggleWishlist(productId);
-    toast.success("Removed from wishlist");
   };
 
   return (
     <section className="bg-zinc-50">
-      <Container className="py-8 lg:py-10">
-        <header className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <h1 className="text-2xl font-bold text-zinc-900">My Wishlist</h1>
-          {!isEmpty && (
+      {isEmpty ? (
+        <EmptyWishlist lang={lang} />
+      ) : (
+        <Container className="py-8 lg:py-10">
+          <header className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <h1 className="text-2xl font-bold text-zinc-900">My Wishlist</h1>
             <p className="text-sm text-zinc-500">
-              You have{" "}
+              You have
               <span className="font-semibold text-zinc-900">
                 {wishlistCount}
-              </span>{" "}
+              </span>
               item{wishlistCount === 1 ? "" : "s"} saved for later.
             </p>
-          )}
-        </header>
+          </header>
 
-        {isEmpty ? (
-          <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-zinc-200 bg-white p-10 text-center">
-            <p className="text-lg font-semibold text-zinc-800">
-              Your wishlist is currently empty
-            </p>
-            <p className="mt-2 text-sm text-zinc-500">
-              Save items you love and quickly add them to your cart when
-              you&apos;re ready to buy.
-            </p>
-            <Link
-              href={`/${lang}/shop`}
-              className="mt-5 inline-flex items-center justify-center rounded-full border border-violet-500 px-5 py-2 text-sm font-medium text-[#7C3BED] hover:bg-violet-50"
-            >
-              Start Shopping
-            </Link>
-          </div>
-        ) : (
           <div className="grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
             <div className="space-y-5">
               {groupedStores.map((group) => (
@@ -178,7 +155,6 @@ export default function WishlistFullPage() {
                         key={product.id}
                         product={product}
                         lang={lang}
-                        onAddToCart={() => handleAddProductToCart(product)}
                         onRemove={() => handleRemoveFromWishlist(product.id)}
                         onMoveToCart={() => {
                           handleAddProductToCart(product);
@@ -207,8 +183,8 @@ export default function WishlistFullPage() {
               isEmpty={isEmpty}
             />
           </div>
-        )}
-      </Container>
+        </Container>
+      )}
     </section>
   );
 }

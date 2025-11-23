@@ -1,15 +1,13 @@
 "use client";
 
-import Link from "next/link";
-import Image from "next/image";
-import { Heart, ShoppingCart } from "lucide-react";
 import type { Product } from "@/src/types/product.types";
-import { Button } from "@/src/components/ui/button";
+import { Heart, ShoppingCart } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 
 type Props = {
   product: Product;
   lang: string;
-  onAddToCart: () => void;
   onRemove: () => void;
   onMoveToCart: () => void;
 };
@@ -17,7 +15,6 @@ type Props = {
 export default function WishlistItemRow({
   product,
   lang,
-  onAddToCart,
   onRemove,
   onMoveToCart,
 }: Props) {
@@ -80,16 +77,6 @@ export default function WishlistItemRow({
           </div>
         </div>
 
-        <div className="flex items-end justify-end">
-          <Button
-            type="button"
-            size="sm"
-            className="rounded-full bg-[#7C3BED] px-4 text-xs font-semibold text-white hover:bg-[#6d28d9]"
-            onClick={onAddToCart}
-          >
-            Add to cart
-          </Button>
-        </div>
       </div>
     </article>
   );

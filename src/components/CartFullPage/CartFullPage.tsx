@@ -89,16 +89,15 @@ export default function CartFullPage() {
 
   return (
     <section className="bg-zinc-50">
-      <Container className="py-8 lg:py-10">
-        <header className="mb-6">
-          <h1 className="text-2xl font-bold text-zinc-900">Shopping Cart</h1>
-        </header>
+      {isEmpty ? (
+        <CartEmptyState lang={lang} />
+      ) : (
+        <Container className="py-8 lg:py-10">
+          <header className="mb-6">
+            <h1 className="text-2xl font-bold text-zinc-900">Shopping Cart</h1>
+          </header>
 
-        {isEmpty ? (
-          <CartEmptyState lang={lang} />
-        ) : (
           <div className="grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
-            {/* LEFT: STORES & ITEMS */}
             <div className="space-y-5">
               {groupedStores.map((group) => (
                 <CartStoreCard
@@ -129,7 +128,6 @@ export default function CartFullPage() {
               </div>
             </div>
 
-            {/* RIGHT: SUMMARY / COUPON / CTA */}
             <CartSummarySidebar
               subtotal={subtotal}
               shipping={shipping}
@@ -138,8 +136,8 @@ export default function CartFullPage() {
               isEmpty={isEmpty}
             />
           </div>
-        )}
-      </Container>
+        </Container>
+      )}
     </section>
   );
 }

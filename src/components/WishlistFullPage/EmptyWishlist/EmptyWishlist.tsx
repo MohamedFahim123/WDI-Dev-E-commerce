@@ -1,14 +1,14 @@
 "use client";
 
+import { Heart } from "lucide-react";
 import Link from "next/link";
 import React from "react";
-import { ShoppingCart } from "lucide-react";
 
 type Props = {
   lang: string;
 };
 
-function CartEmptyState({ lang }: Props) {
+function EmptyWishlist({ lang }: Props) {
   return (
     <div
       className="flex flex-col h-[70vh] items-center justify-center bg-white px-6 py-10 text-center"
@@ -16,13 +16,15 @@ function CartEmptyState({ lang }: Props) {
       aria-live="polite"
     >
       <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-zinc-100 text-zinc-400">
-        <ShoppingCart className="h-7 w-7" aria-hidden="true" />
+        <Heart className="h-7 w-7" aria-hidden="true" />
       </div>
 
-      <p className="text-lg font-semibold text-zinc-900">Your Cart is Empty</p>
+      <p className="text-lg font-semibold text-zinc-900">
+        Your Wishlist is Empty
+      </p>
       <p className="mt-2 max-w-md text-sm text-zinc-500">
-        Looks like you haven&apos;t added anything to your cart yet. Start
-        shopping to fill it up!
+        Save items you love and quickly add them to your cart when you&apos;re
+        ready to buy.
       </p>
 
       <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
@@ -44,4 +46,4 @@ function CartEmptyState({ lang }: Props) {
   );
 }
 
-export default React.memo(CartEmptyState);
+export default React.memo(EmptyWishlist);
