@@ -25,12 +25,12 @@ export const applyFiltersAndSort = (
   } else if (sortKey === "price_asc") {
     result.sort(
       (a, b) =>
-        (a.currentPrice ?? Number.MAX_SAFE_INTEGER) -
-        (b.currentPrice ?? Number.MAX_SAFE_INTEGER)
+        (a.price ?? Number.MAX_SAFE_INTEGER) -
+        (b.price ?? Number.MAX_SAFE_INTEGER)
     );
   } else if (sortKey === "price_desc") {
     result.sort(
-      (a, b) => (b.currentPrice ?? 0) - (a.currentPrice ?? 0)
+      (a, b) => (b.price ?? 0) - (a.price ?? 0)
     );
   }
 

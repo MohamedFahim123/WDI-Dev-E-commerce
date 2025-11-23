@@ -23,12 +23,7 @@ export default function SuperOffer() {
             SUPER OFFER
           </h2>
 
-          <p
-            className="
-              text-base sm:text-lg md:text-lg 
-              text-white/90 leading-relaxed
-            "
-          >
+          <p className="text-base sm:text-lg md:text-lg leading-relaxed">
             Discover your own products and exclusive deals today!
           </p>
         </div>

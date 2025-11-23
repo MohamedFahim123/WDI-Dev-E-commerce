@@ -7,11 +7,11 @@ export default function NavLocationBadge() {
         flex items-center justify-center text-sm bg-gray-100
         px-2 py-2 rounded-sm
         w-full max-w-sm mx-auto
-        sm:max-w-md md:min-w-[400px]
+        sm:max-w-md md:min-w-[380px]
       "
     >
       <MapPin size={18} className="flex-shrink-0 text-[#7C3BED]" />
-      <hr className="w-[1px] h-5 bg-[#7C3BED] mx-2" />
+      <hr className="w-[1px] h-5 bg-[#7C3BED] mx-1" />
       <span className="truncate text-gray-800 text-xs sm:text-sm">
         Sheikh Zayed Road, Building 42, Dubai
       </span>

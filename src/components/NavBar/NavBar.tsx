@@ -1,16 +1,16 @@
 "use client";
 
+import { Menu, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
 
+import { useParams } from "next/navigation";
+import Container from "../Container/Container";
 import GlobalSearchBar from "../GlobalSearchBar/GlobalSearchBar";
 import NavCartContent from "../NavCartContent/NavCartContent";
 import NavLinks from "../NavLinks/NavLinks";
 import NavLocationBadge from "../NavLocationBadge/NavLocationBadge";
-import Container from "../Container/Container";
-import { useParams } from "next/navigation";
 
 export default function Navbar() {
   const [isNavOpen, setIsNavOpen] = useState(false);

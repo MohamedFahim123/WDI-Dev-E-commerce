@@ -1,5 +1,6 @@
 "use client";
 
+import { Clock } from "lucide-react";
 import Container from "../Container/Container";
 import FullTimerBox from "../FullTimerBox/FullTimerBox";
 import ProductsGrid from "../ProductsGrid/ProductsGrid";
@@ -7,7 +8,7 @@ import ProductsGrid from "../ProductsGrid/ProductsGrid";
 export default function FlashDeals() {
   return (
     <section className="w-full">
-      <div className="bg-[#BF5910] py-8">
+      <div className="bg-[#C2410C] px-4 sm:px-6 py-10 flex flex-col items-center justify-center text-center">
         <Container
           className="
             flex flex-col items-center justify-center gap-4
@@ -27,7 +28,12 @@ export default function FlashDeals() {
           </h2>
 
           <div className="w-full max-w-[260px] ">
-            <FullTimerBox />
+            <div className="flex items-center gap-3 border border-white/40 py-1 rounded-lg text-white min-w-70 justify-center">
+              <span className="flex items-center gap-1 text-sm">
+                <Clock size={14} /> Ends in:
+              </span>
+              <FullTimerBox />
+            </div>
           </div>
         </Container>
       </div>

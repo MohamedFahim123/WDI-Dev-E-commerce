@@ -6,6 +6,7 @@ import Container from "../Container/Container";
 import { useShopProducts } from "@/src/hooks/useShopProducts";
 import ProductCardSkeleton from "../Skeletons/ProductCardSkeleton/ProductCardSkeleton";
 import FilterBarSkeleton from "../Skeletons/FilterBarSkeleton/FilterBarSkeleton";
+import { useRouteLang } from "@/src/hooks/useLang";
 
 const FilterBar = dynamic(() => import("../Filters/FilterBar"), {
   ssr: false,
@@ -33,6 +34,8 @@ export default function ShopProducts({
     step,
   });
 
+  const lang: string = useRouteLang();
+
   const showSkeletonGrid = visibleProducts.length === 0;
 
   return (
@@ -46,7 +49,7 @@ export default function ShopProducts({
                 <ProductCardSkeleton key={idx} />
               ))
             : visibleProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
+                <ProductCard key={product.id} product={product} lang={lang} />
               ))}
         </div>
 

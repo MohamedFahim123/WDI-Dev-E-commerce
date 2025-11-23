@@ -23,7 +23,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`min-h-screen flex flex-col ${inter.className}`}>
-        <Toaster position="top-right" richColors />
+        <Toaster position="top-right" duration={1000} richColors />
 
         {children}
       </body>

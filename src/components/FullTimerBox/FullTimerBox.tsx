@@ -1,7 +1,6 @@
-import { Clock } from "lucide-react";
 import { useEffect, useState } from "react";
 
-export default function FullTimerBox() {
+export default function FullTimerBox({ bg }: { bg?: string }) {
   const [timeLeft, setTimeLeft] = useState(24 * 60 * 60);
 
   useEffect(() => {
@@ -16,24 +15,25 @@ export default function FullTimerBox() {
   const minutes = String(Math.floor((timeLeft % 3600) / 60)).padStart(2, "0");
   const seconds = String(timeLeft % 60).padStart(2, "0");
   return (
-    <div className="flex items-center gap-3 border border-white/40 py-1 rounded-lg text-white min-w-70 justify-center">
-      <span className="flex items-center gap-1 text-sm">
-        <Clock size={14} /> Ends in:
-      </span>
+    <>
       <div className="flex items-center gap-1">
-        <TimerBox value={hours} />
+        <TimerBox value={hours} bg={bg ? bg : ""} />
         <span>:</span>
-        <TimerBox value={minutes} />
+        <TimerBox value={minutes} bg={bg ? bg : ""} />
         <span>:</span>
-        <TimerBox value={seconds} />
+        <TimerBox value={seconds} bg={bg ? bg : ""} />
       </div>
-    </div>
+    </>
   );
 }
 
-function TimerBox({ value }: { value: string }) {
+function TimerBox({ value, bg }: { value: string; bg: string }) {
   return (
-    <div className="bg-[#A44603] px-2 py-1 rounded text-sm font-semibold min-w-[35px] text-center">
+    <div
+      className={`${
+        bg ? bg : "bg-[#A44603]"
+      } px-2 py-1 rounded text-sm font-semibold min-w-[35px] text-center`}
+    >
       {value}
     </div>
   );
