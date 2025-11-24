@@ -1,4 +1,10 @@
+import LoginForm from "@/src/components/Auth/LoginForm/LoginForm";
+import { Metadata } from "next";
 
+export const metadata: Metadata ={
+  title: "WDI - Login",
+  description: "Welcome Back, Sign in to your account Now!"
+}
 export default function LoginPage() {
-  return <div>LoginPage</div>;
+  return <LoginForm />;
 }

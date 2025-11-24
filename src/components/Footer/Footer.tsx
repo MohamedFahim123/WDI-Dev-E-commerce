@@ -1,6 +1,14 @@
+"use client";
+import { usePathname } from "next/navigation";
 import Container from "../Container/Container";
+import React from "react";
 
-export default function Footer() {
+function Footer() {
+  const pathname = usePathname();
+  if (pathname.includes("/auth")) {
+    return <></>;
+  }
+
   return (
     <footer className="border-t border-[#E4E4E7] py-4">
       <Container>
@@ -13,3 +21,4 @@ export default function Footer() {
     </footer>
   );
 }
+export default React.memo(Footer);

@@ -3,7 +3,7 @@ import { products } from "@/src/stores/products";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "WDI Product",
+  title: "WDI - Shop",
   description: "Explore Our Products!",
 };
 

@@ -20,6 +20,10 @@ export default function NavLinks({
   const navLinks = [
     { label: "Home", href: `/${lang}` },
     { label: "Shop", href: `/${lang}/shop` },
+    {
+      label: "Flash Deals",
+      href: `/${lang}/flash-deals`,
+    },
     { label: "Categories", href: `/${lang}/categories` },
   ];
 

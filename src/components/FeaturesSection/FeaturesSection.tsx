@@ -87,6 +87,7 @@ export function FeatureCard({
     <div
       className="
         flex items-start gap-3
+        h-full
         w-full min-w-[220px]
         rounded-md bg-[#FFF5EE]
         px-3 py-3 shadow-sm

@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
-import { useParams } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import Container from "../Container/Container";
 import GlobalSearchBar from "../GlobalSearchBar/GlobalSearchBar";
 import NavCartContent from "../NavCartContent/NavCartContent";
@@ -13,9 +13,14 @@ import NavLinks from "../NavLinks/NavLinks";
 import NavLocationBadge from "../NavLocationBadge/NavLocationBadge";
 
 export default function Navbar() {
+  const pathname = usePathname();
   const [isNavOpen, setIsNavOpen] = useState(false);
   const params = useParams();
   const lang = (params?.lang as string) || "en";
+
+  if (pathname.includes("/auth")) {
+    return <></>;
+  }
 
   return (
     <header className="shadow-sm sticky bg-white top-0 z-50">

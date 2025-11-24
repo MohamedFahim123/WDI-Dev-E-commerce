@@ -1,6 +1,6 @@
 "use client";
 
-import { SearchFormValues, searchSchema } from "@/src/schemas/Search.schema";
+import { SearchFormValues, searchSchema } from "@/src/validation/Search.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Search } from "lucide-react";
 import { useForm } from "react-hook-form";

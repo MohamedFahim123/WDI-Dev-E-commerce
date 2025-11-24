@@ -40,7 +40,7 @@ export function ProductSellerInfoCard({ lang }: { lang: string }) {
 
       <div className="mt-4 grid grid-cols-2 gap-3 text-xs">
         <Link
-          href={`/${lang}/store`}
+          href={`/${lang}/store/storedetails`}
           className="inline-flex items-center justify-center gap-2 rounded-full border border-zinc-200 bg-zinc-50 px-3 py-2 font-medium text-zinc-800 hover:border-violet-300 hover:bg-violet-50"
         >
           <Store className="h-4 w-4" />

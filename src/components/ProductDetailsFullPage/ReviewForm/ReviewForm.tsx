@@ -1,6 +1,6 @@
 "use client";
 
-import { ReviewSchema } from "@/src/schemas/Review.schema";
+import { ReviewSchema } from "@/src/validation/Review.schema";
 import { NewReviewInput } from "@/src/services/reviewService";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";

@@ -31,7 +31,7 @@ const SuperOffer = dynamic(
 );
 
 export const metadata: Metadata = {
-  title: "WDI Home",
+  title: "WDI - Home",
   description: "",
 };
 

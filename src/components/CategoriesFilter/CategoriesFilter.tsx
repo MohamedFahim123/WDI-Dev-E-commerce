@@ -14,7 +14,7 @@ const categories = [
   "Category",
 ];
 
-export default function CategoriesFilter() {
+export default function CategoriesFilter({ notHome }: { notHome?: boolean }) {
   const [emblaRef, emblaApi] = useEmblaCarousel({
     dragFree: true,
     containScroll: "trimSnaps",
@@ -38,17 +38,16 @@ export default function CategoriesFilter() {
   return (
     <div className="w-full mb-10">
       <div
-        className="
+        className={`
           embla
           border border-black
           rounded-[50px]
           px-4 py-3
-          mx-auto
-          max-w-fit
+          ${notHome ? "" : "mx-auto max-w-fit"}
           cursor-grab
           active:cursor-grabbing
           overFlowHidden
-        "
+        `}
         ref={emblaRef}
       >
         <div className="embla__container flex xl:gap-4 md:gap-3">
