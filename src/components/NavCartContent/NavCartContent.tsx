@@ -100,7 +100,7 @@ export default function NavCartContent() {
       >
         <Bell size={21} className="sm:h-5 sm:w-5" />
         {notificationsNum > 0 && (
-          <span className="absolute -top-1 -right-2 w-[16px] sm:w-[18px] h-[16px] sm:h-[18px] text-[8px] sm:text-[1px] bg-red-500 text-white rounded-full flex items-center justify-center">
+          <span className="absolute -top-1 -right-2 w-[16px] sm:w-[18px] h-[16px] sm:h-[18px] text-[8px] sm:text-[10px] bg-red-500 text-white rounded-full flex items-center justify-center">
             {notificationsNum}
           </span>
         )}
@@ -113,7 +113,7 @@ export default function NavCartContent() {
         aria-label="Wishlist"
       >
         <Heart size={21} className="sm:h-5 sm:w-5" />
-        <span className="absolute -top-1 -right-2 w-[16px] sm:w-[18px] h-[16px] sm:h-[18px] text-[8px] sm:text-[1px] bg-red-500 text-white rounded-full flex items-center justify-center">
+        <span className="absolute -top-1 -right-2 w-[16px] sm:w-[18px] h-[16px] sm:h-[18px] text-[8px] sm:text-[10px] bg-red-500 text-white rounded-full flex items-center justify-center">
           {wishListQuantity || 0}
         </span>
       </Link>
@@ -125,7 +125,7 @@ export default function NavCartContent() {
         aria-label="Cart"
       >
         <ShoppingCart size={21} className="sm:h-5 sm:w-5" />
-        <span className="absolute -top-1 -right-2 w-[16px] sm:w-[18px] h-[16px] sm:h-[18px] text-[8px] sm:text-[1px] bg-red-500 text-white rounded-full flex items-center justify-center">
+        <span className="absolute -top-1 -right-2 w-[16px] sm:w-[18px] h-[16px] sm:h-[18px] text-[8px] sm:text-[10px] bg-red-500 text-white rounded-full flex items-center justify-center">
           {quantity || 0}
         </span>
       </Link>
