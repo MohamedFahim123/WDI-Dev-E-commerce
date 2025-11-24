@@ -95,12 +95,12 @@ export default function NavCartContent() {
       <Link
         title="Show Notifications Page"
         href={`/${currentLang}/notifications`}
-        className="relative w-6 flex items-center justify-center"
+        className="relative w-5 sm:w-6 flex items-center justify-center"
         aria-label="Notifications"
       >
         <Bell size={21} className="sm:h-5 sm:w-5" />
         {notificationsNum > 0 && (
-          <span className="absolute -top-1 -right-2 w-[16px] sm:w-[18px] h-[16px] sm:h-[18px] text-[8px] sm:text-[11px] bg-red-500 text-white rounded-full flex items-center justify-center">
+          <span className="absolute -top-1 -right-2 w-[16px] sm:w-[18px] h-[16px] sm:h-[18px] text-[8px] sm:text-[1px] bg-red-500 text-white rounded-full flex items-center justify-center">
             {notificationsNum}
           </span>
         )}
@@ -109,11 +109,11 @@ export default function NavCartContent() {
       <Link
         title="Show Wishlist Page"
         href={`/${currentLang}/wishlist`}
-        className="relative w-6 flex items-center justify-center"
+        className="relative w-5 sm:w-6 flex items-center justify-center"
         aria-label="Wishlist"
       >
         <Heart size={21} className="sm:h-5 sm:w-5" />
-        <span className="absolute -top-1 -right-2 w-[16px] sm:w-[18px] h-[16px] sm:h-[18px] text-[8px] sm:text-[11px] bg-red-500 text-white rounded-full flex items-center justify-center">
+        <span className="absolute -top-1 -right-2 w-[16px] sm:w-[18px] h-[16px] sm:h-[18px] text-[8px] sm:text-[1px] bg-red-500 text-white rounded-full flex items-center justify-center">
           {wishListQuantity || 0}
         </span>
       </Link>
@@ -121,11 +121,11 @@ export default function NavCartContent() {
       <Link
         title="Show Cart Page"
         href={`/${currentLang}/cart`}
-        className="relative w-6 flex items-center justify-center"
+        className="relative w-5 sm:w-6 flex items-center justify-center"
         aria-label="Cart"
       >
         <ShoppingCart size={21} className="sm:h-5 sm:w-5" />
-        <span className="absolute -top-1 -right-2 w-[16px] sm:w-[18px] h-[16px] sm:h-[18px] text-[8px] sm:text-[11px] bg-red-500 text-white rounded-full flex items-center justify-center">
+        <span className="absolute -top-1 -right-2 w-[16px] sm:w-[18px] h-[16px] sm:h-[18px] text-[8px] sm:text-[1px] bg-red-500 text-white rounded-full flex items-center justify-center">
           {quantity || 0}
         </span>
       </Link>
@@ -134,7 +134,7 @@ export default function NavCartContent() {
         <Link
           title="Show Profile Page"
           href={`/${currentLang}/profile`}
-          className="relative w-6 flex items-center justify-center"
+          className="relative w-5 sm:w-6 flex items-center justify-center"
           aria-label="Profile"
         >
           <User size={21} className="sm:h-5 sm:w-5" />
