@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { Product, ProductVariant } from "@/src/types/product.types";
 import { useCartStore } from "@/src/stores/cartStore";
 import { useWishlistStore } from "@/src/stores/wishlistStore";
-import { handleShareThisProduct } from "@/src/helpers/ShareProduct";
+import { handleShareThisProduct } from "@/src/lib/ShareProduct";
 
 import { ProductMainInfoCard } from "./ProductMainInfoCard";
 import { ProductPaymentCard } from "./ProductPaymentCard";
