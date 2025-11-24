@@ -2,26 +2,40 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { useForm } from "react-hook-form";
 import { Eye, EyeOff, Globe2 } from "lucide-react";
 import { useAuthStore } from "@/src/stores/authStore";
-import { useLogin } from "@/src/hooks/useLogin";
 import { AuthInput } from "../Fields/AuthInput";
 import { useRouteLang } from "@/src/hooks/useLang";
 
+interface LoginFormValues {
+  identifier: string;
+  password: string;
+}
+
 export default function LoginForm() {
   const lang = useRouteLang();
-  const { values, errors, submitting, handleChange, handleSubmit } = useLogin();
   const { error: globalError } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
 
-  async function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    await handleSubmit();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginFormValues>({
+    defaultValues: {
+      identifier: "",
+      password: "",
+    },
+  });
+
+  async function onSubmit(values: LoginFormValues) {
+    console.log("Login submit", values);
   }
 
   return (
     <form
-      onSubmit={onSubmit}
+      onSubmit={handleSubmit(onSubmit)}
       className="flex flex-col gap-3"
       aria-describedby={globalError ? "login-global-error" : undefined}
     >
@@ -50,9 +64,10 @@ export default function LoginForm() {
         placeholder="Enter phone or email"
         autoComplete="email"
         required
-        value={values.identifier}
-        onChange={(e) => handleChange("identifier", e.target.value)}
-        error={errors.identifier}
+        error={errors.identifier?.message}
+        {...register("identifier", {
+          required: "Please enter your email or phone number",
+        })}
       />
 
       <div className="space-y-1.5">
@@ -72,13 +87,17 @@ export default function LoginForm() {
             placeholder="Enter your password"
             className="h-11 w-full rounded-lg border border-[#E4E4E7] bg-[#F5F5F7] px-3 pr-10 text-sm text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:ring-2 focus:ring-[#8b5cf6] focus:border-transparent"
             autoComplete="current-password"
-            required
             aria-invalid={!!errors.password || undefined}
             aria-describedby={
               errors.password ? "login-password-error" : undefined
             }
-            value={values.password}
-            onChange={(e) => handleChange("password", e.target.value)}
+            {...register("password", {
+              required: "Password is required",
+              minLength: {
+                value: 8,
+                message: "Password must be at least 8 characters",
+              },
+            })}
           />
           <button
             type="button"
@@ -100,14 +119,14 @@ export default function LoginForm() {
             className="text-[11px] font-medium text-red-500"
             role="alert"
           >
-            {errors.password}
+            {errors.password.message}
           </p>
         )}
       </div>
 
       <div className="-mt-2 text-right">
         <Link
-          href="/auth/forgot-password"
+          href={`/${lang}/auth/forgot-password`}
           className="text-[11px] font-semibold text-primary hover:underline"
         >
           Forget Password?
@@ -116,10 +135,10 @@ export default function LoginForm() {
 
       <button
         type="submit"
-        disabled={submitting}
+        disabled={isSubmitting}
         className="mt-1 cursor-pointer h-11 w-full rounded-full bg-[#7C3AED] text-sm font-semibold text-white shadow-[0_6px_18px_rgba(124,58,237,0.45)] transition hover:bg-[#6D28D9] disabled:cursor-not-allowed disabled:opacity-70"
       >
-        {submitting ? "Logging in…" : "Login"}
+        {isSubmitting ? "Logging in…" : "Login"}
       </button>
 
       <div className="flex items-center justify-center gap-2 text-[11px] text-muted-foreground">

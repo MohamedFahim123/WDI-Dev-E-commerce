@@ -1,0 +1,104 @@
+"use client";
+
+import { useRouteLang } from "@/src/hooks/useLang";
+import { useAuthStore } from "@/src/stores/authStore";
+import { Globe2 } from "lucide-react";
+import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { AuthInput } from "../Fields/AuthInput";
+import { useRouter } from "next/navigation";
+
+interface ForgotPasswordValues {
+  email: string;
+}
+
+export function ForgotPasswordForm() {
+  const lang = useRouteLang();
+  const { error: globalError } = useAuthStore();
+  const router = useRouter();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<ForgotPasswordValues>({
+    defaultValues: { email: "" },
+  });
+
+  async function onSubmit(values: ForgotPasswordValues) {
+    router.push(`/${lang}/auth/verify-account`);
+    console.log("Forgot password email", values.email);
+  }
+
+  return (
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="flex flex-col gap-4"
+      aria-describedby={globalError ? "forgot-global-error" : undefined}
+    >
+      <header className="space-y-1">
+        <h1 className="text-xl font-semibold text-foreground sm:text-2xl">
+          Forgot Password
+        </h1>
+        <p className="text-xs text-muted-foreground sm:text-sm">
+          Enter your email to receive a verification code
+        </p>
+      </header>
+
+      {globalError && (
+        <p
+          id="forgot-global-error"
+          className="rounded-md bg-red-50 px-3 py-2 text-[11px] font-medium text-red-600"
+          role="alert"
+          aria-live="polite"
+        >
+          {globalError}
+        </p>
+      )}
+
+      <div className="mt-2 space-y-4">
+        <AuthInput
+          label="Email Address"
+          placeholder="you@example.com"
+          autoComplete="email"
+          required
+          error={errors.email?.message}
+          {...register("email", {
+            required: "Email is required",
+          })}
+        />
+
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="h-11 cursor-pointer w-full rounded-full bg-[#7C3AED] text-sm font-semibold text-white shadow-[0_6px_18px_rgba(124,58,237,0.45)] transition hover:bg-[#6D28D9] disabled:cursor-not-allowed disabled:opacity-70"
+        >
+          {isSubmitting ? "Sending…" : "Send code"}
+        </button>
+      </div>
+
+      <div className="mt-4">
+        <Link
+          href={`/${lang}/auth/login`}
+          className="h-11 w-full rounded-full border border-[#E4E4E7] bg-white text-center text-sm font-semibold text-foreground hover:bg-[#F5F5F7] transition inline-flex items-center justify-center"
+        >
+          Back to login
+        </Link>
+      </div>
+
+      <div className="mt-3 flex items-center justify-center gap-1 text-xs text-muted-foreground">
+        <Globe2 className="h-4 w-4" aria-hidden="true" />
+        <button
+          type="button"
+          className="flex items-center gap-1 rounded-full px-1.5 py-0.5 hover:bg-black/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8b5cf6]"
+          aria-label="Change language"
+        >
+          <span>Language:</span>
+          <span className="font-semibold text-foreground">
+            {lang.toUpperCase()}
+          </span>
+        </button>
+      </div>
+    </form>
+  );
+}
