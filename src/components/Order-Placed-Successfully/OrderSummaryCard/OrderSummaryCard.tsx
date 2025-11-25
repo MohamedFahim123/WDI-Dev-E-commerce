@@ -11,10 +11,13 @@ import { Button } from "@/src/components/ui/button";
 import { Separator } from "@/src/components/ui/separator";
 import { orderSummary } from "../OrderSuccessData";
 import Row from "@/src/components/Checkout/Row/Row";
+import Link from "next/link";
+import { useRouteLang } from "@/src/hooks/useLang";
 
 const AED = (v: number) => `AED ${v.toFixed(2)}`;
 
 export default function OrderSummaryCard() {
+  const lang = useRouteLang();
   const s = orderSummary;
 
   return (
@@ -81,12 +84,14 @@ export default function OrderSummaryCard() {
         </CardContent>
       </Card>
 
-      <Button
-        type="button"
-        className="w-full rounded-full bg-[#7C3BED] text-[13px] font-medium text-white hover:bg-[#6d28d9]"
-      >
-        Continue Shopping
-      </Button>
+      <Link href={`/${lang}/shop`}>
+        <Button
+          type="button"
+          className="w-full rounded-full cursor-pointer bg-[#7C3BED] text-[13px] font-medium text-white hover:bg-[#6d28d9]"
+        >
+          Continue Shopping
+        </Button>
+      </Link>
     </div>
   );
 }

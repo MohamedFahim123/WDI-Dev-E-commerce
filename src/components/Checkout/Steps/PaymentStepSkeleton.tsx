@@ -1,0 +1,28 @@
+import React from "react";
+
+const PaymentStepSkeleton: React.FC = () => {
+  return (
+    <div className="rounded-2xl border border-[#f1f1f3] bg-white shadow-sm">
+      <div className="px-4 pb-4 pt-4">
+        <div className="h-4 w-32 rounded skeleton-shimmer" />
+      </div>
+
+      <div className="space-y-3 px-4 pb-5">
+        {[1, 2, 3, 4].map((i) => (
+          <div
+            key={i}
+            className="flex items-center gap-3 rounded-2xl border border-[#f3f4f6] bg-white p-4"
+          >
+            <div className="mt-1 h-4 w-4 rounded-full skeleton-shimmer" />
+            <div className="flex-1 space-y-2">
+              <div className="h-3 w-32 rounded skeleton-shimmer" />
+              <div className="h-3 w-40 rounded skeleton-shimmer" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default React.memo(PaymentStepSkeleton);

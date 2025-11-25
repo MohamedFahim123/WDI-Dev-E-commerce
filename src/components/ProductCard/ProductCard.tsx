@@ -37,8 +37,8 @@ export default function ProductCard({ product, lang }: Props) {
   };
 
   return (
-    <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-[#E4E4E7] bg-white shadow-[0px_1px_2px_rgba(0,0,0,0.06)] transition-shadow duration-300 hover:shadow-md">
-      <div className="relative w-full overflow-hidden rounded-b-none rounded-t-2xl">
+    <div className="flex h-full flex-col overflow-hidden rounded-xl border border-[#E4E4E7] bg-white shadow-[0px_1px_2px_rgba(0,0,0,0.06)] transition-shadow duration-300 hover:shadow-md">
+      <div className="relative w-full overflow-hidden rounded-b-none rounded-t-xl">
         <Link href={`/${lang}/shop/${product.id}`}>
           <div className="relative h-[170px] w-full sm:h-[190px]">
             <Image
@@ -73,9 +73,9 @@ export default function ProductCard({ product, lang }: Props) {
           title="Add To Wishlist"
           type="button"
           onClick={handleWishlistClick}
-          className={`absolute right-3 top-3 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border bg-white text-gray-600 shadow-sm transition-all duration-300 hover:scale-105 hover:shadow-md ${
+          className={`absolute right-3 top-3 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border bg-white shadow-sm transition-all duration-300 hover:scale-105 hover:shadow-md ${
             isWishlisted
-              ? "border-[#22C55E] text-[#16A34A] bg-[#ECFEFF]"
+              ? "border-[#ff2020] text-[#ff2020] bg-[#ff2020]"
               : "border-[#E4E4E7]"
           }`}
         >
@@ -128,7 +128,7 @@ export default function ProductCard({ product, lang }: Props) {
           onClick={handleAddToCart}
           type="button"
           disabled={inCart}
-          className={`mt-auto flex h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-[#7C3BED] text-xs font-semibold transition-all duration-300 sm:h-11 sm:text-sm ${
+          className={`mt-auto flex h-10 w-full cursor-pointer items-center justify-center gap-2 rounded-md border border-[#7C3BED] text-xs font-semibold transition-all duration-300 sm:h-11 sm:text-sm ${
             inCart
               ? "bg-white text-[#7C3BED] opacity-60 cursor-default"
               : "bg-[#7C3BED] text-white hover:bg-white hover:text-[#7C3BED]"

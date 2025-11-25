@@ -15,7 +15,7 @@ interface PageHeaderProps {
 
 export function PageHeader({ title, breadcrumb, rightSlot }: PageHeaderProps) {
   return (
-    <header className="w-full bg-white">
+    <header className="w-full ">
       <Container>
         <div className="flex items-end justify-between gap-4 pt-2">
           <div>
@@ -59,7 +59,7 @@ export function PageHeader({ title, breadcrumb, rightSlot }: PageHeaderProps) {
           </div>
 
           {rightSlot && (
-            <div className="hidden w-full max-w-xs sm:flex justify-end">
+            <div className="hidden w-full max-w-md sm:flex justify-end">
               {rightSlot}
             </div>
           )}

@@ -82,9 +82,9 @@ export default function CheckoutPage() {
     <FormProvider {...formMethods}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="flex flex-col gap-6">
-          <h1 className="text-2xl font-semibold tracking-tight text-[#111827]">
+          <h2 className="text-2xl font-semibold tracking-tight text-[#111827]">
             Checkout
-          </h1>
+          </h2>
 
           <CheckoutStepper step={step} />
 

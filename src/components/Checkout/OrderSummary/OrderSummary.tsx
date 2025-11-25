@@ -82,8 +82,8 @@ function OrderSummary({
           <Row
             label="Discount"
             value={`- ${AED(discount)}`}
-            labelClass="text-emerald-600"
-            valueClass="text-emerald-600"
+            labelClass="text-[#16A34A]"
+            valueClass="text-[#16A34A]"
           />
         </div>
 

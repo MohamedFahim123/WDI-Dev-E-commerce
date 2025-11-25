@@ -55,7 +55,7 @@ const AddressStep: React.FC = () => {
                     className={cn(
                       "flex cursor-pointer gap-3 rounded-2xl border px-4 py-4 text-xs transition-colors",
                       selected
-                        ? "border-[#7C3BED] bg-[#FFF5EB]"
+                        ? "border-[#7C3BED] bg-[#FFEFE4]"
                         : "border-[#f3f4f6] bg-white hover:border-[#e5e7eb]"
                     )}
                   >
