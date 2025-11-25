@@ -129,6 +129,7 @@ export default function CartFullPage() {
             </div>
 
             <CartSummarySidebar
+              lang={lang}
               subtotal={subtotal}
               shipping={shipping}
               vat={vat}
