@@ -1,4 +1,4 @@
-import MyReturnsPage from "@/src/components/Request-Returns/MyReturnsPage/MyReturnsPage";
+import MyReturnsSection from "@/src/components/Request-Returns/MyReturnsPage/MyReturnsSection";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -6,5 +6,5 @@ export const metadata: Metadata = {
 };
 
 export default function MyReturnsRoutePage() {
-  return <MyReturnsPage />;
+  return <MyReturnsSection />;
 }

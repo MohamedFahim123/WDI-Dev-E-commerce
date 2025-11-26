@@ -1,88 +1,83 @@
 "use client";
 
-import { Download, LifeBuoy } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/src/components/ui/card";
 import { Button } from "@/src/components/ui/button";
-import { Separator } from "@/src/components/ui/separator";
-import { orderSummary } from "../OrderSuccessData";
-import Row from "@/src/components/Checkout/Row/Row";
-import Link from "next/link";
 import { useRouteLang } from "@/src/hooks/useLang";
+import { Download, LifeBuoy } from "lucide-react";
+import Link from "next/link";
+import { OrderSummary } from "../../Orders/OrderDetails/OrderDetails";
+import { orderSummary } from "../OrderSuccessData";
 
-const AED = (v: number) => `AED ${v.toFixed(2)}`;
+type Props = {
+  summary: OrderSummary;
+};
 
-export default function OrderSummaryCard() {
+export default function OrderSummaryCard({ summary }: Props) {
   const lang = useRouteLang();
   const s = orderSummary;
 
   return (
     <div className="flex flex-col gap-4">
-      <Card className="rounded-2xl border border-[#e5e7eb] bg-white shadow-sm text-xs">
-        <CardHeader className="px-4 pb-3 pt-4">
-          <CardTitle className="text-[13px] font-semibold text-[#111827]">
-            Order Summary
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4 px-4 pb-4 pt-0">
-          <div className="space-y-1.5 text-[11px]">
-            <Row label="Subtotal" value={AED(s.subtotal)} />
-            <Row
-              label="Shipping"
-              value={s.shipping === 0 ? "Free" : AED(s.shipping)}
-            />
-            <Row label="VAT (15%)" value={AED(s.vat)} />
-            <Row
-              label="Discount"
-              value={`-AED ${s.discount.toFixed(2)}`}
-              labelClass="text-emerald-600"
-              valueClass="text-emerald-600"
-            />
+      <aside className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm">
+        <h2 className="mb-3 text-lg font-semibold">Order Summary</h2>
+        <dl className="space-y-1 text-sm">
+          <div className="flex justify-between">
+            <dt>Subtotal</dt>
+            <dd>
+              {summary.currency} {summary.subtotal.toFixed(2)}
+            </dd>
           </div>
-
-          <Separator className="bg-[#f3f4f6]" />
-
-          <Row
-            label="Total"
-            value={AED(s.total)}
-            labelClass="text-[12px] font-semibold text-[#111827]"
-            valueClass="text-[14px] font-semibold"
-          />
-          <div className="mt-[-6px] text-right text-[14px] font-semibold">
-            <span className="text-[#7C3BED]">{AED(s.total)}</span>
+          <div className="flex justify-between">
+            <dt>Shipping</dt>
+            <dd>
+              {summary.shipping === 0
+                ? "Free"
+                : `${summary.currency} ${summary.shipping.toFixed(2)}`}
+            </dd>
           </div>
-
-          <div className="space-y-1.5 pt-1 text-[11px] text-[#4b5563]">
-            <p>
-              <span className="font-semibold">Payment Method&nbsp;</span>
-              {s.paymentMethod} **** {s.paymentLast4}
-            </p>
+          <div className="flex justify-between">
+            <dt>VAT</dt>
+            <dd>
+              {summary.currency} {summary.vat.toFixed(2)}
+            </dd>
           </div>
-
-          <div className="mt-3 flex flex-col gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              className="flex w-full items-center justify-center gap-2 rounded-xl border-[#e5e7eb] bg-white text-[11px] font-medium text-[#111827] hover:bg-[#f3f4f6]"
-            >
-              <Download size={14} />
-              Download Invoice
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              className="flex w-full items-center justify-center gap-2 rounded-xl border-[#e5e7eb] bg-white text-[11px] font-medium text-[#111827] hover:bg-[#f3f4f6]"
-            >
-              <LifeBuoy size={14} />
-              Contact Support
-            </Button>
+          <div className="flex justify-between text-green-600">
+            <dt>Discount</dt>
+            <dd>
+              -{summary.currency} {summary.discount.toFixed(2)}
+            </dd>
           </div>
-        </CardContent>
-      </Card>
+          <hr className="my-2" />
+          <div className="flex justify-between text-base font-semibold text-[#7C3BED]">
+            <dt>Total</dt>
+            <dd>
+              {summary.currency} {summary.total.toFixed(2)}
+            </dd>
+          </div>
+        </dl>
+
+        <div className="mt-3 text-xs text-muted-foreground">
+          <p>Payment Method</p>
+          <p className="font-medium text-foreground">{summary.payment}</p>
+        </div>
+        <div className="mt-3 flex flex-col gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            className="flex w-full items-center justify-center gap-2 rounded-xl border-[#e5e7eb] bg-white text-[11px] font-medium text-[#111827] hover:bg-[#f3f4f6]"
+          >
+            <Download size={14} />
+            Download Invoice
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            className="flex w-full items-center justify-center gap-2 rounded-xl border-[#e5e7eb] bg-white text-[11px] font-medium text-[#111827] hover:bg-[#f3f4f6]"
+          >
+            <LifeBuoy size={14} />
+            Contact Support
+          </Button>
+        </div>
+      </aside>
 
       <Link href={`/${lang}/shop`}>
         <Button

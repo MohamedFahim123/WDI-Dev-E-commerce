@@ -1,4 +1,4 @@
-import ReturnRequestPage from "@/src/components/Request-Returns/ReturnRequestPage";
+import MyRequestReturnsSection from "@/src/components/Request-Returns/MyRequestReturnsSection";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -6,5 +6,5 @@ export const metadata: Metadata = {
 };
 
 export default function RequestReturnsPage() {
-  return <ReturnRequestPage />;
+  return <MyRequestReturnsSection />;
 }

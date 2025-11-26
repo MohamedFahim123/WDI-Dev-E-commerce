@@ -1,4 +1,4 @@
-import ReturnItemRequestPage from "@/src/components/Request-Returns/ReturnItemRequestPage/ReturnItemRequestPage";
+import ReturnedItemRequestSection from "@/src/components/Request-Returns/ReturnItemRequestPage/ReturnedItemRequestSection";
 import { RETURN_ITEMS } from "@/src/components/Request-Returns/ReturnRequestData";
 import { Metadata } from "next";
 
@@ -10,7 +10,7 @@ export default async function ReturnItemPage({ params }: Props) {
   const { itemId } = await params;
   const item = RETURN_ITEMS.find((i) => i.id === itemId) ?? RETURN_ITEMS[0];
 
-  return <ReturnItemRequestPage item={item} />;
+  return <ReturnedItemRequestSection item={item} />;
 }
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { itemId } = await params;

@@ -144,6 +144,14 @@ html {
   scrollbar-width: none;
 }
 
+.embla {
+  overflow: hidden;
+}
+
+.embla__container {
+  display: flex;
+}
+
 /* Loader */
 .loaderContainer {
   height: 100vh;

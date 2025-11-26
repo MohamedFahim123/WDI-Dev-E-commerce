@@ -19,7 +19,7 @@ export default function NavCartContent() {
   const [langOpen, setLangOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
 
-  const isLogined = false;
+  const isLogined = true;
 
   const langRef = useRef<HTMLDivElement | null>(null);
   const authRef = useRef<HTMLDivElement | null>(null);

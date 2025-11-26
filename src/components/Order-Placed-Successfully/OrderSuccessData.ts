@@ -1,3 +1,4 @@
+import { OrderSummary } from "../Orders/OrderDetails/OrderDetails";
 
 export type TrackingStatus = "complete" | "current" | "upcoming";
 
@@ -23,15 +24,7 @@ export type Address = {
   phone: string;
 };
 
-export type OrderSummary = {
-  subtotal: number;
-  shipping: number;
-  vat: number;
-  discount: number;
-  total: number;
-  paymentMethod: string;
-  paymentLast4: string;
-};
+
 
 export const trackingSteps: TrackingStep[] = [
   {
@@ -95,8 +88,8 @@ export const orderSummary: OrderSummary = {
   vat: 179.99,
   discount: 50,
   total: 1329.96,
-  paymentMethod: "Visa",
-  paymentLast4: "4242",
+  currency: "$",
+  payment: "Visa",
 };
 
 export const orderMeta = {

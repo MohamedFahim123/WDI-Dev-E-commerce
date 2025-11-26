@@ -1,132 +1,114 @@
 "use client";
 
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-} from "@/src/components/ui/card";
-import { Button } from "@/src/components/ui/button";
-import { trackingSteps, TrackingStep } from "../OrderSuccessData";
+import clsx from "clsx";
+import { Check, Package2, Truck, MapPin, Home } from "lucide-react";
+import { OrderTrackingStep } from "../../Orders/OrderDetails/OrderDetails";
 
-function TrackingDot({ status }: { status: TrackingStep["status"] }) {
-  const base = "flex items-center justify-center h-5 w-5 rounded-full border";
-  if (status === "complete") {
-    return (
-      <div
-        className={`${base} border-[#7C3BED] bg-[#7C3BED] text-white text-[10px]`}
-      >
-        ✓
-      </div>
-    );
-  }
-  if (status === "current") {
-    return (
-      <div className={`${base} bg-white border-[#7C3BED]`}>
-        <div className="h-2.5 w-2.5 rounded-full border-[#7C3BED]" />
-      </div>
-    );
-  }
-  return <div className={`${base} border-[#e5e7eb] bg-white`} />;
-}
+type Props = {
+  tracking: OrderTrackingStep[];
+  courier: string;
+  trackingNumber: string;
+};
 
-export default function OrderTrackingCard() {
+const STEP_ICONS = [Check, Package2, Truck, MapPin, Home];
+
+export default function OrderTrackingCard({
+  tracking,
+  courier,
+  trackingNumber,
+}: Props) {
   return (
-    <Card className="rounded-2xl border border-[#e5e7eb] bg-white shadow-sm">
-      <CardHeader className="pb-3 pt-4">
-        <CardTitle className="text-[14px] font-semibold text-[#111827]">
-          Order Tracking
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4 pb-4 pt-0">
-        <div className="space-y-4">
-          {trackingSteps.map((step, index) => {
-            const isLast = index === trackingSteps.length - 1;
-            const isCurrent = step.status === "current";
-            const isComplete = step.status === "complete";
+    <section className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm">
+      <h2 className="mb-4 text-lg font-semibold text-[#111827]">
+        Order Tracking
+      </h2>
 
-            const lineColor = isComplete || isCurrent ? "#7C3BED" : "#e5e7eb";
+      <ol className="relative mt-2 space-y-6">
+        {tracking.map((step, index) => {
+          const isCurrent = step.status === "current";
+          const isDone = step.status === "done";
+          const isActive = isDone || isCurrent;
 
-            return (
-              <div key={step.id} className="flex items-start gap-3 text-xs">
-                <div className="flex flex-col items-center">
-                  <TrackingDot status={step.status} />
-                  {!isLast && (
-                    <div
-                      className="mt-1 w-[2px] flex-1 rounded-full"
-                      style={{ backgroundColor: lineColor }}
-                    />
+          const Icon = STEP_ICONS[index] ?? Check;
+
+          return (
+            <li
+              key={step.label}
+              className="relative flex flex-col gap-1 pl-8 text-sm"
+            >
+              {index < tracking.length - 1 && (
+                <span
+                  className={clsx(
+                    "absolute left-[11px] top-5 h-[calc(100%-12px)] w-[2px] rounded-full",
+                    isActive ? "bg-[#7C3BED]" : "bg-[#E5E7EB]"
                   )}
-                </div>
+                  aria-hidden="true"
+                />
+              )}
 
-                <div className="flex flex-1 justify-between">
-                  <div>
-                    <p
-                      className={`text-[12px] font-semibold ${
-                        isCurrent || isComplete
-                          ? "text-[#111827]"
-                          : "text-[#9ca3af]"
-                      }`}
-                    >
-                      {step.title}
-                    </p>
-                    {step.datetime && (
-                      <p className="mt-0.5 text-[11px] text-[#6b7280]">
-                        {step.datetime}
-                      </p>
-                    )}
-                  </div>
-
-                  {isCurrent && (
-                    <span className="self-center rounded-full bg-[#f3f4f6] px-2 py-[3px] text-[10px] font-medium text-[#4b5563]">
-                      Current Status
-                    </span>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        <div className="mt-4 rounded-xl bg-[#f9fafb] px-4 py-3 text-[11px] text-[#4b5563]">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-[11px] font-semibold text-[#111827]">
-                Carrier
-              </p>
-              <p className="text-[11px] text-[#6b7280]">Aramex</p>
-            </div>
-            <div className="text-right">
-              <p className="text-[11px] font-semibold text-[#111827]">
-                Tracking Number
-              </p>
-              <button
-                type="button"
-                className="text-[11px] font-semibold text-[#7C3BED] underline-offset-2 hover:underline"
+              <span
+                className={clsx(
+                  "absolute left-0 top-0 flex h-6 w-6 items-center justify-center rounded-full border-2",
+                  isDone
+                    ? "border-[#7C3BED] bg-[#7C3BED]"
+                    : isCurrent
+                    ? "border-[#7C3BED] bg-white"
+                    : "border-[#D4D4D8] bg-white"
+                )}
               >
-                AK0123456789
-              </button>
-            </div>
-          </div>
+                <Icon
+                  className={clsx(
+                    "h-3.5 w-3.5",
+                    isDone
+                      ? "text-white"
+                      : isCurrent
+                      ? "text-[#7C3BED]"
+                      : "text-[#9CA3AF]"
+                  )}
+                  aria-hidden="true"
+                />
+              </span>
 
-          <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:justify-between">
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full rounded-full border-[#7C3BED] text-[11px] font-medium text-[#7C3BED] hover:bg-[#f5f3ff] sm:w-[160px]"
-            >
-              Re-order
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full rounded-full border-[#e5e7eb] bg-white text-[11px] font-medium text-[#4b5563] hover:bg-[#f3f4f6] sm:w-[160px]"
-            >
-              Request a return
-            </Button>
-          </div>
+              <div className="flex items-center justify-between gap-3">
+                <p
+                  className={clsx(
+                    "text-sm font-medium",
+                    isCurrent ? "text-[#7C3BED]" : "text-[#111827]"
+                  )}
+                >
+                  {step.label}
+                </p>
+
+                {isCurrent && (
+                  <span className="inline-flex items-center rounded-full border border-neutral-300 bg-white px-2 py-0.5 text-[10px] font-medium text-neutral-600">
+                    Current Status
+                  </span>
+                )}
+              </div>
+
+              {step.date && (
+                <p className="text-xs text-[#6B7280]">{step.date}</p>
+              )}
+            </li>
+          );
+        })}
+      </ol>
+
+      <div className="mt-6 flex items-center justify-between rounded-lg bg-[#F9FAFB] p-3 text-xs sm:text-sm">
+        <div>
+          <p className="text-[11px] text-[#6B7280]">Carrier</p>
+          <p className="text-sm font-medium text-[#111827]">{courier}</p>
         </div>
-      </CardContent>
-    </Card>
+        <div className="text-right">
+          <p className="text-[11px] text-[#6B7280]">Tracking Number</p>
+          <button
+            type="button"
+            className="text-sm font-medium text-[#7C3BED] hover:underline"
+          >
+            {trackingNumber}
+          </button>
+        </div>
+      </div>
+    </section>
   );
 }
