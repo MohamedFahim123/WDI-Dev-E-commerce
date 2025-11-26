@@ -16,13 +16,16 @@ interface AuthState {
   setError: (message: string | null) => void;
   finishInitializing: () => void;
   reset: () => void;
+
+  login: (identifier: string, password: string) => Promise<void>;
+  logout: () => void;
 }
 
 export const useAuthStore = create<AuthState>()(
   devtools((set) => ({
     user: null,
     isAuthenticated:
-      typeof window !== "undefined" ? getAuthFromCookie() : false,
+      typeof window !== "undefined" ? !!getAuthFromCookie() : false,
     isInitializing: false,
     error: null,
 
@@ -36,5 +39,33 @@ export const useAuthStore = create<AuthState>()(
         isAuthenticated: false,
         error: null,
       }),
+
+    async login(identifier, password) {
+      set({ isInitializing: true, error: null });
+      await new Promise((r) => setTimeout(r, 800));
+
+      if (password === "12345678") {
+        set({
+          user: { id: "1", name: "John Doe", email: identifier },
+          isAuthenticated: true,
+          isInitializing: false,
+          error: null,
+        });
+      } else {
+        set({
+          error: "Invalid credentials. Try using password 12345678.",
+          isInitializing: false,
+        });
+      }
+    },
+
+    /** Dummy logout */
+    logout() {
+      set({
+        user: null,
+        isAuthenticated: false,
+        error: null,
+      });
+    },
   }))
 );

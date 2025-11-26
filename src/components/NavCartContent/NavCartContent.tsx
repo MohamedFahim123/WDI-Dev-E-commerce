@@ -1,6 +1,7 @@
 "use client";
 
 import { languages } from "@/src/i18n/settings";
+import { useAuthStore } from "@/src/stores/authStore";
 import { useCartStore } from "@/src/stores/cartStore";
 import { useWishlistStore } from "@/src/stores/wishlistStore";
 import { Bell, ChevronDown, Heart, ShoppingCart, User } from "lucide-react";
@@ -19,7 +20,9 @@ export default function NavCartContent() {
   const [langOpen, setLangOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
 
-  const isLogined = true;
+  const isAuthenticated = useAuthStore((e) => e.isAuthenticated);
+  const user = useAuthStore((e) => e.user);
+  const logout = useAuthStore((e) => e.logout);
 
   const langRef = useRef<HTMLDivElement | null>(null);
   const authRef = useRef<HTMLDivElement | null>(null);
@@ -92,19 +95,21 @@ export default function NavCartContent() {
         )}
       </div>
 
-      <Link
-        title="Show Notifications Page"
-        href={`/${currentLang}/notifications`}
-        className="relative w-5 sm:w-6 flex items-center justify-center"
-        aria-label="Notifications"
-      >
-        <Bell size={21} className="sm:h-5 sm:w-5" />
-        {notificationsNum > 0 && (
-          <span className="absolute -top-1 -right-2 w-[16px] sm:w-[18px] h-[16px] sm:h-[18px] text-[8px] sm:text-[10px] bg-red-500 text-white rounded-full flex items-center justify-center">
-            {notificationsNum}
-          </span>
-        )}
-      </Link>
+      {isAuthenticated && (
+        <Link
+          title="Show Notifications Page"
+          href={`/${currentLang}/notifications`}
+          className="relative w-5 sm:w-6 flex items-center justify-center"
+          aria-label="Notifications"
+        >
+          <Bell size={21} className="sm:h-5 sm:w-5" />
+          {notificationsNum > 0 && (
+            <span className="absolute -top-1 -right-2 w-[16px] sm:w-[18px] h-[16px] sm:h-[18px] text-[8px] sm:text-[10px] bg-red-500 text-white rounded-full flex items-center justify-center">
+              {notificationsNum}
+            </span>
+          )}
+        </Link>
+      )}
 
       <Link
         title="Show Wishlist Page"
@@ -130,15 +135,43 @@ export default function NavCartContent() {
         </span>
       </Link>
 
-      {isLogined ? (
-        <Link
-          title="Show Profile Page"
-          href={`/${currentLang}/profile`}
-          className="relative w-5 sm:w-6 flex items-center justify-center"
-          aria-label="Profile"
-        >
-          <User size={21} className="sm:h-5 sm:w-5" />
-        </Link>
+      {isAuthenticated ? (
+        <div className="relative" ref={authRef}>
+          <button
+            type="button"
+            onClick={() => {
+              setAuthOpen((p) => !p);
+              setLangOpen(false);
+            }}
+            className="flex cursor-pointer items-center justify-center rounded-full border border-[#E4E4E7] bg-white text-xs sm:text-sm p-1.5 sm:px-2 hover:bg-gray-100"
+          >
+            <User size={20} />
+            <span className="hidden sm:inline ml-1 font-medium text-gray-700">
+              {user?.name?.split(" ")[0] ?? "Profile"}
+            </span>
+          </button>
+
+          {authOpen && (
+            <div className="absolute right-0 mt-2 w-40 bg-white shadow-lg border border-[#ddd] rounded z-50 py-1">
+              <Link
+                href={`/${currentLang}/buyer/profile`}
+                className="block px-3 py-2 text-sm hover:bg-gray-100"
+                onClick={() => setAuthOpen(false)}
+              >
+                My Account
+              </Link>
+              <button
+                onClick={() => {
+                  logout();
+                  setAuthOpen(false);
+                }}
+                className="w-full cursor-pointer text-left px-3 py-2 text-sm hover:bg-gray-100 text-red-600"
+              >
+                Logout
+              </button>
+            </div>
+          )}
+        </div>
       ) : (
         <div className="relative" ref={authRef}>
           <button
@@ -147,32 +180,17 @@ export default function NavCartContent() {
               setAuthOpen((p) => !p);
               setLangOpen(false);
             }}
-            className="
-              relative flex items-center justify-center
-              rounded-sm border border-[#7C3BED] bg-[#7C3BED]
-              text-white text-xs sm:text-sm
-              px-1.5 sm:px-3 py-1
-              hover:bg-white hover:text-[#7C3BED]
-              transition-all duration-300
-              whitespace-nowrap
-            "
-            aria-haspopup="menu"
-            aria-expanded={authOpen}
-            aria-label="Open authentication menu"
+            className="relative cursor-pointer flex items-center justify-center rounded-sm border border-[#7C3BED] bg-[#7C3BED] text-white text-xs sm:text-sm px-1.5 sm:px-3 py-1 hover:bg-white hover:text-[#7C3BED] transition-all"
           >
-            <User className="h-4 w-4 sm:mr-1" aria-hidden="true" />
+            <User className="h-4 w-4 sm:mr-1" />
             <span className="hidden sm:inline">Login / Register</span>
           </button>
 
           {authOpen && (
-            <div
-              className="absolute right-0 mt-2 w-40 bg-white shadow-lg border border-[#ddd] rounded z-50 py-1"
-              role="menu"
-            >
+            <div className="absolute right-0 mt-2 w-40 bg-white shadow-lg border border-[#ddd] rounded z-50 py-1">
               <Link
                 href={`/${currentLang}/auth/login`}
                 className="block px-3 py-2 text-sm hover:bg-gray-100"
-                role="menuitem"
                 onClick={() => setAuthOpen(false)}
               >
                 Login
@@ -180,7 +198,6 @@ export default function NavCartContent() {
               <Link
                 href={`/${currentLang}/auth/register`}
                 className="block px-3 py-2 text-sm hover:bg-gray-100"
-                role="menuitem"
                 onClick={() => setAuthOpen(false)}
               >
                 Register

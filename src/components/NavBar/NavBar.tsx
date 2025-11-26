@@ -23,7 +23,7 @@ export default function Navbar() {
   }
 
   return (
-    <header className="shadow-sm sticky bg-white top-0 z-50">
+    <header className={`shadow-sm ${pathname.includes("buyer") ? "absolute w-full": "sticky"} bg-white top-0 z-50`}>
       <Container className="grid grid-rows-[auto_1px_auto]">
         <div
           className="
