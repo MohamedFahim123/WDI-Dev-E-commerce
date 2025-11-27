@@ -7,7 +7,7 @@ interface Props {
   setAuthOpen: (x: boolean | ((p: boolean) => boolean)) => void;
   setLangOpen: (x: boolean) => void;
   currentLang: string;
-  authRef: React.RefObject<HTMLDivElement>;
+  authRef: React.RefObject<HTMLDivElement | null>;
 }
 
 export default function AuthMenu({

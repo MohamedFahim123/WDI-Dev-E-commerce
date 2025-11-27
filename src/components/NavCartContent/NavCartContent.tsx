@@ -7,11 +7,12 @@ import { useCartStore } from "@/src/stores/cartStore";
 import { useWishlistStore } from "@/src/stores/wishlistStore";
 
 import LangDropDown from "./LangDropDown";
+import useOutsideClose from "./useOutsideClose";
 import NotificationsButton from "./NotificationsButton";
 import WishlistButton from "./WishlistButton";
 import CartButton from "./CartButton";
 import AuthMenu from "./AuthMenu";
-import useOutsideClose from "./useOutsideClose";
+
 
 export default function NavCartContent() {
   const params = useParams();

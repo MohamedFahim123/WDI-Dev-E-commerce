@@ -1,7 +1,7 @@
-import { useEffect } from "react";
+import { RefObject, useEffect } from "react";
 
-export default function useOutsideClose(
-  ref: React.RefObject<HTMLElement>,
+export default function useOutsideClose<T extends HTMLElement>(
+  ref: RefObject<T | null>,
   onClose: () => void,
   closeOnScroll = false
 ) {
