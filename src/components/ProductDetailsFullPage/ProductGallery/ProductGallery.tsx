@@ -94,7 +94,7 @@ export function ProductGallery({ product }: Props) {
                 />
 
                 {product.badge === "OFF" ? (
-                  <div className="absolute left-3 top-3 rounded bg-[#C2410C] px-2 py-1 text-xs font-medium text-white">
+                  <div className="absolute left-3 top-3 rounded bg-[#BF5910] px-2 py-1 text-xs font-medium text-white">
                     -{product.discountCount}%
                   </div>
                 ) : product.badge === "HOT" ? (

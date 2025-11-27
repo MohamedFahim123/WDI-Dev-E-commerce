@@ -93,9 +93,9 @@ export default function ReturnItemRequestPage({
                 />
 
                 <div className="flex-1">
-                  <p className="line-clamp-2 text-[14px] font-semibold text-[#111827]">
+                  <h2 className="line-clamp-2 text-[14px] font-semibold text-[#111827]">
                     {item.name}
-                  </p>
+                  </h2>
                   <div className="mt-2 flex flex-wrap gap-2 text-[11px]">
                     <span className="rounded-full bg-[#F3F4F6] px-2 py-[2px] text-[#4B5563]">
                       Qty: {item.quantity}
@@ -115,9 +115,9 @@ export default function ReturnItemRequestPage({
             </div>
 
             <section className="space-y-3">
-              <h2 className="text-[15px] font-semibold text-[#111827]">
+              <h3 className="text-[15px] font-semibold text-[#111827]">
                 Reason for Return
-              </h2>
+              </h3>
 
               <RadioGroup
                 value={watch("reason")}
@@ -150,9 +150,9 @@ export default function ReturnItemRequestPage({
             </section>
 
             <section className="space-y-3">
-              <h2 className="text-[15px] font-semibold text-[#111827]">
+              <h3 className="text-[15px] font-semibold text-[#111827]">
                 Upload Photos (optional)
-              </h2>
+              </h3>
 
               <div className="flex flex-wrap gap-3">
                 <Image
@@ -184,9 +184,9 @@ export default function ReturnItemRequestPage({
             </section>
 
             <section className="space-y-3">
-              <h2 className="text-[15px] font-semibold text-[#111827]">
+              <h3 className="text-[15px] font-semibold text-[#111827]">
                 Return Method
-              </h2>
+              </h3>
 
               <RadioGroup
                 value={method}
@@ -237,9 +237,9 @@ export default function ReturnItemRequestPage({
             </section>
 
             <section className="space-y-3">
-              <h2 className="text-[15px] font-semibold text-[#111827]">
+              <h3 className="text-[15px] font-semibold text-[#111827]">
                 Seller Return Policy
-              </h2>
+              </h3>
 
               <div className="space-y-2">
                 {POLICY_LINES.map((line) => (
@@ -262,9 +262,9 @@ export default function ReturnItemRequestPage({
             </section>
 
             <section className="space-y-3">
-              <h2 className="text-[15px] font-semibold text-[#111827]">
+              <h3 className="text-[15px] font-semibold text-[#111827]">
                 Notes (optional)
-              </h2>
+              </h3>
               <Textarea
                 {...register("notes")}
                 placeholder="Type Here ..."

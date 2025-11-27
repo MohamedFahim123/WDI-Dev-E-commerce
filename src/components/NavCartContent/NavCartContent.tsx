@@ -1,211 +1,72 @@
 "use client";
 
-import { languages } from "@/src/i18n/settings";
+import { useEffect, useRef, useState } from "react";
+import { useParams, usePathname } from "next/navigation";
 import { useAuthStore } from "@/src/stores/authStore";
 import { useCartStore } from "@/src/stores/cartStore";
 import { useWishlistStore } from "@/src/stores/wishlistStore";
-import { Bell, ChevronDown, Heart, ShoppingCart, User } from "lucide-react";
-import Link from "next/link";
-import { useParams, usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+
+import LangDropDown from "./LangDropDown";
+import NotificationsButton from "./NotificationsButton";
+import WishlistButton from "./WishlistButton";
+import CartButton from "./CartButton";
+import AuthMenu from "./AuthMenu";
+import useOutsideClose from "./useOutsideClose";
 
 export default function NavCartContent() {
-  const quantity = useCartStore((s) => s.getQuantity());
-  const wishListQuantity = useWishlistStore((s) => s.getQuantity());
-  const notificationsNum = 0;
-
   const params = useParams();
   const pathname = usePathname();
-
   const [langOpen, setLangOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
-
-  const isAuthenticated = useAuthStore((e) => e.isAuthenticated);
-  const user = useAuthStore((e) => e.user);
-  const logout = useAuthStore((e) => e.logout);
 
   const langRef = useRef<HTMLDivElement | null>(null);
   const authRef = useRef<HTMLDivElement | null>(null);
 
-  const currentLang =
-    (params?.lang as string | undefined) && typeof params.lang === "string"
-      ? (params.lang as string)
-      : "en";
+  const { isAuthenticated, hydrateFromStorage } = useAuthStore();
+  const quantity = useCartStore((s) => s.getQuantity());
+  const wishListQuantity = useWishlistStore((s) => s.getQuantity());
+  const notificationsNum = 0;
+
+  const currentLang = typeof params?.lang === "string" ? params.lang : "en";
 
   const getPathForLang = (lang: string) =>
     pathname ? pathname.replace(`/${currentLang}`, `/${lang}`) : `/${lang}`;
 
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      const target = event.target as Node;
+    hydrateFromStorage();
+  }, [hydrateFromStorage]);
 
-      if (langRef.current && !langRef.current.contains(target)) {
-        setLangOpen(false);
-      }
-
-      if (authRef.current && !authRef.current.contains(target)) {
-        setAuthOpen(false);
-      }
-    }
-
-    function handleScroll() {
-      setLangOpen(false);
-      setAuthOpen(false);
-    }
-
-    document.addEventListener("mousedown", handleClickOutside);
-    window.addEventListener("scroll", handleScroll, true);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      window.removeEventListener("scroll", handleScroll, true);
-    };
-  }, []);
+  useOutsideClose(langRef, () => setLangOpen(false));
+  useOutsideClose(authRef, () => setAuthOpen(false), true);
 
   return (
     <div className="flex items-center gap-2.5 sm:gap-3">
-      <div className="relative" ref={langRef}>
-        <button
-          name={currentLang}
-          title={currentLang}
-          type="button"
-          onClick={() => {
-            setLangOpen((p) => !p);
-            setAuthOpen(false);
-          }}
-          className="border border-[#ddd] px-2 sm:px-2 py-1 rounded text-xs sm:text-sm font-medium flex items-center gap-1 bg-white min-w-[45px] sm:min-w-[54px] sm:min-w-[60px]"
-        >
-          {currentLang.toUpperCase()}
-          <ChevronDown size={16} className="hidden sm:inline-block" />
-        </button>
-        {langOpen && (
-          <div className="absolute right-0 mt-2 w-32 bg-white shadow-lg border border-[#ddd] rounded z-50 py-1">
-            {languages.map((lang) => (
-              <Link
-                title={lang.name}
-                key={lang.code}
-                href={getPathForLang(lang.code)}
-                className="block px-3 py-2 text-sm hover:bg-gray-100"
-                onClick={() => setLangOpen(false)}
-              >
-                {lang.name}
-              </Link>
-            ))}
-          </div>
-        )}
-      </div>
+      <LangDropDown
+        langOpen={langOpen}
+        currentLang={currentLang}
+        langRef={langRef}
+        setAuthOpen={setAuthOpen}
+        getPathForLang={getPathForLang}
+        setLangOpen={setLangOpen}
+      />
 
       {isAuthenticated && (
-        <Link
-          title="Show Notifications Page"
-          href={`/${currentLang}/notifications`}
-          className="relative w-5 sm:w-6 flex items-center justify-center"
-          aria-label="Notifications"
-        >
-          <Bell size={21} className="sm:h-5 sm:w-5" />
-          {notificationsNum > 0 && (
-            <span className="absolute -top-1 -right-2 w-[16px] sm:w-[18px] h-[16px] sm:h-[18px] text-[8px] sm:text-[10px] bg-red-500 text-white rounded-full flex items-center justify-center">
-              {notificationsNum}
-            </span>
-          )}
-        </Link>
+        <NotificationsButton
+          currentLang={currentLang}
+          count={notificationsNum}
+        />
       )}
 
-      <Link
-        title="Show Wishlist Page"
-        href={`/${currentLang}/wishlist`}
-        className="relative w-5 sm:w-6 flex items-center justify-center"
-        aria-label="Wishlist"
-      >
-        <Heart size={21} className="sm:h-5 sm:w-5" />
-        <span className="absolute -top-1 -right-2 w-[16px] sm:w-[18px] h-[16px] sm:h-[18px] text-[8px] sm:text-[10px] bg-red-500 text-white rounded-full flex items-center justify-center">
-          {wishListQuantity || 0}
-        </span>
-      </Link>
+      <WishlistButton currentLang={currentLang} count={wishListQuantity} />
+      <CartButton currentLang={currentLang} count={quantity} />
 
-      <Link
-        title="Show Cart Page"
-        href={`/${currentLang}/cart`}
-        className="relative w-5 sm:w-6 flex items-center justify-center"
-        aria-label="Cart"
-      >
-        <ShoppingCart size={21} className="sm:h-5 sm:w-5" />
-        <span className="absolute -top-1 -right-2 w-[16px] sm:w-[18px] h-[16px] sm:h-[18px] text-[8px] sm:text-[10px] bg-red-500 text-white rounded-full flex items-center justify-center">
-          {quantity || 0}
-        </span>
-      </Link>
-
-      {isAuthenticated ? (
-        <div className="relative" ref={authRef}>
-          <button
-            type="button"
-            onClick={() => {
-              setAuthOpen((p) => !p);
-              setLangOpen(false);
-            }}
-            className="flex cursor-pointer items-center justify-center rounded-full border border-[#E4E4E7] bg-white text-xs sm:text-sm p-1.5 sm:px-2 hover:bg-gray-100"
-          >
-            <User size={20} />
-            <span className="hidden sm:inline ml-1 font-medium text-gray-700">
-              {user?.name?.split(" ")[0] ?? "Profile"}
-            </span>
-          </button>
-
-          {authOpen && (
-            <div className="absolute right-0 mt-2 w-40 bg-white shadow-lg border border-[#ddd] rounded z-50 py-1">
-              <Link
-                href={`/${currentLang}/buyer/profile`}
-                className="block px-3 py-2 text-sm hover:bg-gray-100"
-                onClick={() => setAuthOpen(false)}
-              >
-                My Account
-              </Link>
-              <button
-                onClick={() => {
-                  logout();
-                  setAuthOpen(false);
-                }}
-                className="w-full cursor-pointer text-left px-3 py-2 text-sm hover:bg-gray-100 text-red-600"
-              >
-                Logout
-              </button>
-            </div>
-          )}
-        </div>
-      ) : (
-        <div className="relative" ref={authRef}>
-          <button
-            type="button"
-            onClick={() => {
-              setAuthOpen((p) => !p);
-              setLangOpen(false);
-            }}
-            className="relative cursor-pointer flex items-center justify-center rounded-sm border border-[#7C3BED] bg-[#7C3BED] text-white text-xs sm:text-sm px-1.5 sm:px-3 py-1 hover:bg-white hover:text-[#7C3BED] transition-all"
-          >
-            <User className="h-4 w-4 sm:mr-1" />
-            <span className="hidden sm:inline">Login / Register</span>
-          </button>
-
-          {authOpen && (
-            <div className="absolute right-0 mt-2 w-40 bg-white shadow-lg border border-[#ddd] rounded z-50 py-1">
-              <Link
-                href={`/${currentLang}/auth/login`}
-                className="block px-3 py-2 text-sm hover:bg-gray-100"
-                onClick={() => setAuthOpen(false)}
-              >
-                Login
-              </Link>
-              <Link
-                href={`/${currentLang}/auth/register`}
-                className="block px-3 py-2 text-sm hover:bg-gray-100"
-                onClick={() => setAuthOpen(false)}
-              >
-                Register
-              </Link>
-            </div>
-          )}
-        </div>
-      )}
+      <AuthMenu
+        authOpen={authOpen}
+        setAuthOpen={setAuthOpen}
+        setLangOpen={setLangOpen}
+        currentLang={currentLang}
+        authRef={authRef}
+      />
     </div>
   );
 }

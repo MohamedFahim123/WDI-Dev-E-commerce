@@ -14,9 +14,9 @@ export function OrderCard({ order, lang }: OrderCardProps) {
       aria-label={`Order #${order.id} placed on ${order.dateLabel}`}
     >
       <header className="mb-3 flex items-start justify-between text-xs sm:text-sm">
-        <h3 className="font-semibold text-foreground">
+        <h2 className="font-semibold text-foreground">
           Order <span>#{order.id}</span>
-        </h3>
+        </h2>
 
         <time
           dateTime={order.dateISO}
@@ -35,18 +35,18 @@ export function OrderCard({ order, lang }: OrderCardProps) {
             height={100}
             key={item.id}
             aria-hidden="true"
-            className="h-14 w-14 flex-shrink-0 rounded-xl bg-yellow-300"
+            className="h-[50px] w-[50px] object-cover flex-shrink-0 rounded-xl bg-yellow-300"
           />
         ))}
       </div>
 
       <div className="mt-auto space-y-3 text-xs sm:text-sm">
-        <p>
+        <h3>
           <span className="text-muted-foreground">Total:&nbsp;</span>
           <span className="font-semibold text-[#7C3BED]">
             {order.currency} {order.total.toFixed(2)}
           </span>
-        </p>
+        </h3>
 
         <Link
           href={`/${lang}/my-orders/${order.id}`}

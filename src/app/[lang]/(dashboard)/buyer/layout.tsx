@@ -1,8 +1,7 @@
-import { ReactNode } from "react";
 import { BuyerLayoutShell } from "@/src/components/Dashboard/Buyer/BuyerLayoutShell/BuyerLayoutShell";
 
 interface BuyerLayoutProps {
-  children: ReactNode;
+  children: React.ReactNode;
 }
 
 export default function BuyerLayout({ children }: BuyerLayoutProps) {

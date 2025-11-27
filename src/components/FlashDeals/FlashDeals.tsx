@@ -8,7 +8,7 @@ import ProductsGrid from "../ProductsGrid/ProductsGrid";
 export default function FlashDeals() {
   return (
     <section className="w-full">
-      <div className="bg-[#C2410C] px-4 sm:px-6 py-10 flex flex-col items-center justify-center text-center">
+      <div className="bg-[#BF5910] px-4 sm:px-6 py-10 flex flex-col items-center justify-center text-center">
         <Container
           className="
             flex flex-col items-center justify-center gap-4

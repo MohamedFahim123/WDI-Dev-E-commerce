@@ -1,9 +1,13 @@
-"use client";
 
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { AuthUser } from "@/src/types/auth";
-import { getAuthFromCookie } from "@/src/lib/authCookies";
+import { authService } from "@/src/services/authService";
+import {
+  loadUserFromLocalStorage,
+  saveUserToLocalStorage,
+  clearUserFromLocalStorage,
+} from "@/src/lib/authClient";
 
 interface AuthState {
   user: AuthUser | null;
@@ -16,56 +20,82 @@ interface AuthState {
   setError: (message: string | null) => void;
   finishInitializing: () => void;
   reset: () => void;
+  hydrateFromStorage: () => void;
 
   login: (identifier: string, password: string) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>()(
   devtools((set) => ({
     user: null,
-    isAuthenticated:
-      typeof window !== "undefined" ? !!getAuthFromCookie() : false,
+    isAuthenticated: false,
     isInitializing: false,
     error: null,
 
-    setUser: (user) => set({ user }),
+    setUser: (user) => {
+      if (user) {
+        saveUserToLocalStorage(user);
+      } else {
+        clearUserFromLocalStorage();
+      }
+      set({ user, isAuthenticated: !!user });
+    },
+
     setAuthenticated: (value) => set({ isAuthenticated: value }),
     setError: (message) => set({ error: message }),
     finishInitializing: () => set({ isInitializing: false }),
-    reset: () =>
+
+    reset: () => {
+      clearUserFromLocalStorage();
       set({
         user: null,
         isAuthenticated: false,
         error: null,
-      }),
+        isInitializing: false,
+      });
+    },
+
+    hydrateFromStorage: () => {
+      if (typeof window === "undefined") return;
+      const user = loadUserFromLocalStorage();
+      set({ user, isAuthenticated: !!user });
+    },
 
     async login(identifier, password) {
       set({ isInitializing: true, error: null });
-      await new Promise((r) => setTimeout(r, 800));
 
-      if (password === "12345678") {
+      try {
+        const res = await authService.login({ identifier, password });
         set({
-          user: { id: "1", name: "John Doe", email: identifier },
+          user: res.user,
           isAuthenticated: true,
           isInitializing: false,
           error: null,
         });
-      } else {
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Unable to login";
         set({
-          error: "Invalid credentials. Try using password 12345678.",
+          error: message,
           isInitializing: false,
         });
       }
     },
 
-    /** Dummy logout */
-    logout() {
-      set({
-        user: null,
-        isAuthenticated: false,
-        error: null,
-      });
+    async logout() {
+      set({ isInitializing: true, error: null });
+
+      try {
+        await authService.logout();
+      } finally {
+        clearUserFromLocalStorage();
+        set({
+          user: null,
+          isAuthenticated: false,
+          isInitializing: false,
+          error: null,
+        });
+      }
     },
   }))
 );

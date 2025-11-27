@@ -1,4 +1,4 @@
-
+// PaymentMethodsSection.tsx
 import { CreditCard, Pencil, Trash2, Plus } from "lucide-react";
 import clsx from "clsx";
 
@@ -12,23 +12,17 @@ export interface PaymentMethod {
 
 interface PaymentMethodsSectionProps {
   methods: PaymentMethod[];
+  onAddNew: () => void;
+  onEdit: (id: string) => void;
+  onDelete: (id: string) => void;
 }
 
 export default function PaymentMethodsSection({
   methods,
+  onAddNew,
+  onEdit,
+  onDelete,
 }: PaymentMethodsSectionProps) {
-  const handleAddNew = () => {
-    console.log("Add new card");
-  };
-
-  const handleEdit = (id: string) => {
-    console.log("Edit card", id);
-  };
-
-  const handleDelete = (id: string) => {
-    console.log("Delete card", id);
-  };
-
   return (
     <section className="space-y-4">
       <div className="flex items-center justify-between gap-3">
@@ -38,7 +32,7 @@ export default function PaymentMethodsSection({
 
         <button
           type="button"
-          onClick={handleAddNew}
+          onClick={onAddNew}
           className="inline-flex items-center gap-2 rounded-full bg-[#7C3BED] px-4 py-2 text-xs font-medium text-white shadow-sm hover:bg-[#6D28D9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7C3BED] focus-visible:ring-offset-2"
         >
           <Plus className="h-4 w-4" />
@@ -70,7 +64,7 @@ export default function PaymentMethodsSection({
               <div className="flex items-center gap-2 text-[#6B7280]">
                 <button
                   type="button"
-                  onClick={() => handleEdit(method.id)}
+                  onClick={() => onEdit(method.id)}
                   className="rounded-full p-1 hover:bg-[#F3F4F6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7C3BED] focus-visible:ring-offset-2"
                   aria-label={`Edit ${method.brand} card ending in ${method.last4}`}
                 >
@@ -78,7 +72,7 @@ export default function PaymentMethodsSection({
                 </button>
                 <button
                   type="button"
-                  onClick={() => handleDelete(method.id)}
+                  onClick={() => onDelete(method.id)}
                   className={clsx(
                     "rounded-full p-1 hover:bg-[#FEF2F2] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#EF4444] focus-visible:ring-offset-2"
                   )}

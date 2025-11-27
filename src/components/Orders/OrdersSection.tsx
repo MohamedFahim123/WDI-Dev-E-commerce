@@ -54,13 +54,6 @@ export function OrdersSection({ orders }: OrdersSectionProps) {
         onChange={(val) => setFilter(val as OrderFilter)}
       />
 
-      <h2
-        id="my-orders-section-heading"
-        className="mb-4 text-base font-semibold text-foreground sm:text-lg"
-      >
-        My Orders
-      </h2>
-
       {filteredOrders.length === 0 ? (
         <p className="text-sm text-muted-foreground">
           You don&apos;t have any orders in this state.

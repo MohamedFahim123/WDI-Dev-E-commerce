@@ -23,7 +23,6 @@ export default function ReturnItemCard({ item, onReturn }: Props) {
     <div className="flex h-full flex-col justify-between rounded-2xl border border-[#E4E4E7] bg-white shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
       <button
         type="button"
-        onClick={goToReturnRequest}
         className="flex w-full flex-col cursor-pointer transition-all duration-200 gap-1 rounded-t-2xl px-4 pt-4 pb-3 text-left hover:bg-[#F9FAFB] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7C3BED] focus-visible:ring-offset-2"
       >
         <div className="flex gap-3">
@@ -36,7 +35,10 @@ export default function ReturnItemCard({ item, onReturn }: Props) {
           />
 
           <div className="flex-1">
-            <h2 className="line-clamp-2 cursor-pointer hover:text-[#7C3BED] transition-all duration-200 text-[13px] font-semibold text-[#111827]">
+            <h2
+              onClick={goToReturnRequest}
+              className="line-clamp-2 cursor-pointer hover:text-[#7C3BED] transition-all duration-200 text-[13px] font-semibold text-[#111827]"
+            >
               {item.name}
             </h2>
 
@@ -62,7 +64,7 @@ export default function ReturnItemCard({ item, onReturn }: Props) {
       <div className="px-4 pb-4 pt-1">
         <Button
           type="button"
-          onClick={() => onReturn?.(item)}
+          onClick={goToReturnRequest}
           className="w-full cursor-pointer rounded-full border border-[#7C3BED] bg-[#7C3BED] text-[12px] font-medium text-white transition-colors hover:bg-white hover:text-[#7C3BED]"
         >
           Return

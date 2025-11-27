@@ -53,7 +53,7 @@ export default function ProductCard({ product, lang }: Props) {
         </Link>
 
         {product.badge === "OFF" && product.discountCount ? (
-          <div className="absolute left-3 top-3 rounded-full bg-[#F97316] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-white shadow-sm">
+          <div className="absolute left-3 top-3 rounded-full bg-[#BF5910] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-white shadow-sm">
             {product.discountCount}% OFF
           </div>
         ) : product.badge === "HOT" ? (
@@ -116,7 +116,7 @@ export default function ProductCard({ product, lang }: Props) {
             {product.price.toFixed(2)} $
           </span>
           {product.originalPrice && (
-            <span className="text-xs text-[#A1A1AA] line-through sm:text-sm">
+            <span className="text-xs text-[#71717A] line-through sm:text-sm">
               {product.originalPrice.toFixed(2)} $
             </span>
           )}

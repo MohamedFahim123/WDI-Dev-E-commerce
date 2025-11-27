@@ -18,7 +18,7 @@ export default function Navbar() {
   const params = useParams();
   const lang = (params?.lang as string) || "en";
 
-  if (pathname.includes("/auth")) {
+  if (pathname.includes("/auth") || pathname.includes("/buyer")) {
     return <></>;
   }
 

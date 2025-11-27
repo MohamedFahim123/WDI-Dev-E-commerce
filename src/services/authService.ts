@@ -1,12 +1,22 @@
 "use client";
 
 import { AuthResponse } from "@/src/types/auth";
-import { clearAuthCookie, setAuthCookie } from "@/src/lib/authCookies";
+import {
+  saveUserToLocalStorage,
+  clearUserFromLocalStorage,
+} from "@/src/lib/authClient";
 import { LoginInput } from "../validation/LoginSchema";
-import { RegisterStep1Input, RegisterStep2Input, RegisterStep3Input } from "../validation/RegisterSchemas";
-import { ForgotPasswordStep1Input, ForgotPasswordStep2Input } from "../validation/ForgotPasswordSchemas";
+import {
+  RegisterStep1Input,
+  RegisterStep2Input,
+  RegisterStep3Input,
+} from "../validation/RegisterSchemas";
+import {
+  ForgotPasswordStep1Input,
+  ForgotPasswordStep2Input,
+} from "../validation/ForgotPasswordSchemas";
 
-const API_BASE = "/api/auth"; 
+const API_BASE = "/api/auth";
 
 async function handleJson<T>(res: Response): Promise<T> {
   if (!res.ok) {
@@ -29,30 +39,36 @@ export const authService = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
+      credentials: "include",
     });
 
     const data = await handleJson<AuthResponse>(res);
-
-    setAuthCookie(true);
+    if (data.user) saveUserToLocalStorage(data.user);
+    console.log(data)
 
     return data;
   },
 
   async logout(): Promise<void> {
-    clearAuthCookie();
+    clearUserFromLocalStorage();
+
     try {
-      await fetch(`${API_BASE}/logout`, { method: "POST" });
+      await fetch(`${API_BASE}/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
     } catch {
     }
   },
-
 
   async registerStep1(payload: RegisterStep1Input): Promise<{ email: string }> {
     const res = await fetch(`${API_BASE}/register/step1`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
+      credentials: "include",
     });
+
     return handleJson(res);
   },
 
@@ -61,7 +77,9 @@ export const authService = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
+      credentials: "include",
     });
+
     return handleJson(res);
   },
 
@@ -70,13 +88,14 @@ export const authService = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
+      credentials: "include",
     });
 
     const data = await handleJson<AuthResponse>(res);
-    setAuthCookie(true);
+    if (data.user) saveUserToLocalStorage(data.user);
+
     return data;
   },
-
 
   async forgotPasswordStep1(
     payload: ForgotPasswordStep1Input
@@ -85,7 +104,9 @@ export const authService = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
+      credentials: "include",
     });
+
     return handleJson(res);
   },
 
@@ -96,7 +117,9 @@ export const authService = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
+      credentials: "include",
     });
+
     return handleJson(res);
   },
 };

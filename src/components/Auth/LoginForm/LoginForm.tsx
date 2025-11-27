@@ -8,6 +8,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { AuthInput } from "../Fields/AuthInput";
 import { useRouter } from "next/navigation";
+import { setAuthCookieServer } from "@/src/lib/authCookies";
 
 interface LoginFormValues {
   identifier: string;
@@ -34,7 +35,11 @@ export default function LoginForm() {
 
   async function onSubmit(values: LoginFormValues) {
     await login(values.identifier, values.password);
-    router.push(`/${lang}/buyer/profile`);
+
+    const err = useAuthStore.getState().error;
+    if (!err) {
+      router.push(`/${lang}/buyer/profile`);
+    }
   }
 
   return (
@@ -75,8 +80,10 @@ export default function LoginForm() {
           />
           <button
             type="button"
+            title={showPassword ? "Hide" : "Show"}
+            name={showPassword ? "Hide" : "Show"}
             onClick={() => setShowPassword((p) => !p)}
-            className="absolute inset-y-0 right-2 flex items-center text-gray-500"
+            className="absolute cursor-pointer p-1 inset-y-0 right-2 flex items-center text-gray-500"
           >
             {showPassword ? (
               <EyeOff className="h-4 w-4" />

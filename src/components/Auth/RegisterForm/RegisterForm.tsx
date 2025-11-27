@@ -9,6 +9,7 @@ import { useForm } from "react-hook-form";
 import RegisterDetailsStep from "./RegisterDetailsStep";
 import RegisterEmailStep from "./RegisterEmailStep";
 import RegisterPhoneStep from "./RegisterPhoneStep";
+import { authService } from "@/src/services/authService";
 
 type RegisterStep = "details" | "email" | "phone";
 
@@ -23,8 +24,7 @@ export interface RegisterFormValues {
 
 export default function RegisterForm() {
   const lang = useRouteLang();
-  const { error: globalError } = useAuthStore();
-
+  const { setUser, setAuthenticated, setError } = useAuthStore();
   const [step, setStep] = useState<RegisterStep>("details");
 
   const {
@@ -55,6 +55,13 @@ export default function RegisterForm() {
       setStep("phone");
     } else {
       console.log("Phone step submit", values.countryCode, values.phoneNumber);
+      const res = await authService.registerStep3({
+        countryCode: values.countryCode,
+        phone: values.phoneNumber,
+        email: values.email,
+      });
+      setUser(res.user);
+      setAuthenticated(true);
     }
   }
 
@@ -74,28 +81,13 @@ export default function RegisterForm() {
       : "Verify your phone number";
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="flex flex-col gap-3"
-      aria-describedby={globalError ? "register-global-error" : undefined}
-    >
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
       <header className="space-y-1 text-center">
         <h1 className="text-xl font-semibold text-foreground sm:text-2xl">
           Create Account
         </h1>
         <p className="text-xs text-muted-foreground sm:text-sm">{subtitle}</p>
       </header>
-
-      {globalError && (
-        <p
-          id="register-global-error"
-          className="rounded-md bg-red-50 px-3 py-2 text-[11px] font-medium text-red-600"
-          role="alert"
-          aria-live="polite"
-        >
-          {globalError}
-        </p>
-      )}
 
       <div className="mt-2">
         <div className="relative h-1 rounded-full bg-[#E4E4E7]">

@@ -1,27 +1,30 @@
-"use client";
+import { cookies } from "next/headers";
 
 const AUTH_COOKIE_NAME = "isLoggedIn";
 
-function getCookie(name: string): string | null {
-  if (typeof document === "undefined") return null;
-  const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
-  return match ? decodeURIComponent(match[2]) : null;
-}
-
-export function setAuthCookie(loggedIn: boolean, days = 7) {
-  if (typeof document === "undefined") return;
-  const maxAge = days * 24 * 60 * 60;
-  document.cookie = `${AUTH_COOKIE_NAME}=${
-    loggedIn ? "true" : "false"
-  }; path=/; max-age=${maxAge}; SameSite=Lax`;
-}
-
-export function clearAuthCookie() {
-  if (typeof document === "undefined") return;
-  document.cookie = `${AUTH_COOKIE_NAME}=false; path=/; max-age=0; SameSite=Lax`;
-}
-
-export function getAuthFromCookie(): boolean {
-  const value = getCookie(AUTH_COOKIE_NAME);
+export async function getAuthFromCookieServer(): Promise<boolean> {
+  const cookieStore = await cookies();
+  const value = cookieStore.get(AUTH_COOKIE_NAME)?.value;
   return value === "true";
+}
+
+export async function setAuthCookieServer(loggedIn: boolean, days = 7) {
+  const cookieStore = await cookies();
+  const maxAge = days * 24 * 60 * 60;
+
+  cookieStore.set(AUTH_COOKIE_NAME, loggedIn ? "true" : "false", {
+    path: "/",
+    maxAge,
+    sameSite: "lax",
+  });
+}
+
+export async function clearAuthCookieServer() {
+  const cookieStore = await cookies();
+  cookieStore.set(AUTH_COOKIE_NAME, "false", {
+    path: "/",
+    maxAge: 0,
+    sameSite: "lax",
+    secure: true,
+  });
 }
