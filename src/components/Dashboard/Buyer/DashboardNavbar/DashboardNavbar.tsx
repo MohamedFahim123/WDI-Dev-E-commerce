@@ -11,11 +11,13 @@ interface DashboardNavbarProps {
   collapsed: boolean;
   setCollapsed: (v: boolean) => void;
   onToggleMobileSidebar: () => void;
+  loginType: "buyer" | "seller";
 }
 
 export default function DashboardNavbar({
   collapsed,
   setCollapsed,
+  loginType,
   onToggleMobileSidebar,
 }: DashboardNavbarProps) {
   const lang = useRouteLang();
@@ -55,7 +57,7 @@ export default function DashboardNavbar({
 
         <div className="flex items-center gap-4">
           <Link
-            href={`/${lang}/buyer/notifications-preferences`}
+            href={`/${lang}/notifications`}
             aria-label="Notifications"
             className="relative flex items-center justify-center"
           >
@@ -71,7 +73,7 @@ export default function DashboardNavbar({
             setLangOpen={setLangOpen}
             langOpen={langOpen}
             setAuthOpen={() => {}}
-            getPathForLang={(l) => `/${l}/buyer/profile`}
+            getPathForLang={(l) => `/${l}/${loginType}/profile`}
           />
 
           <button

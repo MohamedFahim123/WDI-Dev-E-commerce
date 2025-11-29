@@ -16,19 +16,23 @@ import {
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { ReactNode, useEffect, useState } from "react";
-import BuyerSidebarSkeleton from "../BuyerSidebar/BuyerSidebarSkeleton";
-import DashboardNavbar from "../DashboardNavbar/DashboardNavbar";
-import { NavLink } from "../BuyerSidebar/BuyerSidebar";
-const BuyerSidebar = dynamic(() => import("../BuyerSidebar/BuyerSidebar"), {
-  ssr: false,
-  loading: () => <BuyerSidebarSkeleton />,
-});
+import { NavLink } from "../../Buyer/BuyerSidebar/BuyerSidebar";
+import BuyerSidebarSkeleton from "../../Buyer/BuyerSidebar/BuyerSidebarSkeleton";
+import DashboardNavbar from "../../Buyer/DashboardNavbar/DashboardNavbar";
 
-interface BuyerLayoutShellProps {
+const BuyerSidebar = dynamic(
+  () => import("../../Buyer/BuyerSidebar/BuyerSidebar"),
+  {
+    ssr: false,
+    loading: () => <BuyerSidebarSkeleton />,
+  }
+);
+
+interface SellerLayoutShellProps {
   children: ReactNode;
 }
 
-export function BuyerLayoutShell({ children }: BuyerLayoutShellProps) {
+export function SellerLayoutShell({ children }: SellerLayoutShellProps) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [isHydrating, setIsHydrating] = useState(true);
@@ -53,29 +57,28 @@ export function BuyerLayoutShell({ children }: BuyerLayoutShellProps) {
   }, [isHydrating, user, router, lang]);
 
   if (isHydrating || !user?.id) return null;
-
   const navItems: NavLink[] = [
-    { href: `/${lang}/buyer/profile`, label: "Profile", icon: User },
-    { href: `/${lang}/buyer/addresses`, label: "Addresses", icon: MapPin },
+    { href: `/${lang}/seller/profile`, label: "Profile", icon: User },
+    { href: `/${lang}/seller/addresses`, label: "Addresses", icon: MapPin },
     {
-      href: `/${lang}/buyer/payment-methods`,
+      href: `/${lang}/seller/payment-methods`,
       label: "Payment Methods",
       icon: CreditCard,
     },
-    { href: `/${lang}/buyer/coupons`, label: "Coupons", icon: TicketPercent },
-    { href: `/${lang}/buyer/my-wishlist`, label: "Wishlist", icon: Heart },
+    { href: `/${lang}/seller/coupons`, label: "Coupons", icon: TicketPercent },
+    { href: `/${lang}/seller/my-wishlist`, label: "Wishlist", icon: Heart },
     {
-      href: `/${lang}/buyer/loyalty-program`,
+      href: `/${lang}/seller/loyalty-program`,
       label: "Loyalty Program",
       icon: Star,
     },
     {
-      href: `/${lang}/buyer/notifications-preferences`,
+      href: `/${lang}/seller/notifications-preferences`,
       label: "Notifications",
       icon: Bell,
     },
     {
-      href: `/${lang}/buyer/help-support`,
+      href: `/${lang}/seller/help-support`,
       label: "Help & Support",
       icon: LifeBuoy,
     },
@@ -121,7 +124,7 @@ export function BuyerLayoutShell({ children }: BuyerLayoutShellProps) {
 
       <div className="flex flex-1 flex-col">
         <DashboardNavbar
-          loginType={"buyer"}
+          loginType={"seller"}
           collapsed={collapsed}
           setCollapsed={setCollapsed}
           onToggleMobileSidebar={() => setMobileSidebarOpen((prev) => !prev)}

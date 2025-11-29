@@ -10,7 +10,7 @@ interface AuthSelectProps
   containerClassName?: string;
 }
 
-export const AuthSelect = React.forwardRef<HTMLSelectElement, AuthSelectProps>(
+const AuthSelect = React.forwardRef<HTMLSelectElement, AuthSelectProps>(
   (
     { id, label, error, containerClassName, className, children, ...props },
     ref
@@ -27,12 +27,14 @@ export const AuthSelect = React.forwardRef<HTMLSelectElement, AuthSelectProps>(
         >
           {label}
         </label>
+
         <select
           id={selectId}
           ref={ref}
+          autoComplete={label}
           className={cn(
             "h-11 w-full rounded-lg border border-[#E4E4E7] bg-[#F5F5F7] px-3 text-sm text-foreground",
-            "focus:outline-none focus:ring-2 focus:ring-[#8b5cf6] focus:border-transparent",
+            "focus:outline-none focus:ring-2 focus:ring-[#7C3BED] focus:border-transparent",
             error && "border-red-500 focus:ring-red-500",
             className
           )}
@@ -42,11 +44,13 @@ export const AuthSelect = React.forwardRef<HTMLSelectElement, AuthSelectProps>(
         >
           {children}
         </select>
+
         {error && (
           <p
             id={errorId}
             className="text-[11px] font-medium text-red-500"
             role="alert"
+            aria-live="assertive"
           >
             {error}
           </p>
@@ -57,3 +61,4 @@ export const AuthSelect = React.forwardRef<HTMLSelectElement, AuthSelectProps>(
 );
 
 AuthSelect.displayName = "AuthSelect";
+export default AuthSelect;

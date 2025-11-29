@@ -2,23 +2,26 @@
 
 import { Button } from "@/src/components/ui/button";
 import { useRouteLang } from "@/src/hooks/useLang";
-import {
-  Bell,
-  CreditCard,
-  Heart,
-  LifeBuoy,
-  MapPin,
-  Star,
-  TicketPercent,
-  User,
-} from "lucide-react";
+import { LucideProps } from "lucide-react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { Dispatch, SetStateAction } from "react";
+import {
+  Dispatch,
+  ForwardRefExoticComponent,
+  RefAttributes,
+  SetStateAction,
+} from "react";
 import { Menu, MenuItem, Sidebar } from "react-pro-sidebar";
-
+export interface NavLink {
+  href: string;
+  label: string;
+  icon: ForwardRefExoticComponent<
+    Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>
+  >;
+}
 interface BuyerSidebarProps {
   collapsed?: boolean;
+  navItems: NavLink[];
   setCollapsed?: Dispatch<SetStateAction<boolean>>;
   onNavigate?: () => void;
 }
@@ -26,37 +29,10 @@ interface BuyerSidebarProps {
 export default function BuyerSidebar({
   collapsed,
   onNavigate,
+  navItems,
 }: BuyerSidebarProps) {
   const pathname = usePathname();
-  const lang = useRouteLang();
   const router = useRouter();
-
-  const navItems = [
-    { href: `/${lang}/buyer/profile`, label: "Profile", icon: User },
-    { href: `/${lang}/buyer/addresses`, label: "Addresses", icon: MapPin },
-    {
-      href: `/${lang}/buyer/payment-methods`,
-      label: "Payment Methods",
-      icon: CreditCard,
-    },
-    { href: `/${lang}/buyer/coupons`, label: "Coupons", icon: TicketPercent },
-    { href: `/${lang}/buyer/my-wishlist`, label: "Wishlist", icon: Heart },
-    {
-      href: `/${lang}/buyer/loyalty-program`,
-      label: "Loyalty Program",
-      icon: Star,
-    },
-    {
-      href: `/${lang}/buyer/notifications-preferences`,
-      label: "Notifications",
-      icon: Bell,
-    },
-    {
-      href: `/${lang}/buyer/help-support`,
-      label: "Help & Support",
-      icon: LifeBuoy,
-    },
-  ];
 
   const handleItemClick = (href: string) => {
     router.push(href);

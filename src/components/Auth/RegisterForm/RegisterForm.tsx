@@ -24,7 +24,7 @@ export interface RegisterFormValues {
 
 export default function RegisterForm() {
   const lang = useRouteLang();
-  const { setUser, setAuthenticated, setError } = useAuthStore();
+  const { setUser, setAuthenticated } = useAuthStore();
   const [step, setStep] = useState<RegisterStep>("details");
 
   const {

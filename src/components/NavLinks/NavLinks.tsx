@@ -24,9 +24,9 @@ export default function NavLinks({
       label: "Flash Deals",
       href: `/${lang}/flash-deals`,
     },
-    { label: "My Returns", href: `/${lang}/my-returns` },
     { label: "Request Return", href: `/${lang}/request-return` },
     { label: "My Orders", href: `/${lang}/my-orders` },
+    {label: "Create Store",href: `/${lang}/create-store`}
   ];
 
   const isRow = direction === "row";

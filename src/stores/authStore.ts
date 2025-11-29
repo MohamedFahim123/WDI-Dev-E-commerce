@@ -1,13 +1,13 @@
-
-import { create } from "zustand";
-import { devtools } from "zustand/middleware";
-import { AuthUser } from "@/src/types/auth";
-import { authService } from "@/src/services/authService";
 import {
+  clearUserFromLocalStorage,
   loadUserFromLocalStorage,
   saveUserToLocalStorage,
-  clearUserFromLocalStorage,
 } from "@/src/lib/authClient";
+import { authService } from "@/src/services/authService";
+import { AuthUser } from "@/src/types/auth";
+import { create } from "zustand";
+import { devtools } from "zustand/middleware";
+import { LoginInput } from "./../validation/LoginSchema";
 
 interface AuthState {
   user: AuthUser | null;
@@ -22,7 +22,7 @@ interface AuthState {
   reset: () => void;
   hydrateFromStorage: () => void;
 
-  login: (identifier: string, password: string) => Promise<void>;
+  login: (input: LoginInput) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -62,11 +62,13 @@ export const useAuthStore = create<AuthState>()(
       set({ user, isAuthenticated: !!user });
     },
 
-    async login(identifier, password) {
+    async login(input) {
+      const { identifier, password, role } = input;
       set({ isInitializing: true, error: null });
 
       try {
-        const res = await authService.login({ identifier, password });
+        // 👇 include role in the request payload
+        const res = await authService.login({ identifier, password, role });
         set({
           user: res.user,
           isAuthenticated: true,

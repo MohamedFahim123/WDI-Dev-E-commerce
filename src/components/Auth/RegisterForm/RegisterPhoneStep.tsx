@@ -1,7 +1,7 @@
 import { ChevronDown } from "lucide-react";
 import { AuthInput } from "../Fields/AuthInput";
-import { AuthSelect } from "../Fields/AuthSelect";
 import { StepBaseProps } from "./RegisterDetailsStep";
+import AuthSelect from "../Fields/AuthSelect";
 
 function RegisterPhoneStep({ register, errors, isSubmitting }: StepBaseProps) {
   return (

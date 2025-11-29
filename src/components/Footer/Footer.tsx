@@ -5,7 +5,11 @@ import React from "react";
 
 function Footer() {
   const pathname = usePathname();
-  if (pathname.includes("/auth") || pathname.includes("/buyer")) {
+  if (
+    pathname.includes("/auth") ||
+    pathname.includes("/buyer") ||
+    pathname.includes("/seller")
+  ) {
     return <></>;
   }
 

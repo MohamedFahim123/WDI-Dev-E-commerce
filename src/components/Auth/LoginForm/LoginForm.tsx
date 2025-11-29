@@ -4,41 +4,41 @@ import { useRouteLang } from "@/src/hooks/useLang";
 import { useAuthStore } from "@/src/stores/authStore";
 import { Eye, EyeOff, Globe2 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { AuthInput } from "../Fields/AuthInput";
-import { useRouter } from "next/navigation";
-import { setAuthCookieServer } from "@/src/lib/authCookies";
 
-interface LoginFormValues {
-  identifier: string;
-  password: string;
-}
+import { zodResolver } from "@hookform/resolvers/zod";
+import { LoginInput, loginSchema } from "@/src/validation/LoginSchema";
 
 export default function LoginForm() {
   const lang = useRouteLang();
   const router = useRouter();
   const login = useAuthStore((s) => s.login);
   const isLoading = useAuthStore((s) => s.isInitializing);
+  const authError = useAuthStore((s) => s.error);
   const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginFormValues>({
+  } = useForm<LoginInput>({
+    resolver: zodResolver(loginSchema),
     defaultValues: {
       identifier: "",
       password: "",
+      role: "buyer",
     },
   });
 
-  async function onSubmit(values: LoginFormValues) {
-    await login(values.identifier, values.password);
+  async function onSubmit(values: LoginInput) {
+    await login(values);
 
     const err = useAuthStore.getState().error;
     if (!err) {
-      router.push(`/${lang}/buyer/profile`);
+      router.push(`/${lang}/${values.role}/profile`);
     }
   }
 
@@ -57,9 +57,7 @@ export default function LoginForm() {
         autoComplete="email"
         required
         error={errors.identifier?.message}
-        {...register("identifier", {
-          required: "Please enter your email or phone number",
-        })}
+        {...register("identifier")}
       />
 
       <div className="space-y-1.5">
@@ -73,10 +71,7 @@ export default function LoginForm() {
             type={showPassword ? "text" : "password"}
             placeholder="Enter your password"
             className="h-11 w-full rounded-lg border border-gray-300 bg-gray-50 px-3 pr-10 text-sm focus:ring-2 focus:ring-[#8b5cf6]"
-            {...register("password", {
-              required: "Password is required",
-              minLength: { value: 8, message: "Minimum 8 characters" },
-            })}
+            {...register("password")}
           />
           <button
             type="button"
@@ -97,6 +92,51 @@ export default function LoginForm() {
           <p className="text-[11px] text-red-500">{errors.password.message}</p>
         )}
       </div>
+      <div className="space-y-1.5">
+        <span className="text-xs font-medium">Login as</span>
+
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <input
+              type="radio"
+              id="login-role-buyer"
+              value="buyer"
+              className="peer hidden"
+              {...register("role")}
+            />
+            <label
+              htmlFor="login-role-buyer"
+              className="flex h-11 w-full cursor-pointer items-center justify-center rounded-lg border border-gray-300 bg-gray-50 text-xs sm:text-sm font-medium text-gray-700 transition
+                   hover:bg-gray-100
+                   peer-checked:border-[#8b5cf6] peer-checked:bg-[#ede9fe] peer-checked:text-[#4c1d95] peer-checked:shadow-sm"
+            >
+              Buyer
+            </label>
+          </div>
+
+          <div>
+            <input
+              type="radio"
+              id="login-role-seller"
+              value="seller"
+              className="peer hidden"
+              {...register("role")}
+            />
+            <label
+              htmlFor="login-role-seller"
+              className="flex h-11 w-full cursor-pointer items-center justify-center rounded-lg border border-gray-300 bg-gray-50 text-xs sm:text-sm font-medium text-gray-700 transition
+                   hover:bg-gray-100
+                   peer-checked:border-[#8b5cf6] peer-checked:bg-[#ede9fe] peer-checked:text-[#4c1d95] peer-checked:shadow-sm"
+            >
+              Seller
+            </label>
+          </div>
+        </div>
+
+        {errors.role && (
+          <p className="text-[11px] text-red-500">{errors.role.message}</p>
+        )}
+      </div>
 
       <div className="-mt-2 text-right">
         <Link
@@ -106,6 +146,10 @@ export default function LoginForm() {
           Forget Password?
         </Link>
       </div>
+
+      {authError && (
+        <p className="text-[11px] text-red-500 text-center">{authError}</p>
+      )}
 
       <button
         type="submit"

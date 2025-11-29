@@ -1,9 +1,9 @@
-import React from "react";
+import { SellerLayoutShell } from "@/src/components/Dashboard/Seller/SellerrLayoutShell/SellerLayoutShell";
 
-export default function SellerDashboardLayout({
-  children,
-}: {
+interface BuyerLayoutProps {
   children: React.ReactNode;
-}) {
-  return <>{children}</>;
+}
+
+export default function BuyerLayout({ children }: BuyerLayoutProps) {
+  return <SellerLayoutShell>{children}</SellerLayoutShell>;
 }

@@ -18,12 +18,20 @@ export default function Navbar() {
   const params = useParams();
   const lang = (params?.lang as string) || "en";
 
-  if (pathname.includes("/auth") || pathname.includes("/buyer")) {
+  if (
+    pathname.includes("/auth") ||
+    pathname.includes("/buyer") ||
+    pathname.includes("/seller")
+  ) {
     return <></>;
   }
 
   return (
-    <header className={`shadow-sm ${pathname.includes("buyer") ? "absolute w-full": "sticky"} bg-white top-0 z-50`}>
+    <header
+      className={`shadow-sm ${
+        pathname.includes("buyer") ? "absolute w-full" : "sticky"
+      } bg-white top-0 z-50`}
+    >
       <Container className="grid grid-rows-[auto_1px_auto]">
         <div
           className="
