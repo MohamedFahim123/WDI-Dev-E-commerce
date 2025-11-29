@@ -11,6 +11,7 @@ type LoginErrors = Partial<Record<keyof LoginInput, string>> & {
 
 export function useLogin() {
   const [values, setValues] = useState<LoginInput>({
+    role: "" as "buyer" | "seller",
     identifier: "",
     password: "",
   });
