@@ -24,7 +24,7 @@ export default function TasksQuickActions() {
           >
             <div className="flex items-center gap-3">
               <div
-                className={`h-2.5 w-2.5 rounded-full ${
+                className={`h-2.5 max-w-2.5 rounded-full ${
                   t.tone === "red" ? "bg-rose-500" : "bg-sky-500"
                 }`}
               />

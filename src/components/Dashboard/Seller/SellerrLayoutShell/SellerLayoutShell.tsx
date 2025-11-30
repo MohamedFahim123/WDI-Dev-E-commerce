@@ -60,7 +60,6 @@ export function SellerLayoutShell({ children }: SellerLayoutShellProps) {
 
   return (
     <div className="flex min-h-screen bg-[#F9FAFB]">
-
       <div
         className={clsx(
           "hidden lg:block transition-all duration-300",
