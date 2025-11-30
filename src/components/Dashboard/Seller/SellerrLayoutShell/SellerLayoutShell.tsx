@@ -60,30 +60,18 @@ export function SellerLayoutShell({ children }: SellerLayoutShellProps) {
 
   return (
     <div className="flex min-h-screen bg-[#F9FAFB]">
-      {/* ===========================
-          Desktop sidebar (sticky)
-          - stays inside layout (not fixed)
-          - uses sticky so it remains visible while content scrolls
-          - top offset equals navbar height (h-14)
-          =========================== */}
+
       <div
         className={clsx(
-          // hidden on small screens, visible on lg+
           "hidden lg:block transition-all duration-300",
-          // width when collapsed/expanded (keeps layout consistent)
           collapsed ? "w-20" : "w-64",
-          // add sticky behavior on lg (do NOT use fixed)
           "lg:sticky lg:top-0 lg:self-start",
-          // allow sidebar to scroll internally if content taller than viewport
           "lg:overflow-auto"
         )}
       >
         <BuyerSidebar navItems={navItems} collapsed={collapsed} />
       </div>
 
-      {/* ===========================
-          Mobile off-canvas sidebar (unchanged)
-          =========================== */}
       <div
         className={clsx(
           "fixed inset-0 z-50 lg:hidden transition-opacity duration-200",
@@ -111,9 +99,6 @@ export function SellerLayoutShell({ children }: SellerLayoutShellProps) {
         </div>
       </div>
 
-      {/* ===========================
-          Main content column (no special padding needed)
-          =========================== */}
       <div className="flex flex-1 flex-col">
         <DashboardNavbar
           loginType={"seller"}

@@ -5,7 +5,7 @@ import type { AuthResponse } from "@/src/types/auth";
 
 export async function POST(req: Request) {
   const body = (await req.json()) as LoginInput;
-  const { identifier, password } = body;
+  const { identifier, password, role } = body;
 
   if (password !== "12345678") {
     return NextResponse.json(
@@ -17,6 +17,7 @@ export async function POST(req: Request) {
   const user = {
     id: "1",
     name: "John Doe",
+    role: role,
     email: identifier,
   };
 

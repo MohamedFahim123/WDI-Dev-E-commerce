@@ -19,6 +19,7 @@ import { ReactNode, useEffect, useState } from "react";
 import BuyerSidebarSkeleton from "../BuyerSidebar/BuyerSidebarSkeleton";
 import DashboardNavbar from "../DashboardNavbar/DashboardNavbar";
 import { NavLink } from "../BuyerSidebar/BuyerSidebar";
+
 const BuyerSidebar = dynamic(() => import("../BuyerSidebar/BuyerSidebar"), {
   ssr: false,
   loading: () => <BuyerSidebarSkeleton />,
@@ -83,15 +84,19 @@ export function BuyerLayoutShell({ children }: BuyerLayoutShellProps) {
 
   return (
     <div className="flex min-h-screen bg-[#F9FAFB]">
+      {/* Desktop sidebar: sticky (inside layout, not fixed) */}
       <div
         className={clsx(
           "hidden lg:block transition-all duration-300",
-          collapsed ? "w-20" : "w-64"
+          collapsed ? "w-20" : "w-64",
+          "lg:sticky lg:top-0 lg:self-start",
+          "lg:overflow-auto"
         )}
       >
         <BuyerSidebar navItems={navItems} collapsed={collapsed} />
       </div>
 
+      {/* Mobile off-canvas (unchanged) */}
       <div
         className={clsx(
           "fixed inset-0 z-50 lg:hidden transition-opacity duration-200",
@@ -119,6 +124,7 @@ export function BuyerLayoutShell({ children }: BuyerLayoutShellProps) {
         </div>
       </div>
 
+      {/* Main content */}
       <div className="flex flex-1 flex-col">
         <DashboardNavbar
           loginType={"buyer"}
