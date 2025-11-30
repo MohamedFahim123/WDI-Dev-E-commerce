@@ -1,15 +1,46 @@
 "use client";
 
+import dynamic from "next/dynamic";
+import { redirect } from "next/navigation";
 import * as React from "react";
-import StoreInfoForm from "./StoreInfoForm/StoreInfoForm";
-import AddressForm from "./AddressForm/AddressForm";
-import KycForm from "./KycForm/KycForm";
-import PayoutForm from "./PayoutForm/PayoutForm";
-import { Stepper } from "./Stepper/Stepper";
+
+import { useRouteLang } from "@/src/hooks/useLang";
 import { submitStore } from "@/src/services/createStoreService";
 import { useCreateStore } from "@/src/stores/StepsCreateStore";
+import { useAuthStore } from "@/src/stores/authStore";
+import AddressFormSkeleton from "../Skeletons/CreateStore/AddressFormSkeleton";
+import KycFormSkeleton from "../Skeletons/CreateStore/KycFormSkeleton";
+import PayoutFormSkeleton from "../Skeletons/CreateStore/PayoutFormSkeleton";
+import StepperSkeleton from "../Skeletons/CreateStore/StepperSkeleton";
+import StoreInfoFormSkeleton from "../Skeletons/CreateStore/StoreInfoFormSkeleton";
+
+const Stepper = dynamic(
+  () => import("./Stepper/Stepper").then((m) => m.Stepper),
+  { loading: () => <StepperSkeleton />, ssr: false }
+);
+
+const StoreInfoForm = dynamic(
+  () => import("./StoreInfoForm/StoreInfoForm").then((m) => m.default),
+  { loading: () => <StoreInfoFormSkeleton />, ssr: false }
+);
+
+const AddressForm = dynamic(
+  () => import("./AddressForm/AddressForm").then((m) => m.default),
+  { loading: () => <AddressFormSkeleton />, ssr: false }
+);
+
+const KycForm = dynamic(
+  () => import("./KycForm/KycForm").then((m) => m.default),
+  { loading: () => <KycFormSkeleton />, ssr: false }
+);
+
+const PayoutForm = dynamic(
+  () => import("./PayoutForm/PayoutForm").then((m) => m.default),
+  { loading: () => <PayoutFormSkeleton />, ssr: false }
+);
 
 export default function CreateStoreFullPage() {
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const step = useCreateStore((s) => s.step);
   const setStep = useCreateStore((s) => s.setStep);
   const [submitting, setSubmitting] = React.useState(false);
@@ -17,6 +48,7 @@ export default function CreateStoreFullPage() {
   const addressInfo = useCreateStore((s) => s.addressInfo);
   const kycInfo = useCreateStore((s) => s.kycInfo);
   const payoutInfo = useCreateStore((s) => s.payoutInfo);
+  const lang = useRouteLang();
 
   async function handleFinalSubmit() {
     setSubmitting(true);
@@ -36,6 +68,10 @@ export default function CreateStoreFullPage() {
     } finally {
       setSubmitting(false);
     }
+  }
+
+  if (isAuthenticated) {
+    redirect(`/${lang}`);
   }
 
   return (

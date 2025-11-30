@@ -1,4 +1,5 @@
 "use client";
+import { setRoleCookie, clearRoleCookie } from "@/src/lib/authClient";
 
 import { AuthResponse } from "@/src/types/auth";
 import {
@@ -43,22 +44,27 @@ export const authService = {
     });
 
     const data = await handleJson<AuthResponse>(res);
-    if (data.user) saveUserToLocalStorage(data.user);
-    console.log(data)
+    if (data.user) {
+      saveUserToLocalStorage(data.user);
+      if (payload.role === "buyer" || payload.role === "seller") {
+        setRoleCookie(payload.role);
+      }
+    }
 
+    console.log(data);
     return data;
   },
 
   async logout(): Promise<void> {
     clearUserFromLocalStorage();
+    clearRoleCookie();
 
     try {
       await fetch(`${API_BASE}/logout`, {
         method: "POST",
         credentials: "include",
       });
-    } catch {
-    }
+    } catch {}
   },
 
   async registerStep1(payload: RegisterStep1Input): Promise<{ email: string }> {

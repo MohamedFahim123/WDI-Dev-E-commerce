@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuthStore } from "@/src/stores/authStore";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -16,6 +17,7 @@ export default function NavLinks({
   lang,
 }: NavLinksProps) {
   const pathname = usePathname();
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
   const navLinks = [
     { label: "Home", href: `/${lang}` },
@@ -26,8 +28,15 @@ export default function NavLinks({
     },
     { label: "Request Return", href: `/${lang}/request-return` },
     { label: "My Orders", href: `/${lang}/my-orders` },
-    {label: "Create Store",href: `/${lang}/create-store`}
+    {
+      label: "Create Store",
+      href: `/${lang}/create-store`,
+    },
   ];
+
+  const updatedNavLinks = isAuthenticated
+    ? navLinks.filter((l) => l.label !== "Create Store")
+    : navLinks;
 
   const isRow = direction === "row";
 
@@ -39,7 +48,7 @@ export default function NavLinks({
           : "flex flex-col divide-y divide-gray-100"
       }
     >
-      {navLinks.map((link) => {
+      {updatedNavLinks.map((link) => {
         const isActive = pathname === link.href;
         const base = "transition-all duration-200";
 

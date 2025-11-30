@@ -24,6 +24,8 @@ interface AuthState {
 
   login: (input: LoginInput) => Promise<void>;
   logout: () => Promise<void>;
+  role: "buyer" | "seller" | null;
+  setRole: (role: "buyer" | "seller" | null) => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -67,10 +69,10 @@ export const useAuthStore = create<AuthState>()(
       set({ isInitializing: true, error: null });
 
       try {
-        // 👇 include role in the request payload
         const res = await authService.login({ identifier, password, role });
         set({
           user: res.user,
+          role: role,
           isAuthenticated: true,
           isInitializing: false,
           error: null,

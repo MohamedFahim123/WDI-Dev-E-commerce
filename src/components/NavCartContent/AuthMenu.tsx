@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { User } from "lucide-react";
 import { useAuthStore } from "@/src/stores/authStore";
+import { useRole } from "@/src/hooks/useRole";
 
 interface Props {
   authOpen: boolean;
@@ -18,6 +19,7 @@ export default function AuthMenu({
   authRef,
 }: Props) {
   const { isAuthenticated, user, logout } = useAuthStore();
+  const role = useRole();
 
   if (isAuthenticated) {
     return (
@@ -39,7 +41,7 @@ export default function AuthMenu({
         {authOpen && (
           <div className="absolute right-0 mt-2 w-40 bg-white shadow-lg border border-[#ddd] rounded z-50 py-1">
             <Link
-              href={`/${currentLang}/buyer/profile`}
+              href={`/${currentLang}/${role}/profile`}
               className="block px-3 py-2 text-sm hover:bg-gray-100"
               onClick={() => setAuthOpen(false)}
             >

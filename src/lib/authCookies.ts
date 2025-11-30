@@ -28,3 +28,14 @@ export async function clearAuthCookieServer() {
     secure: true,
   });
 }
+
+const ROLE_COOKIE_NAME = "role";
+
+export async function getRoleFromCookieServer(): Promise<
+  "buyer" | "seller" | null
+> {
+  const cookieStore = await cookies();
+  const value = cookieStore.get(ROLE_COOKIE_NAME)?.value;
+  if (!value) return null;
+  return value === "buyer" || value === "seller" ? value : null;
+}

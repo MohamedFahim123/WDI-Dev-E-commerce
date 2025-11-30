@@ -2,11 +2,37 @@
 
 import { useRouteLang } from "@/src/hooks/useLang";
 import dynamic from "next/dynamic";
-import CategoriesFilter from "../CategoriesFilter/CategoriesFilter";
 import Container from "../Container/Container";
-import FlashDeals from "../FlashDeals/FlashDeals";
-import ProductsGrid from "../ProductsGrid/ProductsGrid";
+
+import CategoriesFilterSkeleton from "../Skeletons/CategoriesFilterSkeleton/CategoriesFilterSkeleton";
 import DealsHeroSkeleton from "../Skeletons/DealsHeroSkeleton/DealsHeroSkeleton";
+import FlashDealsSkeleton from "../Skeletons/FlashDealsSkeleton/FlashDealsSkeleton";
+import ProductsGridSkeleton from "../Skeletons/ProductsGridSkeleton/ProductsGridSkeleton";
+
+const CategoriesFilter = dynamic(
+  () =>
+    import("@/src/components/CategoriesFilter/CategoriesFilter").then(
+      (m) => m.default
+    ),
+  {
+    loading: () => <CategoriesFilterSkeleton />,
+  }
+);
+const ProductsGrid = dynamic(
+  () =>
+    import("@/src/components/ProductsGrid/ProductsGrid").then((m) => m.default),
+  {
+    loading: () => <ProductsGridSkeleton />,
+  }
+);
+
+const FlashDeals = dynamic(
+  () => import("@/src/components/FlashDeals/FlashDeals").then((m) => m.default),
+  {
+    loading: () => <FlashDealsSkeleton />,
+  }
+);
+
 const DealsHero = dynamic(
   () =>
     import("@/src/components/FlashDealsFullContent/DealsHero/DealsHero").then(

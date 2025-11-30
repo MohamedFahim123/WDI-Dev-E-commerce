@@ -3,16 +3,7 @@
 import { useRouteLang } from "@/src/hooks/useLang";
 import { useAuthStore } from "@/src/stores/authStore";
 import clsx from "clsx";
-import {
-  Bell,
-  CreditCard,
-  Heart,
-  LifeBuoy,
-  MapPin,
-  Star,
-  TicketPercent,
-  User,
-} from "lucide-react";
+import { LayoutDashboardIcon, User } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { ReactNode, useEffect, useState } from "react";
@@ -57,44 +48,42 @@ export function SellerLayoutShell({ children }: SellerLayoutShellProps) {
   }, [isHydrating, user, router, lang]);
 
   if (isHydrating || !user?.id) return null;
+
   const navItems: NavLink[] = [
+    {
+      href: `/${lang}/seller/my-dashboard`,
+      label: "My Dashboard",
+      icon: LayoutDashboardIcon,
+    },
     { href: `/${lang}/seller/profile`, label: "Profile", icon: User },
-    { href: `/${lang}/seller/addresses`, label: "Addresses", icon: MapPin },
-    {
-      href: `/${lang}/seller/payment-methods`,
-      label: "Payment Methods",
-      icon: CreditCard,
-    },
-    { href: `/${lang}/seller/coupons`, label: "Coupons", icon: TicketPercent },
-    { href: `/${lang}/seller/my-wishlist`, label: "Wishlist", icon: Heart },
-    {
-      href: `/${lang}/seller/loyalty-program`,
-      label: "Loyalty Program",
-      icon: Star,
-    },
-    {
-      href: `/${lang}/seller/notifications-preferences`,
-      label: "Notifications",
-      icon: Bell,
-    },
-    {
-      href: `/${lang}/seller/help-support`,
-      label: "Help & Support",
-      icon: LifeBuoy,
-    },
   ];
 
   return (
     <div className="flex min-h-screen bg-[#F9FAFB]">
+      {/* ===========================
+          Desktop sidebar (sticky)
+          - stays inside layout (not fixed)
+          - uses sticky so it remains visible while content scrolls
+          - top offset equals navbar height (h-14)
+          =========================== */}
       <div
         className={clsx(
+          // hidden on small screens, visible on lg+
           "hidden lg:block transition-all duration-300",
-          collapsed ? "w-20" : "w-64"
+          // width when collapsed/expanded (keeps layout consistent)
+          collapsed ? "w-20" : "w-64",
+          // add sticky behavior on lg (do NOT use fixed)
+          "lg:sticky lg:top-0 lg:self-start",
+          // allow sidebar to scroll internally if content taller than viewport
+          "lg:overflow-auto"
         )}
       >
         <BuyerSidebar navItems={navItems} collapsed={collapsed} />
       </div>
 
+      {/* ===========================
+          Mobile off-canvas sidebar (unchanged)
+          =========================== */}
       <div
         className={clsx(
           "fixed inset-0 z-50 lg:hidden transition-opacity duration-200",
@@ -122,6 +111,9 @@ export function SellerLayoutShell({ children }: SellerLayoutShellProps) {
         </div>
       </div>
 
+      {/* ===========================
+          Main content column (no special padding needed)
+          =========================== */}
       <div className="flex flex-1 flex-col">
         <DashboardNavbar
           loginType={"seller"}

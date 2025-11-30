@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/src/components/ui/button";
-import { useRouteLang } from "@/src/hooks/useLang";
 import { LucideProps } from "lucide-react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
@@ -78,7 +77,7 @@ export default function BuyerSidebar({
         menuItemStyles={{
           button: ({ active }) => ({
             padding: "8px 16px",
-            margin: "2px 5px",
+            margin: "2px 0px",
             fontSize: "14px",
             fontWeight: 400,
             color: "#111827",
