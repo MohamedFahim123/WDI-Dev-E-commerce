@@ -3,7 +3,7 @@
 import { useRouteLang } from "@/src/hooks/useLang";
 import { useAuthStore } from "@/src/stores/authStore";
 import clsx from "clsx";
-import { LayoutDashboardIcon, User } from "lucide-react";
+import { FilePlus, LayoutDashboardIcon, Package, User } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { ReactNode, useEffect, useState } from "react";
@@ -56,6 +56,12 @@ export function SellerLayoutShell({ children }: SellerLayoutShellProps) {
       icon: LayoutDashboardIcon,
     },
     { href: `/${lang}/seller/profile`, label: "Profile", icon: User },
+    { href: `/${lang}/seller/catalog`, label: "Catalog", icon: Package },
+    {
+      href: `/${lang}/seller/add-product`,
+      label: "Add Product",
+      icon: FilePlus,
+    },
   ];
 
   return (

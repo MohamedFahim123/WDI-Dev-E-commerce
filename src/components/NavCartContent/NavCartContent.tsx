@@ -1,18 +1,17 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { useParams, usePathname } from "next/navigation";
 import { useAuthStore } from "@/src/stores/authStore";
 import { useCartStore } from "@/src/stores/cartStore";
 import { useWishlistStore } from "@/src/stores/wishlistStore";
+import { useParams, usePathname } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
-import LangDropDown from "./LangDropDown";
-import useOutsideClose from "./useOutsideClose";
-import NotificationsButton from "./NotificationsButton";
-import WishlistButton from "./WishlistButton";
-import CartButton from "./CartButton";
 import AuthMenu from "./AuthMenu";
-
+import CartButton from "./CartButton";
+import LangDropDown from "./LangDropDown";
+import NotificationsMenu from "./NotificationsMenu";
+import useOutsideClose from "./useOutsideClose";
+import WishlistButton from "./WishlistButton";
 
 export default function NavCartContent() {
   const params = useParams();
@@ -26,7 +25,6 @@ export default function NavCartContent() {
   const { isAuthenticated, hydrateFromStorage } = useAuthStore();
   const quantity = useCartStore((s) => s.getQuantity());
   const wishListQuantity = useWishlistStore((s) => s.getQuantity());
-  const notificationsNum = 0;
 
   const currentLang = typeof params?.lang === "string" ? params.lang : "en";
 
@@ -52,9 +50,8 @@ export default function NavCartContent() {
       />
 
       {isAuthenticated && (
-        <NotificationsButton
+        <NotificationsMenu
           currentLang={currentLang}
-          count={notificationsNum}
         />
       )}
 

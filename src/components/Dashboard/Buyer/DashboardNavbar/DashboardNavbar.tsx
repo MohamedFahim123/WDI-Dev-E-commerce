@@ -1,11 +1,12 @@
 "use client";
 
-import Link from "next/link";
-import { Home, Menu, Bell, LogOut } from "lucide-react";
+import LangDropDown from "@/src/components/NavCartContent/LangDropDown";
+import NotificationsMenu from "@/src/components/NavCartContent/NotificationsMenu";
 import { useRouteLang } from "@/src/hooks/useLang";
 import { useAuthStore } from "@/src/stores/authStore";
+import { Home, LogOut, Menu } from "lucide-react";
+import Link from "next/link";
 import { useRef, useState } from "react";
-import LangDropDown from "@/src/components/NavCartContent/LangDropDown";
 
 interface DashboardNavbarProps {
   collapsed: boolean;
@@ -56,16 +57,7 @@ export default function DashboardNavbar({
         </div>
 
         <div className="flex items-center gap-4">
-          <Link
-            href={`/${lang}/notifications`}
-            aria-label="Notifications"
-            className="relative flex items-center justify-center"
-          >
-            <Bell size={20} />
-            <span className="absolute -top-1 -right-2 bg-red-500 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center">
-              3
-            </span>
-          </Link>
+          <NotificationsMenu currentLang={lang} />
 
           <LangDropDown
             langRef={langRef}

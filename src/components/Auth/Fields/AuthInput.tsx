@@ -53,13 +53,12 @@ export const AuthInput = React.forwardRef<HTMLInputElement, AuthInputProps>(
             error && "border-red-500 focus:ring-red-500",
             className
           )}
-          autoComplete={"on"}
+          autoComplete={autoComplete ?? "on"}
           aria-invalid={!!error || undefined}
           aria-describedby={error ? errorId : undefined}
           aria-required={required || undefined}
           {...props}
         />
-
         {error && (
           <p
             id={errorId}
