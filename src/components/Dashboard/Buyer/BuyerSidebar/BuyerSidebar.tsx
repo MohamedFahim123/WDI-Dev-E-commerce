@@ -98,7 +98,7 @@ export default function BuyerSidebar({
       >
         {navItems.map((item) => {
           const Icon = item.icon;
-          const active = pathname?.startsWith(item.href);
+          const active = pathname === item.href;
 
           return (
             <MenuItem

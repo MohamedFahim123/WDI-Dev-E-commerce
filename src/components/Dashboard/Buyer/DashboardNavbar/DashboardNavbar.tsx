@@ -57,7 +57,7 @@ export default function DashboardNavbar({
         </div>
 
         <div className="flex items-center gap-4">
-          <NotificationsMenu currentLang={lang} />
+          <NotificationsMenu loginType={loginType} currentLang={lang} />
 
           <LangDropDown
             langRef={langRef}

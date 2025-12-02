@@ -3,7 +3,17 @@
 import { useRouteLang } from "@/src/hooks/useLang";
 import { useAuthStore } from "@/src/stores/authStore";
 import clsx from "clsx";
-import { FilePlus, LayoutDashboardIcon, Package, User } from "lucide-react";
+import {
+  Bell,
+  ChartBar,
+  FilePlus,
+  LayoutDashboardIcon,
+  ListOrderedIcon,
+  LucideSettings2,
+  Package,
+  Settings,
+  User,
+} from "lucide-react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { ReactNode, useEffect, useState } from "react";
@@ -50,17 +60,42 @@ export function SellerLayoutShell({ children }: SellerLayoutShellProps) {
   if (isHydrating || !user?.id) return null;
 
   const navItems: NavLink[] = [
+    { href: `/${lang}/seller/profile`, label: "Profile", icon: User },
     {
       href: `/${lang}/seller/my-dashboard`,
       label: "My Dashboard",
       icon: LayoutDashboardIcon,
     },
-    { href: `/${lang}/seller/profile`, label: "Profile", icon: User },
+    {
+      href: `/${lang}/seller/overview-metrics`,
+      label: "Overview Metrics",
+      icon: ChartBar,
+    },
+    {
+      href: `/${lang}/seller/order-management`,
+      label: "Order Managment",
+      icon: ListOrderedIcon,
+    },
     { href: `/${lang}/seller/catalog`, label: "Catalog", icon: Package },
     {
       href: `/${lang}/seller/add-product`,
       label: "Add Product",
       icon: FilePlus,
+    },
+    {
+      href: `/${lang}/seller/notifications`,
+      label: "Notifications",
+      icon: Bell,
+    },
+    {
+      href: `/${lang}/seller/notifications-preferences`,
+      label: "Notification Settings",
+      icon: LucideSettings2,
+    },
+    {
+      href: `/${lang}/seller/store-settings`,
+      label: "Store Settings",
+      icon: Settings,
     },
   ];
 

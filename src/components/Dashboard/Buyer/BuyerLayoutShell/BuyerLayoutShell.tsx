@@ -8,6 +8,7 @@ import {
   CreditCard,
   Heart,
   LifeBuoy,
+  LucideSettings2,
   MapPin,
   Star,
   TicketPercent,
@@ -16,9 +17,9 @@ import {
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { ReactNode, useEffect, useState } from "react";
+import { NavLink } from "../BuyerSidebar/BuyerSidebar";
 import BuyerSidebarSkeleton from "../BuyerSidebar/BuyerSidebarSkeleton";
 import DashboardNavbar from "../DashboardNavbar/DashboardNavbar";
-import { NavLink } from "../BuyerSidebar/BuyerSidebar";
 
 const BuyerSidebar = dynamic(() => import("../BuyerSidebar/BuyerSidebar"), {
   ssr: false,
@@ -54,7 +55,6 @@ export function BuyerLayoutShell({ children }: BuyerLayoutShellProps) {
   }, [isHydrating, user, router, lang]);
 
   if (isHydrating || !user?.id) return null;
-
   const navItems: NavLink[] = [
     { href: `/${lang}/buyer/profile`, label: "Profile", icon: User },
     { href: `/${lang}/buyer/addresses`, label: "Addresses", icon: MapPin },
@@ -71,9 +71,14 @@ export function BuyerLayoutShell({ children }: BuyerLayoutShellProps) {
       icon: Star,
     },
     {
-      href: `/${lang}/buyer/notifications-preferences`,
+      href: `/${lang}/buyer/notifications`,
       label: "Notifications",
       icon: Bell,
+    },
+    {
+      href: `/${lang}/buyer/notifications-preferences`,
+      label: "Notification Settings",
+      icon: LucideSettings2,
     },
     {
       href: `/${lang}/buyer/help-support`,
@@ -84,7 +89,6 @@ export function BuyerLayoutShell({ children }: BuyerLayoutShellProps) {
 
   return (
     <div className="flex min-h-screen bg-[#F9FAFB]">
-      {/* Desktop sidebar: sticky (inside layout, not fixed) */}
       <div
         className={clsx(
           "hidden lg:block transition-all duration-300",
@@ -96,7 +100,6 @@ export function BuyerLayoutShell({ children }: BuyerLayoutShellProps) {
         <BuyerSidebar navItems={navItems} collapsed={collapsed} />
       </div>
 
-      {/* Mobile off-canvas (unchanged) */}
       <div
         className={clsx(
           "fixed inset-0 z-50 lg:hidden transition-opacity duration-200",
@@ -124,7 +127,6 @@ export function BuyerLayoutShell({ children }: BuyerLayoutShellProps) {
         </div>
       </div>
 
-      {/* Main content */}
       <div className="flex flex-1 flex-col">
         <DashboardNavbar
           loginType={"buyer"}

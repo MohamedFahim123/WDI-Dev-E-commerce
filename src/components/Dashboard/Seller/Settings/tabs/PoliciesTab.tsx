@@ -8,7 +8,7 @@ export default function PoliciesTab() {
   const {
     register,
     handleSubmit,
-    formState: { isSubmitting },
+    formState: { errors, isSubmitting },
   } = useForm<PoliciesFormValues>({
     resolver: zodResolver(policiesSchema),
     defaultValues: {
@@ -34,31 +34,37 @@ export default function PoliciesTab() {
           label="Shipping Policy EN"
           placeholder="Enter policy here"
           {...register("shippingEn")}
+          error={errors.shippingEn?.message}
         />
         <FormInput
           label="Shipping Policy AR"
           placeholder="اكتب هنا"
           {...register("shippingAr")}
+          error={errors.shippingAr?.message}
         />
         <FormInput
           label="Return Policy EN"
           placeholder="Enter policy here"
           {...register("returnEn")}
+          error={errors.returnEn?.message}
         />
         <FormInput
           label="Return Policy AR"
           placeholder="اكتب هنا"
           {...register("returnAr")}
+          error={errors.returnAr?.message}
         />
         <FormInput
           label="Warranty Policy EN"
           placeholder="Enter policy here"
           {...register("warrantyEn")}
+          error={errors.warrantyEn?.message}
         />
         <FormInput
           label="Warranty Policy AR"
           placeholder="اكتب هنا"
           {...register("warrantyAr")}
+          error={errors.warrantyAr?.message}
         />
       </div>
 
@@ -66,7 +72,7 @@ export default function PoliciesTab() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="inline-flex items-center justify-center rounded-md bg-[#7C3BED] px-4 py-2 text-sm font-medium text-white hover:bg-[#6D28D9]"
+          className="inline-flex transition-all duration-200 cursor-pointer items-center justify-center rounded-md bg-[#7C3BED] px-4 py-2 text-sm font-medium text-white hover:bg-[#6D28D9]"
         >
           {isSubmitting ? "Saving..." : "Save"}
         </button>

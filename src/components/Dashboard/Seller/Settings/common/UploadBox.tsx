@@ -12,10 +12,17 @@ export default function UploadBox({
   placeholder?: string;
 }) {
   return (
-    <label className="block w-full cursor-pointer rounded-md border border-dashed border-[#E4E4E7] bg-[#FAFBFC] p-4 text-center">
+    <label
+      className="block w-full cursor-pointer rounded-lg border border-dashed p-4 text-center transition-colors duration-150
+                bg-[color:color-mix(in srgb,var(--card) 98%, white)] border-[color:var(--border)]"
+    >
       <div className="mx-auto inline-flex flex-col items-center justify-center gap-2">
-        <ImagePlus className="h-6 w-6 text-[#9CA3AF]" />
-        <div className="text-sm text-[#6B7280]">{placeholder}</div>
+        <div className="h-10 w-10 flex items-center justify-center rounded-md bg-[color:color-mix(in srgb,var(--card) 92%, white)] border border-[color:var(--border)]">
+          <ImagePlus className="h-5 w-5 text-[color:var(--muted-foreground)]" />
+        </div>
+        <div className="text-sm text-[color:var(--muted-foreground)]">
+          {placeholder}
+        </div>
       </div>
       <input
         type="file"

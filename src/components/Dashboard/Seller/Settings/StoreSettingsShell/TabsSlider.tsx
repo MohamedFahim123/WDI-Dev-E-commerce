@@ -1,8 +1,7 @@
 "use client";
 
 import clsx from "clsx";
-import useEmblaCarousel from "embla-carousel-react";
-import { useEffect, useRef } from "react";
+import { KeyboardEvent } from "react";
 
 type Tab = { id: string; label: string };
 
@@ -15,40 +14,70 @@ export default function TabsSlider({
   active: string;
   onChange: (id: string) => void;
 }) {
-  const [emblaRef, emblaApi] = useEmblaCarousel({
-    align: "start",
-    skipSnaps: false,
-  });
-  const activeRef = useRef<HTMLButtonElement | null>(null);
+  const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    const focus = document.activeElement as HTMLElement | null;
+    if (!focus || focus.tagName !== "BUTTON") return;
 
-  useEffect(() => {
-    if (!emblaApi || !activeRef.current) return;
-    const index = tabs.findIndex((t) => t.id === active);
-    if (index >= 0) emblaApi.scrollTo(index);
-  }, [active, emblaApi, tabs]);
+    const idx = tabs.findIndex((t) => t.id === active);
+    if (e.key === "ArrowRight") {
+      e.preventDefault();
+      const next = tabs[(idx + 1) % tabs.length];
+      onChange(next.id);
+      (
+        document.querySelector(
+          `button[data-tab="${next.id}"]`
+        ) as HTMLButtonElement | null
+      )?.focus();
+    } else if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      const prev = tabs[(idx - 1 + tabs.length) % tabs.length];
+      onChange(prev.id);
+      (
+        document.querySelector(
+          `button[data-tab="${prev.id}"]`
+        ) as HTMLButtonElement | null
+      )?.focus();
+    } else if (e.key === "Home") {
+      e.preventDefault();
+      onChange(tabs[0].id);
+    } else if (e.key === "End") {
+      e.preventDefault();
+      onChange(tabs[tabs.length - 1].id);
+    }
+  };
 
   return (
     <div className="w-full">
-      <div ref={emblaRef} className="overflow-hidden">
-        <div className="flex gap-2 px-1">
-          {tabs.map((t) => (
+      {/* wrapper uses flex-wrap so pills go to next line on small screens */}
+      <div
+        className="flex flex-wrap gap-2 items-center py-1"
+        role="tablist"
+        aria-label="Store settings tabs"
+        onKeyDown={onKeyDown}
+      >
+        {tabs.map((t) => {
+          const isActive = t.id === active;
+
+          return (
             <button
               key={t.id}
-              ref={(el) => {
-                if (t.id === active) activeRef.current = el;
-              }}
+              data-tab={t.id}
+              role="tab"
+              aria-selected={isActive}
               onClick={() => onChange(t.id)}
               className={clsx(
-                "whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-medium transition",
-                t.id === active
-                  ? "bg-[#7C3BED] text-white border border-[#7C3BED]"
-                  : "bg-[#F3F4F6] text-[#374151]"
+                "relative cursor-pointer z-10 whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-medium transition-all duration-200",
+                "box-border border-2 min-h-[36px] leading-[1rem]",
+
+                isActive
+                  ? "bg-[#7C3BED] text-white border-[#7C3BED]"
+                  : "bg-[#DADADA] text-[#000000] border-transparent"
               )}
             >
               {t.label}
             </button>
-          ))}
-        </div>
+          );
+        })}
       </div>
     </div>
   );

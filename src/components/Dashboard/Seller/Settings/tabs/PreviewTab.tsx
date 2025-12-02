@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 
 export default function PreviewTab() {
@@ -52,23 +51,36 @@ export default function PreviewTab() {
         </div>
 
         <div className="rounded-lg border border-dashed border-[#7C3BED] p-3 flex items-center justify-center">
-          <div className="w-full">
-            <div className="h-28 bg-[#F3F4F6] rounded mb-3"></div>
-            <div className="flex items-center gap-3">
-              <div className="h-12 w-12 bg-white rounded-full border flex items-center justify-center">
-                Logo
-              </div>
-              <div>
-                <div className="text-sm font-semibold">Store Name</div>
-                <div className="text-xs text-[#6B7280]">4.8 (120 reviews)</div>
+          {mode === "desktop" ? (
+            <div className="w-full">
+              <div className="h-28 bg-[#F3F4F6] rounded mb-3" />
+              <div className="flex items-center gap-3">
+                <div className="h-12 w-12 bg-white rounded-full border flex items-center justify-center">
+                  Logo
+                </div>
+                <div>
+                  <div className="text-sm font-semibold">Store Name</div>
+                  <div className="text-xs text-[#6B7280]">
+                    4.8 (120 reviews)
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
+          ) : (
+            <div className="w-36 text-center">
+              <div className="h-20 w-full bg-[#F3F4F6] rounded mb-2" />
+              <div className="mx-auto w-14 h-14 -mt-10 rounded-full bg-white border flex items-center justify-center">
+                Logo
+              </div>
+              <div className="mt-2 text-sm font-semibold">Store Name</div>
+              <div className="text-xs text-[#6B7280]">4.8 (120)</div>
+            </div>
+          )}
         </div>
       </div>
 
       <div className="flex items-center justify-end gap-3 pt-2">
-        <button className="inline-flex items-center justify-center rounded-md bg-[#7C3BED] px-4 py-2 text-sm font-medium text-white hover:bg-[#6D28D9]">
+        <button className="inline-flex transition-all duration-200 cursor-pointer items-center justify-center rounded-md bg-[#7C3BED] px-4 py-2 text-sm font-medium text-white hover:bg-[#6D28D9]">
           Save
         </button>
       </div>

@@ -16,8 +16,8 @@ export const identitySchema = z.object({
       "Only one file allowed"
     ),
   storeName: z.string().min(2, "Store name is required").max(100),
-  taglineEn: z.string().max(240).optional().or(z.literal("")),
-  taglineAr: z.string().max(240).optional().or(z.literal("")),
+  taglineEn: z.string().min(3, "Description En is required min 3").max(240),
+  taglineAr: z.string().min(3, "Description En is required min 3").max(240),
 });
 
 export type IdentityFormValues = z.infer<typeof identitySchema>;

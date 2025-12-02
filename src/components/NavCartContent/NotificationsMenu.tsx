@@ -7,9 +7,10 @@ import { NotificationItemProps } from "../Notifications/NotificationItem/Notific
 interface Props {
   currentLang: string;
   notifications?: Notification[];
+  loginType?: "buyer" | "seller";
 }
 
-export default function NotificationsMenu({ currentLang }: Props) {
+export default function NotificationsMenu({ currentLang, loginType }: Props) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
 
@@ -111,7 +112,9 @@ export default function NotificationsMenu({ currentLang }: Props) {
 
           <div className="pt-1">
             <Link
-              href={`/${currentLang}/notifications`}
+              href={`/${currentLang}/${
+                loginType ? `/${loginType}/notifications` : "notifications"
+              }`}
               onClick={() => setOpen(false)}
               className="block text-center text-sm px-3 py-2 hover:bg-gray-50 text-[#7C3BED] font-medium"
             >

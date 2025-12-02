@@ -35,6 +35,8 @@ export default function IdentityTab() {
     await new Promise((r) => setTimeout(r, 600));
   };
 
+  console.log(errors)
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <h3 className="text-sm font-semibold text-[#111827]">Identity</h3>
@@ -88,6 +90,7 @@ export default function IdentityTab() {
           label="Store Name"
           placeholder="Enter Store name here"
           {...register("storeName")}
+          error={errors.storeName?.message}
         />
         <div />
       </div>
@@ -97,11 +100,13 @@ export default function IdentityTab() {
           label="Short Tagline / Description (EN)"
           placeholder="type here"
           {...register("taglineEn")}
+          error={errors.taglineEn?.message}
         />
         <FormTextArea
           label="Short Tagline / Description (AR)"
           placeholder="اكتب هنا"
           {...register("taglineAr")}
+          error={errors.taglineAr?.message}
         />
       </div>
 
@@ -109,7 +114,7 @@ export default function IdentityTab() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="inline-flex items-center justify-center rounded-md bg-[#7C3BED] px-4 py-2 text-sm font-medium text-white hover:bg-[#6D28D9]"
+          className="inline-flex cursor-pointer transition-all duration-200 items-center justify-center rounded-md bg-[#7C3BED] px-4 py-2 text-sm font-medium text-white hover:bg-[#6D28D9]"
         >
           {isSubmitting ? "Saving..." : "Save"}
         </button>

@@ -5,8 +5,8 @@ import FormInput from "../common/FormInput";
 import FormTextArea from "../common/FormTextArea";
 import UploadBox from "../common/UploadBox";
 import {
-    ValidationFormValues,
-    validationSchema,
+  ValidationFormValues,
+  validationSchema,
 } from "../schemas/validationSchema";
 
 export default function ValidationTab() {
@@ -66,16 +66,19 @@ export default function ValidationTab() {
           label="Title"
           placeholder="Enter Title here"
           {...register("title")}
+          error={errors.title?.message}
         />
         <FormTextArea
           label="Tagline"
           placeholder="type here"
           {...register("tagline")}
+          error={errors.tagline?.message}
         />
         <FormTextArea
           label="Policy text"
           placeholder="type here"
           {...register("policyText")}
+          error={errors.policyText?.message}
         />
       </div>
 
@@ -83,7 +86,7 @@ export default function ValidationTab() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="inline-flex items-center justify-center rounded-md bg-[#7C3BED] px-4 py-2 text-sm font-medium text-white hover:bg-[#6D28D9]"
+          className="inline-flex cursor-pointer transition-all duration-200 items-center justify-center rounded-md bg-[#7C3BED] px-4 py-2 text-sm font-medium text-white hover:bg-[#6D28D9]"
         >
           {isSubmitting ? "Saving..." : "Save"}
         </button>
