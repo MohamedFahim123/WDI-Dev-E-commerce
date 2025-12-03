@@ -1,4 +1,4 @@
-import Container from "@/src/components/Container/Container";
+import PageHeader from "@/src/components/Dashboard/Seller/PageHeader/PageHeader";
 import {
   NotificationItem,
   NotificationItemProps,
@@ -23,7 +23,7 @@ export default async function NotificationsDashboardPage({
       iconSrc: "/assets/products/prod7.webp",
       iconAlt: "Headphones order",
       ctaLabel: "View Order",
-      ctaHref: `/${lang}/my-orders/1234`,
+      ctaHref: `/${lang}/seller/order-management/1234`,
     },
     {
       id: "2",
@@ -32,7 +32,7 @@ export default async function NotificationsDashboardPage({
       iconSrc: "/assets/products/prod7.webp",
       iconAlt: "Headphones order",
       ctaLabel: "View Order",
-      ctaHref: `/${lang}/my-orders/1234`,
+      ctaHref: `/${lang}/seller/order-management/1234`,
     },
     {
       id: "3",
@@ -41,14 +41,14 @@ export default async function NotificationsDashboardPage({
       iconSrc: "/assets/products/prod7.webp",
       iconAlt: "Headphones order",
       ctaLabel: "View Order",
-      ctaHref: `/${lang}/my-orders/1234`,
+      ctaHref: `/${lang}/seller/order-management/1234`,
     },
   ];
 
   return (
-    <section className="p-4 bg-white">
-      <h1>Notifications</h1>
-      <div className="pt-4 ">
+    <section className="max-w-7xl mx-auto px-4 py-8 space-y-6 box-border">
+      <PageHeader title="Notfications" subtitle="Check Your Latest Notfications" />
+      <div className="p-4 rounded-md bg-white">
         <ul className="space-y-2" role="list">
           {MOCK_NOTIFICATIONS.map((notification) => (
             <NotificationItem key={notification.id} {...notification} />

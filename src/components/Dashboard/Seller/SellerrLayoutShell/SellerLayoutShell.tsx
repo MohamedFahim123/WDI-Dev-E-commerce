@@ -8,9 +8,9 @@ import {
   ChartBar,
   FilePlus,
   LayoutDashboardIcon,
-  ListOrderedIcon,
   LucideSettings2,
   Package,
+  Receipt ,
   Settings,
   User,
 } from "lucide-react";
@@ -74,7 +74,7 @@ export function SellerLayoutShell({ children }: SellerLayoutShellProps) {
     {
       href: `/${lang}/seller/order-management`,
       label: "Order Managment",
-      icon: ListOrderedIcon,
+      icon: Receipt ,
     },
     { href: `/${lang}/seller/catalog`, label: "Catalog", icon: Package },
     {

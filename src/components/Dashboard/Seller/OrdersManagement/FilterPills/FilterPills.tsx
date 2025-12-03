@@ -23,7 +23,7 @@ export default function FilterPills({
           <button
             key={p}
             onClick={() => onChange(p)}
-            className={`text-sm px-3 py-1.5 rounded-full font-medium border ${
+            className={`text-sm cursor-pointer px-3 py-1.5 rounded-full font-medium border transition-all ease-in-out duration-200 ${
               isActive
                 ? "bg-violet-600 text-white border-transparent shadow-sm"
                 : "bg-gray-100 text-gray-700 border-gray-200"

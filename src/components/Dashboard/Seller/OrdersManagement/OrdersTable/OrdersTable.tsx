@@ -1,4 +1,5 @@
 import { Search, Sliders } from "lucide-react";
+import Link from "next/link";
 
 type Row = {
   id: string;
@@ -56,10 +57,16 @@ function StatusPill({ status }: { status: string }) {
   return <span className={`${base} bg-gray-100 text-gray-800`}>{status}</span>;
 }
 
-export default function OrdersTable() {
+export default function OrdersTable({
+  lang,
+  loginType,
+}: {
+  lang: string;
+  loginType: "seller" | "buyer";
+}) {
   return (
     <div className="bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
-      <div className="bg-white p-4 ">
+      <div className="bg-white p-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div className="flex-1 min-w-0">
             <label htmlFor="order-search" className="sr-only">
@@ -108,8 +115,10 @@ export default function OrdersTable() {
           <tbody className="divide-y">
             {rows.map((r) => (
               <tr key={r.id} className="bg-white">
-                <td className="px-6 py-5 text-sm font-medium text-gray-800 whitespace-nowrap">
-                  {r.id}
+                <td>
+                  <Link className="px-6 py-5 text-sm font-medium text-gray-800 whitespace-nowrap hover:underline transition-all duration-200 hover:text-[#7C3BED]" href={`/${lang}/${loginType}/order-management/${r.id.split("#").join("")}`}>
+                    {r.id}
+                  </Link>
                 </td>
                 <td className="px-6 py-5 text-sm text-gray-600 whitespace-nowrap">
                   {r.date}

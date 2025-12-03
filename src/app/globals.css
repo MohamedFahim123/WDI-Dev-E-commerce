@@ -40,7 +40,7 @@
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px); 
+  --radius-xl: calc(var(--radius) + 4px);
 }
 
 :root {
@@ -122,6 +122,9 @@
 }
 html {
   overflow-y: scroll;
+}
+.notifications-scroll {
+  -webkit-overflow-scrolling: touch;
 }
 
 @supports (scrollbar-gutter: stable) {

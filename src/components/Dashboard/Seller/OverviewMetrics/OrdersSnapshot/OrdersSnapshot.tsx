@@ -43,7 +43,6 @@ export default function OrdersSnapshot() {
           <p className="text-sm text-gray-500">Recent payout transactions</p>
         </div>
 
-        {/* Search + Filter row — responsive */}
         <div className="w-full sm:w-auto">
           <div className="flex items-center gap-3">
             <label htmlFor="payout-search" className="sr-only">
@@ -73,34 +72,89 @@ export default function OrdersSnapshot() {
         </div>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white">
-          <thead>
-            <tr className="text-xs text-gray-500 uppercase">
-              <th className="text-left px-4 py-3">Payout ID</th>
-              <th className="text-left px-4 py-3">Date</th>
-              <th className="text-left px-4 py-3">Amount</th>
-              <th className="text-left px-4 py-3">Status</th>
-              <th className="text-left px-4 py-3">Bank Account</th>
-            </tr>
-          </thead>
+      <div className="hidden sm:block">
+        <div className="overflow-hidden rounded">
+          <table className="min-w-full table-fixed">
+            <colgroup>
+              <col className="w-[18%]" />
+              <col className="w-[18%]" />
+              <col className="w-[18%]" />
+              <col className="w-[18%]" />
+              <col className="w-[28%]" />
+            </colgroup>
 
-          <tbody className="divide-y">
-            {rows.map((r) => (
-              <tr key={r.id} className="bg-white">
-                <td className="px-4 py-5 text-sm font-medium text-gray-800">
-                  {r.id}
-                </td>
-                <td className="px-4 py-5 text-sm text-gray-600">{r.date}</td>
-                <td className="px-4 py-5 text-sm font-semibold">{r.amount}</td>
-                <td className="px-4 py-5">
-                  <StatusPill status={r.status} />
-                </td>
-                <td className="px-4 py-5 text-sm text-gray-600">{r.account}</td>
+            <thead>
+              <tr className="text-xs text-gray-500 uppercase">
+                <th className="text-left px-4 py-3">Payout ID</th>
+                <th className="text-left px-4 py-3">Date</th>
+                <th className="text-left px-4 py-3">Amount</th>
+                <th className="text-left px-4 py-3">Status</th>
+                <th className="text-left px-4 py-3">Bank Account</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+
+            <tbody className="divide-y">
+              {rows.map((r) => (
+                <tr key={r.id} className="bg-white">
+                  <td className="px-4 py-5 text-sm font-medium text-gray-800 truncate">
+                    {r.id}
+                  </td>
+                  <td className="px-4 py-5 text-sm text-gray-600 truncate">
+                    {r.date}
+                  </td>
+                  <td className="px-4 py-5 text-sm font-semibold truncate">
+                    {r.amount}
+                  </td>
+                  <td className="px-4 py-5">
+                    <StatusPill status={r.status} />
+                  </td>
+                  <td className="px-4 py-5 text-sm text-gray-600 truncate">
+                    {r.account}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div className="sm:hidden space-y-3">
+        {rows.map((r) => (
+          <article
+            key={r.id}
+            className="border border-gray-100 rounded-lg p-3 bg-white shadow-sm"
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                  <div className="text-sm font-medium text-gray-800 truncate">
+                    {r.id}
+                  </div>
+                  <div className="text-xs text-gray-500">{r.date}</div>
+                </div>
+
+                <div className="mt-2 text-sm text-gray-700">{r.account}</div>
+
+                <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-gray-600">
+                  <div>
+                    Amount:{" "}
+                    <span className="font-medium text-gray-800">
+                      {r.amount}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-sm">Pay: </span>
+                    <span className="text-gray-700">{r.status}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex-shrink-0 self-start">
+                <StatusPill status={r.status} />
+              </div>
+            </div>
+          </article>
+        ))}
       </div>
     </section>
   );

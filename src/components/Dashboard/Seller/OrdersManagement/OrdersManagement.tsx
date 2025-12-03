@@ -1,11 +1,10 @@
-// "use client"
 "use client";
 
 import dynamic from "next/dynamic";
-import { Search, Sliders } from "lucide-react";
 import { useState } from "react";
 import FilterPills from "./FilterPills/FilterPills";
 import OrdersSkeleton from "./OrdersSkeleton";
+import { useRouteLang } from "@/src/hooks/useLang";
 
 const OrdersTable = dynamic(
   () => import("./OrdersTable/OrdersTable").then((m) => m.default),
@@ -17,6 +16,7 @@ const OrdersTable = dynamic(
 
 export default function OrdersManagement() {
   const [filter, setFilter] = useState<string>("ALL");
+  const lang = useRouteLang();
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 space-y-6 box-border">
@@ -29,10 +29,8 @@ export default function OrdersManagement() {
         </div>
       </div>
 
-
-
       <div>
-        <OrdersTable />
+        <OrdersTable loginType={"seller"} lang={lang} />
       </div>
     </div>
   );

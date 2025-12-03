@@ -50,6 +50,10 @@ export default function NotificationsMenu({ currentLang, loginType }: Props) {
   const display = list.slice(0, 3);
   const count = list.length;
 
+  const viewMoreHref = `/${currentLang}/${
+    loginType ? `${loginType}/notifications` : "notifications"
+  }`;
+
   return (
     <div className="relative" ref={ref}>
       <button
@@ -57,6 +61,7 @@ export default function NotificationsMenu({ currentLang, loginType }: Props) {
         onClick={() => setOpen((p) => !p)}
         title="Show Notifications"
         aria-label="Notifications"
+        aria-expanded={open}
         className="relative cursor-pointer w-5 sm:w-6 flex items-center justify-center"
       >
         <Bell size={21} className="sm:h-5 sm:w-5" />
@@ -69,15 +74,31 @@ export default function NotificationsMenu({ currentLang, loginType }: Props) {
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-2 w-80 max-w-xs bg-white shadow-lg border border-[#ddd] rounded z-50 py-2">
+        <div
+          className="
+            absolute
+            top-full mt-2
+            left-1/2 -translate-x-1/2
+            sm:left-auto sm:right-0 sm:translate-x-0 
+            w-[60vw] sm:w-80
+            bg-white shadow-lg border border-[#ddd] rounded z-50
+            py-1"
+          style={{
+            paddingTop: `max(6px, env(safe-area-inset-top))`,
+            maxHeight: "calc(100vh - 120px)",
+            maxWidth: "calc(100vw - 40px)",
+          }}
+        >
           <div className="px-3 pb-1 border-b border-[#eee]">
-            <div className="text-sm font-medium text-gray-800">
+            <div className="text-xs sm:text-sm font-medium text-gray-800">
               Notifications
             </div>
-            <div className="text-xs text-gray-500">{count} recent</div>
+            <div className="text-[11px] sm:text-xs text-gray-500">
+              {count} recent
+            </div>
           </div>
 
-          <div className="max-h-64 overflow-auto">
+          <div className="max-h-[calc(100vh-120px)] overflow-auto">
             {display.map((n) => (
               <Link
                 key={n.id}
@@ -86,7 +107,7 @@ export default function NotificationsMenu({ currentLang, loginType }: Props) {
                 className="block px-3 py-2 text-sm hover:bg-gray-50 border-b last:border-b-0"
               >
                 <div className="flex items-start justify-between">
-                  <div className="text-gray-800 font-medium text-sm">
+                  <div className="text-gray-800 font-medium text-sm line-clamp-2">
                     {n.title}
                   </div>
                   {n.timeLabel && (
@@ -96,7 +117,7 @@ export default function NotificationsMenu({ currentLang, loginType }: Props) {
                   )}
                 </div>
                 {n.ctaLabel && (
-                  <div className="text-xs text-gray-500 mt-1 line-clamp-2">
+                  <div className="text-[12px] text-gray-500 mt-1 line-clamp-2">
                     {n.ctaLabel}
                   </div>
                 )}
@@ -112,9 +133,7 @@ export default function NotificationsMenu({ currentLang, loginType }: Props) {
 
           <div className="pt-1">
             <Link
-              href={`/${currentLang}/${
-                loginType ? `/${loginType}/notifications` : "notifications"
-              }`}
+              href={viewMoreHref}
               onClick={() => setOpen(false)}
               className="block text-center text-sm px-3 py-2 hover:bg-gray-50 text-[#7C3BED] font-medium"
             >
