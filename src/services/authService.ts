@@ -1,21 +1,19 @@
 "use client";
-import { setRoleCookie, clearRoleCookie } from "@/src/lib/authClient";
+import { setRoleCookie } from "@/src/lib/authClient";
 
+import { saveUserToLocalStorage } from "@/src/lib/authClient";
 import { AuthResponse } from "@/src/types/auth";
 import {
-  saveUserToLocalStorage,
-  clearUserFromLocalStorage,
-} from "@/src/lib/authClient";
+  ForgotPasswordStep1Input,
+  ForgotPasswordStep2Input,
+} from "../validation/ForgotPasswordSchemas";
 import { LoginInput } from "../validation/LoginSchema";
 import {
   RegisterStep1Input,
   RegisterStep2Input,
   RegisterStep3Input,
 } from "../validation/RegisterSchemas";
-import {
-  ForgotPasswordStep1Input,
-  ForgotPasswordStep2Input,
-} from "../validation/ForgotPasswordSchemas";
+import { LogoutAction } from "./auth.service";
 
 const API_BASE = "/api/auth";
 
@@ -55,15 +53,7 @@ export const authService = {
   },
 
   async logout(): Promise<void> {
-    clearUserFromLocalStorage();
-    clearRoleCookie();
-
-    try {
-      await fetch(`${API_BASE}/logout`, {
-        method: "POST",
-        credentials: "include",
-      });
-    } catch {}
+    await LogoutAction();
   },
 
   async registerStep1(payload: RegisterStep1Input): Promise<{ email: string }> {

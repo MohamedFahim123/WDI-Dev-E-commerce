@@ -9,6 +9,8 @@ import { useForm } from "react-hook-form";
 import RegisterDetailsStep from "./RegisterDetailsStep";
 import RegisterEmailStep from "./RegisterEmailStep";
 import RegisterPhoneStep from "./RegisterPhoneStep";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 type RegisterStep = "details" | "email" | "phone";
 
@@ -27,6 +29,7 @@ export interface RegisterFormValues {
 export default function RegisterForm() {
   const lang = useRouteLang();
   const [step, setStep] = useState<RegisterStep>("details");
+  const router = useRouter();
 
   const {
     register,
@@ -52,19 +55,21 @@ export default function RegisterForm() {
   const emailValue = watch("email");
 
   async function onSubmit(values: RegisterFormValues) {
-    if (step === "details") {
-      setStep("email");
-    } else if (step === "email") {
-      setStep("phone");
-    } else {
-      // const res = await authService.registerStep3({
-      //   countryCode: values.countryCode,
-      //   phone: values.phoneNumber,
-      //   email: values.email,
-      // });
-      // setUser(res.user);
-      // setAuthenticated(true);
-      await RegisterAction(values);
+    if (step === "details") return setStep("email");
+    if (step === "email") return setStep("phone");
+
+    try {
+      const res = await RegisterAction(values);
+
+      toast.success(res.message || "Registered successfully", {
+        duration: 1500,
+      });
+      router.push(`/${lang}/auth/login`);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Registration failed";
+      toast.error(msg, {
+        duration: 3000,
+      });
     }
   }
 
@@ -84,88 +89,90 @@ export default function RegisterForm() {
       : "Verify your phone number";
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
-      <header className="space-y-1 text-center">
-        <h1 className="text-xl font-semibold text-foreground sm:text-2xl">
-          Create Account
-        </h1>
-        <p className="text-xs text-muted-foreground sm:text-sm">{subtitle}</p>
-      </header>
+    <>
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
+        <header className="space-y-1 text-center">
+          <h1 className="text-xl font-semibold text-foreground sm:text-2xl">
+            Create Account
+          </h1>
+          <p className="text-xs text-muted-foreground sm:text-sm">{subtitle}</p>
+        </header>
 
-      <div className="mt-2">
-        <div className="relative h-1 rounded-full bg-[#E4E4E7]">
-          <div
-            className={`absolute left-0 top-0 h-1 rounded-full bg-[#7C3AED] transition-all duration-300 ${progressWidth}`}
+        <div className="mt-2">
+          <div className="relative h-1 rounded-full bg-[#E4E4E7]">
+            <div
+              className={`absolute left-0 top-0 h-1 rounded-full bg-[#7C3AED] transition-all duration-300 ${progressWidth}`}
+            />
+          </div>
+          <div className="mt-2 flex justify-between">
+            <span title="Details" className={stepLabelClass("details")}>
+              Details
+            </span>
+            <span title="Email" className={stepLabelClass("email")}>
+              Email
+            </span>
+            <span title="Phone" className={stepLabelClass("phone")}>
+              Phone
+            </span>
+          </div>
+        </div>
+
+        {step === "details" && (
+          <RegisterDetailsStep
+            register={register}
+            errors={errors}
+            isSubmitting={isSubmitting}
+            passwordValue={passwordValue}
           />
+        )}
+
+        {step === "email" && (
+          <RegisterEmailStep
+            register={register}
+            errors={errors}
+            isSubmitting={isSubmitting}
+            emailValue={emailValue}
+          />
+        )}
+
+        {step === "phone" && (
+          <RegisterPhoneStep
+            role={watch("role")}
+            register={register}
+            errors={errors}
+            isSubmitting={isSubmitting}
+          />
+        )}
+
+        <div className="mt-4 flex items-center justify-center gap-2 text-[11px] text-muted-foreground">
+          <span className="h-px flex-1 bg-[#E4E4E7]" />
+          <span className="font-semibold tracking-wide">
+            ALREADY HAVE AN ACCOUNT?
+          </span>
+          <span className="h-px flex-1 bg-[#E4E4E7]" />
         </div>
-        <div className="mt-2 flex justify-between">
-          <span title="Details" className={stepLabelClass("details")}>
-            Details
-          </span>
-          <span title="Email" className={stepLabelClass("email")}>
-            Email
-          </span>
-          <span title="Phone" className={stepLabelClass("phone")}>
-            Phone
-          </span>
-        </div>
-      </div>
 
-      {step === "details" && (
-        <RegisterDetailsStep
-          register={register}
-          errors={errors}
-          isSubmitting={isSubmitting}
-          passwordValue={passwordValue}
-        />
-      )}
-
-      {step === "email" && (
-        <RegisterEmailStep
-          register={register}
-          errors={errors}
-          isSubmitting={isSubmitting}
-          emailValue={emailValue}
-        />
-      )}
-
-      {step === "phone" && (
-        <RegisterPhoneStep
-          role={watch("role")}
-          register={register}
-          errors={errors}
-          isSubmitting={isSubmitting}
-        />
-      )}
-
-      <div className="mt-4 flex items-center justify-center gap-2 text-[11px] text-muted-foreground">
-        <span className="h-px flex-1 bg-[#E4E4E7]" />
-        <span className="font-semibold tracking-wide">
-          ALREADY HAVE AN ACCOUNT?
-        </span>
-        <span className="h-px flex-1 bg-[#E4E4E7]" />
-      </div>
-
-      <Link
-        href={`/${lang}/auth/login`}
-        className="h-11 w-full rounded-full border border-[#E4E4E7] bg-white text-center text-sm font-semibold text-foreground hover:bg-[#F5F5F7] transition inline-flex items-center justify-center"
-      >
-        Login
-      </Link>
-
-      <div className="mt-2 flex items-center justify-center gap-1 text-xs text-muted-foreground">
-        <Globe2 className="h-4 w-4" aria-hidden="true" />
-        <button
-          type="button"
-          className="flex items-center gap-1 rounded-full px-1.5 py-0.5 hover:bg-black/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8b5cf6]"
-          aria-label="Change language"
+        <Link
+          href={`/${lang}/auth/login`}
+          className="h-11 w-full rounded-full border border-[#E4E4E7] bg-white text-center text-sm font-semibold text-foreground hover:bg-[#F5F5F7] transition inline-flex items-center justify-center"
         >
-          <span>Language:</span>
-          <span className="font-semibold text-foreground">
-            {lang.toUpperCase()}
-          </span>
-        </button>
-      </div>
-    </form>
+          Login
+        </Link>
+
+        <div className="mt-2 flex items-center justify-center gap-1 text-xs text-muted-foreground">
+          <Globe2 className="h-4 w-4" aria-hidden="true" />
+          <button
+            type="button"
+            className="flex items-center gap-1 rounded-full px-1.5 py-0.5 hover:bg-black/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8b5cf6]"
+            aria-label="Change language"
+          >
+            <span>Language:</span>
+            <span className="font-semibold text-foreground">
+              {lang.toUpperCase()}
+            </span>
+          </button>
+        </div>
+      </form>
+    </>
   );
 }

@@ -39,7 +39,6 @@ export function SellerLayoutShell({ children }: SellerLayoutShellProps) {
 
   const lang = useRouteLang();
 
-  const user = useAuthStore((s) => s.user);
   const hydrateFromServer = useAuthStore((s) => s.hydrateFromServer);
 
   useEffect(() => {
@@ -49,7 +48,7 @@ export function SellerLayoutShell({ children }: SellerLayoutShellProps) {
     })();
   }, [hydrateFromServer]);
 
-  if (isHydrating || !user?.user_id) return null;
+  if (isHydrating) return null;
 
   const navItems: NavLink[] = [
     { href: `/${lang}/seller/profile`, label: "Profile", icon: User },

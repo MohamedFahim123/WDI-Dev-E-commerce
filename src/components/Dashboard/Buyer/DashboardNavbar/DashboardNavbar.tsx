@@ -22,7 +22,7 @@ export default function DashboardNavbar({
   onToggleMobileSidebar,
 }: DashboardNavbarProps) {
   const lang = useRouteLang();
-  const { logout } = useAuthStore();
+  const logout = useAuthStore((s) => s.logout);
 
   const [langOpen, setLangOpen] = useState(false);
   const langRef = useRef<HTMLDivElement | null>(null);
@@ -70,7 +70,7 @@ export default function DashboardNavbar({
 
           <button
             type="button"
-            onClick={() => logout()}
+            onClick={async () => await logout()}
             className="inline-flex cursor-pointer hover:text-[#EF4343] transition-all duration-300 items-center gap-1.5 rounded-md border border-gray-300 px-2.5 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50"
           >
             <LogOut size={16} />

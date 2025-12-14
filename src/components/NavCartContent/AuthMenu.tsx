@@ -1,6 +1,8 @@
-import Link from "next/link";
-import { User } from "lucide-react";
+import { getAuthTokenFromCookieServer } from "@/src/lib/authCookies";
 import { useAuthStore } from "@/src/stores/authStore";
+import { User } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 import AuthMenuSkeleton from "./AuthMenuSkeleton";
 
 interface Props {
@@ -8,6 +10,7 @@ interface Props {
   setAuthOpen: (x: boolean | ((p: boolean) => boolean)) => void;
   setLangOpen: (x: boolean) => void;
   currentLang: string;
+  loading: boolean;
   authRef: React.RefObject<HTMLDivElement | null>;
 }
 
@@ -17,8 +20,18 @@ export default function AuthMenu({
   setLangOpen,
   currentLang,
   authRef,
+  loading,
 }: Props) {
-  const { isAuthenticated, user, logout, role, loading } = useAuthStore();
+  const logout = useAuthStore((s) => s.logout);
+  const role = useAuthStore((s) => s.role);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+
+  useEffect(() => {
+    (async () => {
+      const token = await getAuthTokenFromCookieServer();
+      setIsAuthenticated(token ? true : false);
+    })();
+  }, []);
 
   if (loading) {
     return <AuthMenuSkeleton variant="guest" showMenu={authOpen} />;
@@ -37,7 +50,7 @@ export default function AuthMenu({
         >
           <User size={20} />
           <span className="hidden sm:inline ml-1 font-medium text-gray-700">
-            {user?.name?.split(" ")[0] ?? "Profile"}
+            My Profile
           </span>
         </button>
 
@@ -51,9 +64,10 @@ export default function AuthMenu({
               My Account
             </Link>
             <button
-              onClick={() => {
-                void logout();
+              onClick={async () => {
+                await logout();
                 setAuthOpen(false);
+                setIsAuthenticated(false);
               }}
               className="w-full cursor-pointer text-left px-3 py-2 text-sm hover:bg-gray-100 text-red-600"
             >

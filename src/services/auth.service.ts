@@ -8,6 +8,7 @@ import {
   clearAuthCookieServer,
   clearAuthTokenCookieServer,
   clearRoleCookieServer,
+  getAuthTokenFromCookieServer,
   setAuthCookieServer,
   setAuthTokenCookieServer,
   setRoleCookieServer,
@@ -48,23 +49,35 @@ async function LoginAction(input: LoginInput) {
     data: safeUser,
   };
 }
+
 async function LogoutAction() {
   const res = await fetchApi(`auth/logout`, {
     method: "POST",
     cache: "no-store",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${await getAuthTokenFromCookieServer()}`,
+    },
   });
 
   if (!res.success) {
-    throw new Error(res.message || "Unable to login");
+    throw new Error(res.message || "Unable to Logout");
   }
   await clearCookies();
 
   return { success: true };
 }
 
+type RegisterData = {
+  user_id: number;
+  partner_id: number;
+  token: string;
+  name: string;
+  email: string;
+};
+
 async function RegisterAction(data: RegisterFormValues) {
-  const response = await fetchApi<unknown>(`auth/${data.role}/signup`, {
+  const response = await fetchApi<RegisterData>(`auth/${data.role}/signup`, {
     method: "POST",
     cache: "no-store",
     headers: { "Content-Type": "application/json" },

@@ -26,6 +26,7 @@ export default function NavCartContent() {
   const hydrateFromServer = useAuthStore((s) => s.hydrateFromServer);
   const quantity = useCartStore((s) => s.getQuantity());
   const wishListQuantity = useWishlistStore((s) => s.getQuantity());
+  const loading = useAuthStore((s) => s.loading);
 
   const currentLang = typeof params?.lang === "string" ? params.lang : "en";
 
@@ -63,6 +64,7 @@ export default function NavCartContent() {
         setLangOpen={setLangOpen}
         currentLang={currentLang}
         authRef={authRef}
+        loading={loading}
       />
     </div>
   );
