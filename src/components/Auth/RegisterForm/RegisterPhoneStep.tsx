@@ -3,7 +3,12 @@ import { AuthInput } from "../Fields/AuthInput";
 import { StepBaseProps } from "./RegisterDetailsStep";
 import AuthSelect from "../Fields/AuthSelect";
 
-function RegisterPhoneStep({ register, errors, isSubmitting }: StepBaseProps) {
+function RegisterPhoneStep({
+  register,
+  errors,
+  isSubmitting,
+  role,
+}: StepBaseProps) {
   return (
     <div className="mt-4 space-y-4">
       <AuthSelect
@@ -27,6 +32,28 @@ function RegisterPhoneStep({ register, errors, isSubmitting }: StepBaseProps) {
           aria-hidden="true"
         />
       </div>
+      {
+        <AuthInput
+          label="User Name"
+          placeholder="User Name"
+          required
+          error={errors.name?.message}
+          {...register("name", {
+            required: "User Name is required",
+          })}
+        />
+      }
+      {role && role === "seller" && (
+        <AuthInput
+          label="Company Name"
+          placeholder="Company Name"
+          required
+          error={errors.companyName?.message}
+          {...register("companyName", {
+            required: "Company Name is required",
+          })}
+        />
+      )}
 
       <AuthInput
         label="Phone Number"

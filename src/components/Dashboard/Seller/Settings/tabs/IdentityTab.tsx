@@ -35,7 +35,6 @@ export default function IdentityTab() {
     await new Promise((r) => setTimeout(r, 600));
   };
 
-  console.log(errors)
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">

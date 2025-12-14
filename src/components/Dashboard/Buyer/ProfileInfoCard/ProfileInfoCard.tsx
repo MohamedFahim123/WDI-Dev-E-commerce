@@ -1,10 +1,12 @@
 "use client";
 
+import { useAuthStore } from "@/src/stores/authStore";
+import { Mail, Phone, Shield, User as UserIcon } from "lucide-react";
 import { useState } from "react";
-import { Mail, Phone, User as UserIcon, Shield } from "lucide-react";
+import ProfileInfoCardSkeleton from "./ProfileInfoCardSkeleton";
 
 type Profile = {
-  fullName: string;
+  name: string;
   email: string;
   phone: string;
 };
@@ -55,7 +57,6 @@ function EditableField({
   );
 }
 
-
 type ProfileInfoViewProps = {
   profile: Profile;
   onEdit: () => void;
@@ -80,9 +81,13 @@ function ProfileInfoView({ profile, onEdit }: ProfileInfoViewProps) {
       </div>
 
       <div className="space-y-4">
-        <InfoField label="Full Name" icon={UserIcon} value={profile.fullName} />
+        <InfoField label="Full Name" icon={UserIcon} value={profile.name} />
         <InfoField label="Email" icon={Mail} value={profile.email} />
-        <InfoField label="Phone Number" icon={Phone} value={profile.phone} />
+        <InfoField
+          label="Phone Number"
+          icon={Phone}
+          value={profile?.phone as string}
+        />
 
         <div className="pt-2">
           <p className="mb-2 text-xs font-medium text-[#6B7280]">Security</p>
@@ -97,7 +102,6 @@ function ProfileInfoView({ profile, onEdit }: ProfileInfoViewProps) {
     </>
   );
 }
-
 
 type ProfileInfoEditFormProps = {
   draft: Profile;
@@ -124,8 +128,8 @@ function ProfileInfoEditForm({
         <EditableField
           label="Full Name"
           icon={UserIcon}
-          value={draft.fullName}
-          onChange={(val) => setDraft({ ...draft, fullName: val })}
+          value={draft.name}
+          onChange={(val) => setDraft({ ...draft, name: val })}
         />
         <EditableField
           label="Email"
@@ -163,20 +167,21 @@ function ProfileInfoEditForm({
   );
 }
 
-
 export default function ProfileInfoCard() {
   const [profile, setProfile] = useState<Profile>({
-    fullName: "Ahmed Al Mansoori",
+    name: "Ahmed Al Mansoori",
     email: "ahmed.almansoori@example.com",
     phone: "+971 50 123 4567",
   });
+  const loading = useAuthStore((s) => s.loading);
+  const user = useAuthStore((s) => s.user);
 
   const [draft, setDraft] = useState<Profile>(profile);
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
   const handleEdit = () => {
-    setDraft(profile); 
+    setDraft(profile);
     setIsEditing(true);
   };
 
@@ -196,6 +201,10 @@ export default function ProfileInfoCard() {
     }
   };
 
+  if (loading) {
+    return <ProfileInfoCardSkeleton />;
+  }
+
   return (
     <section className="rounded-2xl border border-[#E5E7EB] bg-white p-5 shadow-sm">
       {isEditing ? (
@@ -207,7 +216,14 @@ export default function ProfileInfoCard() {
           isSaving={isSaving}
         />
       ) : (
-        <ProfileInfoView profile={profile} onEdit={handleEdit} />
+        <ProfileInfoView
+          profile={{
+            name: user?.name || profile.name,
+            email: user?.email || profile.email,
+            phone: user?.phone || profile.phone,
+          }}
+          onEdit={handleEdit}
+        />
       )}
     </section>
   );

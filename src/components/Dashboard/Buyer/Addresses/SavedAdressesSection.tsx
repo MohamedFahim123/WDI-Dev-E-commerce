@@ -59,12 +59,10 @@ export default function SavedAddressesSection() {
 
   const handleSubmit = (data: Omit<Address, "id">) => {
     if (editingAddress) {
-      // update
       setAddresses((prev) =>
         prev.map((a) => (a.id === editingAddress.id ? { ...a, ...data } : a))
       );
     } else {
-      // create
       const id = crypto.randomUUID ? crypto.randomUUID() : `addr-${Date.now()}`;
 
       setAddresses((prev) => [...prev, { ...data, id }]);

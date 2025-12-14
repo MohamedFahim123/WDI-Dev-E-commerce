@@ -1,12 +1,28 @@
-import React from "react";
-import Link from "next/link";
+import {
+  getAuthTokenFromCookieServer,
+  getRoleFromCookieServer,
+} from "@/src/lib/authCookies";
 import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import React from "react";
 
 interface AuthLayoutProps {
   children: React.ReactNode;
+  params: Promise<{ lang: string }>;
 }
 
-export default function AuthRootLayout({ children }: AuthLayoutProps) {
+export default async function AuthRootLayout({
+  children,
+  params,
+}: AuthLayoutProps) {
+  const token = await getAuthTokenFromCookieServer();
+  const role = await getRoleFromCookieServer();
+  const { lang } = await params;
+
+  if (token && role) {
+    redirect(`/${lang}/${role}/profile`);
+  }
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-[#7C3BED1A] via-[#FAFAFA] to-[#F974151A] px-4 py-6 flex items-center justify-center">
       <section
@@ -29,7 +45,6 @@ export default function AuthRootLayout({ children }: AuthLayoutProps) {
             <span>Back to Home</span>
           </Link>
         </div>
-
         {children}
       </section>
     </div>

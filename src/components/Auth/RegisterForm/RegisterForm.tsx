@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouteLang } from "@/src/hooks/useLang";
-import { useAuthStore } from "@/src/stores/authStore";
+import { RegisterAction } from "@/src/services/auth.service";
 import { Globe2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -9,7 +9,6 @@ import { useForm } from "react-hook-form";
 import RegisterDetailsStep from "./RegisterDetailsStep";
 import RegisterEmailStep from "./RegisterEmailStep";
 import RegisterPhoneStep from "./RegisterPhoneStep";
-import { authService } from "@/src/services/authService";
 
 type RegisterStep = "details" | "email" | "phone";
 
@@ -20,11 +19,13 @@ export interface RegisterFormValues {
   emailOtp: string;
   countryCode: string;
   phoneNumber: string;
+  companyName: string;
+  role: "buyer" | "seller";
+  name: string;
 }
 
 export default function RegisterForm() {
   const lang = useRouteLang();
-  const { setUser, setAuthenticated } = useAuthStore();
   const [step, setStep] = useState<RegisterStep>("details");
 
   const {
@@ -40,28 +41,30 @@ export default function RegisterForm() {
       emailOtp: "",
       countryCode: "+971 [UAE]",
       phoneNumber: "",
+      role: "buyer",
+      companyName: "",
+      name: "",
     },
   });
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const passwordValue = watch("password");
   const emailValue = watch("email");
 
   async function onSubmit(values: RegisterFormValues) {
     if (step === "details") {
-      console.log("Register details submit", values);
       setStep("email");
     } else if (step === "email") {
-      console.log("Verify email OTP", values.emailOtp);
       setStep("phone");
     } else {
-      console.log("Phone step submit", values.countryCode, values.phoneNumber);
-      const res = await authService.registerStep3({
-        countryCode: values.countryCode,
-        phone: values.phoneNumber,
-        email: values.email,
-      });
-      setUser(res.user);
-      setAuthenticated(true);
+      // const res = await authService.registerStep3({
+      //   countryCode: values.countryCode,
+      //   phone: values.phoneNumber,
+      //   email: values.email,
+      // });
+      // setUser(res.user);
+      // setAuthenticated(true);
+      await RegisterAction(values);
     }
   }
 
@@ -128,6 +131,7 @@ export default function RegisterForm() {
 
       {step === "phone" && (
         <RegisterPhoneStep
+          role={watch("role")}
           register={register}
           errors={errors}
           isSubmitting={isSubmitting}

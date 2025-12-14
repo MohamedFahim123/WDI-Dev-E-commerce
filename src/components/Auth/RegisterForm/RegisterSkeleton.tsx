@@ -3,16 +3,13 @@ import React from "react";
 function RegisterSkeleton() {
   return (
     <div className="flex flex-col gap-3 animate-pulse">
-      {/* Header */}
       <header className="space-y-2 text-center">
         <div className="mx-auto h-5 w-44 rounded skeleton-shimmer" />
         <div className="mx-auto h-3 w-60 rounded skeleton-shimmer" />
       </header>
 
-      {/* Global error */}
       <div className="h-7 w-full rounded-md skeleton-shimmer" />
 
-      {/* Step bar */}
       <div className="mt-2 space-y-2">
         <div className="h-1 w-full rounded-full skeleton-shimmer" />
         <div className="flex justify-between gap-3">

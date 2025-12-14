@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { User } from "lucide-react";
 import { useAuthStore } from "@/src/stores/authStore";
-import { useRole } from "@/src/hooks/useRole";
+import AuthMenuSkeleton from "./AuthMenuSkeleton";
 
 interface Props {
   authOpen: boolean;
@@ -18,8 +18,11 @@ export default function AuthMenu({
   currentLang,
   authRef,
 }: Props) {
-  const { isAuthenticated, user, logout } = useAuthStore();
-  const role = useRole();
+  const { isAuthenticated, user, logout, role, loading } = useAuthStore();
+
+  if (loading) {
+    return <AuthMenuSkeleton variant="guest" showMenu={authOpen} />;
+  }
 
   if (isAuthenticated) {
     return (

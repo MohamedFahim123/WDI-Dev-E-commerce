@@ -33,11 +33,12 @@ export function ResetPasswordForm() {
   });
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/incompatible-library
     setPasswordValue(watch("password"));
   }, [watch]);
 
   async function onSubmit(values: ResetPasswordValues) {
-    console.log("Reset password", values);
+    console.log(values);
   }
 
   return (

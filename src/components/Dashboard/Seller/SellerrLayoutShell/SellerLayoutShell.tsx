@@ -10,7 +10,7 @@ import {
   LayoutDashboardIcon,
   LucideSettings2,
   Package,
-  Receipt ,
+  Receipt,
   Settings,
   User,
 } from "lucide-react";
@@ -38,26 +38,19 @@ export function SellerLayoutShell({ children }: SellerLayoutShellProps) {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [isHydrating, setIsHydrating] = useState(true);
 
-  const router = useRouter();
   const lang = useRouteLang();
 
   const user = useAuthStore((s) => s.user);
-  const hydrateFromStorage = useAuthStore((s) => s.hydrateFromStorage);
+  const hydrateFromServer = useAuthStore((s) => s.hydrateFromServer);
 
   useEffect(() => {
     (async () => {
-      await hydrateFromStorage();
+      await hydrateFromServer();
       setIsHydrating(false);
     })();
-  }, [hydrateFromStorage]);
+  }, [hydrateFromServer]);
 
-  useEffect(() => {
-    if (!isHydrating && !user?.id) {
-      router.replace(`/${lang}/auth/login`);
-    }
-  }, [isHydrating, user, router, lang]);
-
-  if (isHydrating || !user?.id) return null;
+  if (isHydrating || !user?.user_id) return null;
 
   const navItems: NavLink[] = [
     { href: `/${lang}/seller/profile`, label: "Profile", icon: User },
@@ -74,7 +67,7 @@ export function SellerLayoutShell({ children }: SellerLayoutShellProps) {
     {
       href: `/${lang}/seller/order-management`,
       label: "Order Managment",
-      icon: Receipt ,
+      icon: Receipt,
     },
     { href: `/${lang}/seller/catalog`, label: "Catalog", icon: Package },
     {

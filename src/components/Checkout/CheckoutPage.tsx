@@ -43,7 +43,7 @@ export default function CheckoutPage() {
   const { handleSubmit, trigger, watch, formState } = formMethods;
 
   const onSubmit = (data: CheckoutFormValues) => {
-    console.log("Checkout submit", data);
+    console.log(data);
     toast.success("Order placed successfully!");
     router.push(`/${lang}/successfull-order`);
   };
@@ -71,6 +71,7 @@ export default function CheckoutPage() {
 
   const subtotal = 339.99;
   const shippingOption =
+    // eslint-disable-next-line react-hooks/incompatible-library
     SHIPPING_OPTIONS.find((s) => s.id === watch("shippingMethodId")) ??
     SHIPPING_OPTIONS[0];
   const shipping = shippingOption.price;

@@ -114,7 +114,7 @@ export default function CreateProductPage() {
   };
 
   const onSubmit = methods.handleSubmit((values) => {
-    console.log("Final payload:", values);
+    console.log(values);
     alert("Product payload printed to console");
   });
 

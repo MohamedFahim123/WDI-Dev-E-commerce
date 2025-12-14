@@ -29,13 +29,11 @@ export function VerifyEmailForResetForm({ email }: VerifyEmailFormProps) {
   });
 
   async function onSubmit(values: VerifyEmailValues) {
+    console.log(values);
     router.push(`/${lang}/auth/reset-password`);
-    console.log("Verify reset code", values.code);
   }
 
-  function handleResend() {
-    console.log("Resend OTP");
-  }
+  function handleResend() {}
 
   return (
     <form

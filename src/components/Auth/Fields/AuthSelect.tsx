@@ -1,4 +1,3 @@
-// src/components/ui/AuthSelect.tsx
 "use client";
 
 import * as React from "react";

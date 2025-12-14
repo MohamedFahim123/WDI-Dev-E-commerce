@@ -1,103 +1,115 @@
-import {
-  clearUserFromLocalStorage,
-  loadUserFromLocalStorage,
-  saveUserToLocalStorage,
-} from "@/src/lib/authClient";
-import { authService } from "@/src/services/authService";
-import { AuthUser } from "@/src/types/auth";
+"use client";
+
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import { LoginInput } from "./../validation/LoginSchema";
+import { LoginAction, LogoutAction } from "../services/auth.service";
+
+import {
+  ClientAuthUser,
+  getMyProfileAction,
+} from "../services/profile.service";
+import { LoginInput } from "../validation/LoginSchema";
 
 interface AuthState {
-  user: AuthUser | null;
+  user: ClientAuthUser | null;
+  role: "buyer" | "seller" | null;
+
+  loading: boolean;
   isAuthenticated: boolean;
   isInitializing: boolean;
   error: string | null;
 
-  setUser: (user: AuthUser | null) => void;
-  setAuthenticated: (value: boolean) => void;
-  setError: (message: string | null) => void;
-  finishInitializing: () => void;
+  setUser: (user: ClientAuthUser | null) => void;
+  setRole: (role: "buyer" | "seller" | null) => void;
+
+  hydrateFromServer: () => Promise<void>;
   reset: () => void;
-  hydrateFromStorage: () => void;
 
   login: (input: LoginInput) => Promise<void>;
   logout: () => Promise<void>;
-  role: "buyer" | "seller" | null;
-  setRole: (role: "buyer" | "seller" | null) => void;
 }
 
 export const useAuthStore = create<AuthState>()(
-  devtools((set) => ({
+  devtools((set, get) => ({
     user: null,
+    role: null,
+    loading: true,
+
     isAuthenticated: false,
     isInitializing: false,
     error: null,
 
-    setUser: (user) => {
-      if (user) {
-        saveUserToLocalStorage(user);
-      } else {
-        clearUserFromLocalStorage();
-      }
-      set({ user, isAuthenticated: !!user });
-    },
+    setUser: (user) => set({ user, isAuthenticated: !!user }),
+    setRole: (role) => set({ role }),
 
-    setAuthenticated: (value) => set({ isAuthenticated: value }),
-    setError: (message) => set({ error: message }),
-    finishInitializing: () => set({ isInitializing: false }),
-
-    reset: () => {
-      clearUserFromLocalStorage();
+    reset: () =>
       set({
         user: null,
+        role: null,
         isAuthenticated: false,
-        error: null,
         isInitializing: false,
-      });
-    },
+        error: null,
+        loading: false,
+      }),
 
-    hydrateFromStorage: () => {
-      if (typeof window === "undefined") return;
-      const user = loadUserFromLocalStorage();
-      set({ user, isAuthenticated: !!user });
-    },
-
-    async login(input) {
-      const { identifier, password, role } = input;
-      set({ isInitializing: true, error: null });
+    hydrateFromServer: async () => {
+      set({ loading: true, error: null });
 
       try {
-        const res = await authService.login({ identifier, password, role });
+        const session = await getMyProfileAction();
         set({
-          user: res.user,
-          role: role,
+          user: session.user,
+          role: session.role,
+          isAuthenticated: session.isAuthenticated,
+          loading: false,
+        });
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Unable to hydrate";
+        set({ error: message, loading: false });
+      }
+    },
+
+    login: async (input) => {
+      set({ isInitializing: true, loading: true, error: null });
+
+      try {
+        const res = await LoginAction(input);
+
+        const user = res.data as unknown as ClientAuthUser;
+        if (!user) throw new Error("Login succeeded but user is missing");
+
+        get().setUser(user);
+        get().setRole(input.role);
+
+        set({
           isAuthenticated: true,
           isInitializing: false,
+          loading: false,
           error: null,
         });
       } catch (err) {
         const message = err instanceof Error ? err.message : "Unable to login";
-        set({
-          error: message,
-          isInitializing: false,
-        });
+        set({ error: message, isInitializing: false, loading: false });
       }
     },
 
-    async logout() {
-      set({ isInitializing: true, error: null });
+    logout: async () => {
+      set({ isInitializing: true, loading: true, error: null });
 
       try {
-        await authService.logout();
+        await LogoutAction();
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Unable to logout";
+        set({ error: message });
       } finally {
-        clearUserFromLocalStorage();
         set({
           user: null,
+          role: null,
           isAuthenticated: false,
           isInitializing: false,
           error: null,
+          loading: false,
         });
       }
     },

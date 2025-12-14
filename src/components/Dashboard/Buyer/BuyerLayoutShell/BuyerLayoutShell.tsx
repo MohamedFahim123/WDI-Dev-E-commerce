@@ -15,7 +15,6 @@ import {
   User,
 } from "lucide-react";
 import dynamic from "next/dynamic";
-import { useRouter } from "next/navigation";
 import { ReactNode, useEffect, useState } from "react";
 import { NavLink } from "../BuyerSidebar/BuyerSidebar";
 import BuyerSidebarSkeleton from "../BuyerSidebar/BuyerSidebarSkeleton";
@@ -33,26 +32,18 @@ interface BuyerLayoutShellProps {
 export function BuyerLayoutShell({ children }: BuyerLayoutShellProps) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-  const [isHydrating, setIsHydrating] = useState(true);
 
-  const router = useRouter();
   const lang = useRouteLang();
 
   const user = useAuthStore((s) => s.user);
-  const hydrateFromStorage = useAuthStore((s) => s.hydrateFromStorage);
+  const hydrateFromServer = useAuthStore((s) => s.hydrateFromServer);
+  const isHydrating = useAuthStore((s) => s.loading);
 
   useEffect(() => {
     (async () => {
-      await hydrateFromStorage();
-      setIsHydrating(false);
+      await hydrateFromServer();
     })();
-  }, [hydrateFromStorage]);
-
-  useEffect(() => {
-    if (!isHydrating && !user?.id) {
-      router.replace(`/${lang}/auth/login`);
-    }
-  }, [isHydrating, user, router, lang]);
+  }, [hydrateFromServer]);
 
   if (isHydrating || !user?.id) return null;
   const navItems: NavLink[] = [
@@ -97,7 +88,7 @@ export function BuyerLayoutShell({ children }: BuyerLayoutShellProps) {
           "lg:overflow-auto"
         )}
       >
-        <BuyerSidebar navItems={navItems} collapsed={collapsed} />
+        <BuyerSidebar user={user} navItems={navItems} collapsed={collapsed} />
       </div>
 
       <div

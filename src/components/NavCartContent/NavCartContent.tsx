@@ -22,7 +22,8 @@ export default function NavCartContent() {
   const langRef = useRef<HTMLDivElement | null>(null);
   const authRef = useRef<HTMLDivElement | null>(null);
 
-  const { isAuthenticated, hydrateFromStorage } = useAuthStore();
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const hydrateFromServer = useAuthStore((s) => s.hydrateFromServer);
   const quantity = useCartStore((s) => s.getQuantity());
   const wishListQuantity = useWishlistStore((s) => s.getQuantity());
 
@@ -32,8 +33,10 @@ export default function NavCartContent() {
     pathname ? pathname.replace(`/${currentLang}`, `/${lang}`) : `/${lang}`;
 
   useEffect(() => {
-    hydrateFromStorage();
-  }, [hydrateFromStorage]);
+    (async () => {
+      await hydrateFromServer();
+    })();
+  }, [hydrateFromServer]);
 
   useOutsideClose(langRef, () => setLangOpen(false));
   useOutsideClose(authRef, () => setAuthOpen(false), true);
@@ -49,11 +52,7 @@ export default function NavCartContent() {
         setLangOpen={setLangOpen}
       />
 
-      {isAuthenticated && (
-        <NotificationsMenu
-          currentLang={currentLang}
-        />
-      )}
+      {isAuthenticated && <NotificationsMenu currentLang={currentLang} />}
 
       <WishlistButton currentLang={currentLang} count={wishListQuantity} />
       <CartButton currentLang={currentLang} count={quantity} />

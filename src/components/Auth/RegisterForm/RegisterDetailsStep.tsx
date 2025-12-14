@@ -8,6 +8,7 @@ export interface StepBaseProps {
   register: UseFormRegister<RegisterFormValues>;
   errors: FieldErrors<RegisterFormValues>;
   isSubmitting: boolean;
+  role?: "buyer" | "seller";
 }
 
 function RegisterDetailsStep({
@@ -126,6 +127,52 @@ function RegisterDetailsStep({
           <p className="text-[11px] font-medium text-red-500" role="alert">
             {errors.confirmPassword.message}
           </p>
+        )}
+      </div>
+
+      <div className="space-y-1.5">
+        <span className="text-xs font-medium">Login as</span>
+
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <input
+              type="radio"
+              id="login-role-buyer"
+              value="buyer"
+              className="peer hidden"
+              {...register("role")}
+            />
+            <label
+              htmlFor="login-role-buyer"
+              className="flex h-11 w-full cursor-pointer items-center justify-center rounded-lg border border-gray-300 bg-gray-50 text-xs sm:text-sm font-medium text-gray-700 transition
+                   hover:bg-gray-100
+                   peer-checked:border-[#8b5cf6] peer-checked:bg-[#ede9fe] peer-checked:text-[#4c1d95] peer-checked:shadow-sm"
+            >
+              Buyer
+            </label>
+          </div>
+
+          <div>
+            <input
+              type="radio"
+              id="login-role-seller"
+              value="seller"
+              className="peer hidden"
+              {...register("role")}
+            />
+            <label
+              htmlFor="login-role-seller"
+              className="flex h-11 w-full cursor-pointer items-center justify-center rounded-lg border border-gray-300 bg-gray-50 text-xs sm:text-sm font-medium text-gray-700 transition
+                   hover:bg-gray-100
+                   peer-checked:border-[#8b5cf6] peer-checked:bg-[#ede9fe] peer-checked:text-[#4c1d95] peer-checked:shadow-sm"
+            >
+              Seller
+            </label>
+          </div>
+        </div>
+
+        {errors.role && (
+          <p className="text-[11px] text-red-500">{errors.role.message}</p>
         )}
       </div>
 

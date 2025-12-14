@@ -21,7 +21,6 @@ export default function GlobalSearchBar({
   });
 
   const onSubmit = (values: SearchFormValues) => {
-    console.log("Search query:", values.query);
     toast.success(`Searching for "${values.query}"`);
   };
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/src/components/ui/button";
+import { ClientAuthUser } from "@/src/services/profile.service";
 import { LucideProps } from "lucide-react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
@@ -23,12 +24,14 @@ interface BuyerSidebarProps {
   navItems: NavLink[];
   setCollapsed?: Dispatch<SetStateAction<boolean>>;
   onNavigate?: () => void;
+  user?: ClientAuthUser;
 }
 
 export default function BuyerSidebar({
   collapsed,
   onNavigate,
   navItems,
+  user,
 }: BuyerSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
@@ -51,7 +54,7 @@ export default function BuyerSidebar({
     >
       <div className="flex flex-col items-center gap-2 py-4">
         <Image
-          src="/assets/dashboard/profile.webp"
+          src={user?.image ? user?.image : "/assets/dashboard/profile.webp"}
           alt="Profile avatar"
           width={56}
           height={56}
@@ -60,10 +63,10 @@ export default function BuyerSidebar({
         {!collapsed && (
           <div className="text-center">
             <p className="text-sm font-semibold text-[#111827]">
-              Ahmed Al Mansoori
+              {user?.name ? user.name : "Ahmed Al Mansoori"}
             </p>
             <p className="text-xs text-gray-500">
-              ahmed.almansoori@example.com
+              {user?.email ? user.email : "ahmed.almansoori@example.com"}
             </p>
           </div>
         )}

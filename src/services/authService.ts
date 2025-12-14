@@ -51,7 +51,6 @@ export const authService = {
       }
     }
 
-    console.log(data);
     return data;
   },
 

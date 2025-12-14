@@ -63,7 +63,7 @@ export default function ReturnItemRequestPage({
   const method = watch("method");
 
   const onSubmit = (values: ReturnRequestFormValues) => {
-    console.log("Return request submit", { orderId, item, values });
+    console.log(values);
   };
 
   const breadcrumb = [
@@ -127,6 +127,7 @@ export default function ReturnItemRequestPage({
                 className="space-y-2"
               >
                 {RETURN_REASONS.map((reason) => {
+                  // eslint-disable-next-line react-hooks/incompatible-library
                   const selected = watch("reason") === reason;
                   return (
                     <label
