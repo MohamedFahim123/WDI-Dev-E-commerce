@@ -18,7 +18,7 @@ export function useLogin() {
   const [errors, setErrors] = useState<LoginErrors>({});
   const [submitting, setSubmitting] = useState(false);
 
-  const { setUser, setAuthenticated, setError } = useAuthStore();
+  const { setUser } = useAuthStore();
 
   function handleChange<K extends keyof LoginInput>(
     key: K,
@@ -30,7 +30,6 @@ export function useLogin() {
 
   async function handleSubmit() {
     setSubmitting(true);
-    setError(null);
     setErrors({});
 
     const parsed = loginSchema.safeParse(values);
@@ -52,10 +51,8 @@ export function useLogin() {
     try {
       const res = await authService.login(parsed.data);
       setUser(res.user);
-      setAuthenticated(true);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Unable to login";
-      setError(message);
       setErrors((prev) => ({ ...prev, _form: message }));
     } finally {
       setSubmitting(false);

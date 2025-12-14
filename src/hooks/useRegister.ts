@@ -47,9 +47,8 @@ export function useRegister() {
   const [step3Errors, setStep3Errors] = useState<Step3Errors>({});
   const [submitting, setSubmitting] = useState(false);
 
-  const { setUser, setAuthenticated, setError } = useAuthStore();
+  const { setUser } = useAuthStore();
 
-  // generic change helpers
   function updateStep1<K extends keyof RegisterStep1Input>(
     key: K,
     value: RegisterStep1Input[K]
@@ -76,7 +75,6 @@ export function useRegister() {
 
   async function submitStep1() {
     setSubmitting(true);
-    setError(null);
     setStep1Errors({});
 
     const parsed = registerStep1Schema.safeParse(step1Values);
@@ -100,7 +98,6 @@ export function useRegister() {
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Unable to start registration";
-      setError(message);
       setStep1Errors((prev) => ({ ...prev, _form: message }));
     } finally {
       setSubmitting(false);
@@ -109,7 +106,6 @@ export function useRegister() {
 
   async function submitStep2() {
     setSubmitting(true);
-    setError(null);
     setStep2Errors({});
 
     const parsed = registerStep2Schema.safeParse(step2Values);
@@ -131,7 +127,6 @@ export function useRegister() {
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Unable to verify OTP";
-      setError(message);
       setStep2Errors((prev) => ({ ...prev, _form: message }));
     } finally {
       setSubmitting(false);
@@ -140,7 +135,6 @@ export function useRegister() {
 
   async function submitStep3() {
     setSubmitting(true);
-    setError(null);
     setStep3Errors({});
 
     const parsed = registerStep3Schema.safeParse(step3Values);
@@ -159,11 +153,9 @@ export function useRegister() {
     try {
       const res = await authService.registerStep3(parsed.data);
       setUser(res.user);
-      setAuthenticated(true);
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Unable to complete registration";
-      setError(message);
       setStep3Errors((prev) => ({ ...prev, _form: message }));
     } finally {
       setSubmitting(false);

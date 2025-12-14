@@ -1,14 +1,13 @@
 "use client";
 
+import { authService } from "@/src/services/authService";
 import { useState } from "react";
 import {
-  forgotPasswordStep1Schema,
-  forgotPasswordStep2Schema,
   ForgotPasswordStep1Input,
+  forgotPasswordStep1Schema,
   ForgotPasswordStep2Input,
+  forgotPasswordStep2Schema,
 } from "../validation/ForgotPasswordSchemas";
-import { authService } from "@/src/services/authService";
-import { useAuthStore } from "@/src/stores/authStore";
 
 type Step = 1 | 2;
 
@@ -33,8 +32,6 @@ export function useForgotPassword() {
   const [step2Errors, setStep2Errors] = useState<Step2Errors>({});
   const [submitting, setSubmitting] = useState(false);
 
-  const { setError } = useAuthStore();
-
   function updateStep1<K extends keyof ForgotPasswordStep1Input>(
     key: K,
     value: ForgotPasswordStep1Input[K]
@@ -53,7 +50,6 @@ export function useForgotPassword() {
 
   async function submitStep1() {
     setSubmitting(true);
-    setError(null);
     setStep1Errors({});
 
     const parsed = forgotPasswordStep1Schema.safeParse(step1Values);
@@ -78,7 +74,6 @@ export function useForgotPassword() {
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Unable to start reset flow";
-      setError(message);
       setStep1Errors((prev) => ({ ...prev, _form: message }));
     } finally {
       setSubmitting(false);
@@ -87,7 +82,6 @@ export function useForgotPassword() {
 
   async function submitStep2() {
     setSubmitting(true);
-    setError(null);
     setStep2Errors({});
 
     const parsed = forgotPasswordStep2Schema.safeParse(step2Values);
@@ -107,11 +101,9 @@ export function useForgotPassword() {
 
     try {
       await authService.forgotPasswordStep2(parsed.data);
-      // this is where you might navigate to "set new password" screen
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Unable to verify OTP";
-      setError(message);
       setStep2Errors((prev) => ({ ...prev, _form: message }));
     } finally {
       setSubmitting(false);
