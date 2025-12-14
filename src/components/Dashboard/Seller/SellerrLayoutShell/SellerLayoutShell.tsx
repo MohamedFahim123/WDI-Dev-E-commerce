@@ -15,7 +15,6 @@ import {
   User,
 } from "lucide-react";
 import dynamic from "next/dynamic";
-import { useRouter } from "next/navigation";
 import { ReactNode, useEffect, useState } from "react";
 import { NavLink } from "../../Buyer/BuyerSidebar/BuyerSidebar";
 import BuyerSidebarSkeleton from "../../Buyer/BuyerSidebar/BuyerSidebarSkeleton";
