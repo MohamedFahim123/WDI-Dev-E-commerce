@@ -25,7 +25,6 @@ async function LoginAction(input: LoginInput) {
     `auth/${input.role.toLowerCase()}/login`,
     {
       method: "POST",
-      cache: "no-store",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         email: input.identifier,
@@ -33,6 +32,7 @@ async function LoginAction(input: LoginInput) {
       }),
     }
   );
+  console.log(res)
 
   if (!res.success) {
     throw new Error(res.message || "Unable to login");
@@ -63,8 +63,8 @@ async function LogoutAction() {
   if (!res.success) {
     throw new Error(res.message || "Unable to Logout");
   }
-  await clearCookies();
 
+  await clearCookies();
   return { success: true };
 }
 
@@ -76,25 +76,119 @@ type RegisterData = {
   email: string;
 };
 
-async function RegisterAction(data: RegisterFormValues) {
-  const response = await fetchApi<RegisterData>(`auth/${data.role}/signup`, {
+/**
+ * Step 1 (Details): Buyer Signup
+ * POST auth/buyer/signup
+ * body: { name, email, password, phone }
+ */
+async function RegisterBuyerAction(data: RegisterFormValues) {
+  const response = await fetchApi<RegisterData>(`auth/buyer/signup`, {
     method: "POST",
     cache: "no-store",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      phone: data.phoneNumber,
-      password: data.password,
-      email: data.email,
-      company_name: data.companyName,
       name: data.name,
+      email: data.email,
+      password: data.password,
+      phone: data.phoneNumber,
+    }),
+  });
+
+  if (!response.success)
+    throw new Error(response.message || "Unable to register buyer");
+  return response;
+}
+
+/**
+ * Step 1 (Details): Seller Signup
+ * POST auth/seller/signup
+ * body: { name, email, password, company_name }
+ */
+async function RegisterSellerAction(data: RegisterFormValues) {
+  const response = await fetchApi<RegisterData>(`auth/seller/signup`, {
+    method: "POST",
+    cache: "no-store",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      name: data.name,
+      email: data.email,
+      password: data.password,
+      company_name: data.companyName,
     }),
   });
 
   if (!response.success) {
-    throw new Error(response.message || "Unable to register");
+    throw new Error(response.message || "Unable to register seller");
   }
 
   return response;
 }
 
-export { LoginAction, RegisterAction, LogoutAction };
+/**
+ * Step 2 (OTP): Verify OTP
+ * Change endpoint if your backend uses different route.
+ */
+type VerifyOtpInput = {
+  role: "buyer" | "seller";
+  email: string;
+  otp: string;
+};
+
+async function VerifyOtpAction(input: VerifyOtpInput) {
+  const response = await fetchApi<{ verified: boolean }>(
+    `auth/${input.role}/verify-otp`,
+    {
+      method: "POST",
+      cache: "no-store",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: input.email,
+        otp: input.otp,
+      }),
+    }
+  );
+
+  if (!response.success) {
+    throw new Error(response.message || "Unable to verify OTP");
+  }
+
+  return response;
+}
+
+/**
+ * Optional: Resend OTP
+ * Change endpoint if your backend uses different route.
+ */
+type ResendOtpInput = {
+  role: "buyer" | "seller";
+  email: string;
+};
+
+async function ResendOtpAction(input: ResendOtpInput) {
+  const response = await fetchApi<{ sent: boolean }>(
+    `auth/${input.role}/resend-otp`,
+    {
+      method: "POST",
+      cache: "no-store",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: input.email,
+      }),
+    }
+  );
+
+  if (!response.success) {
+    throw new Error(response.message || "Unable to resend OTP");
+  }
+
+  return response;
+}
+
+export {
+  LoginAction,
+  LogoutAction,
+  RegisterBuyerAction,
+  RegisterSellerAction,
+  VerifyOtpAction,
+  ResendOtpAction,
+};

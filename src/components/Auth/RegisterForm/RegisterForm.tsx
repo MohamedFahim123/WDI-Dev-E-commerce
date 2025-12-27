@@ -1,29 +1,35 @@
 "use client";
 
 import { useRouteLang } from "@/src/hooks/useLang";
-import { RegisterAction } from "@/src/services/auth.service";
+import {
+  RegisterBuyerAction,
+  RegisterSellerAction,
+  VerifyOtpAction,
+  ResendOtpAction,
+} from "@/src/services/auth.service";
 import { Globe2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import RegisterDetailsStep from "./RegisterDetailsStep";
 import RegisterEmailStep from "./RegisterEmailStep";
-import RegisterPhoneStep from "./RegisterPhoneStep";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
-type RegisterStep = "details" | "email" | "phone";
+type RegisterStep = "details" | "otp";
 
 export interface RegisterFormValues {
   email: string;
   password: string;
   confirmPassword: string;
+
   emailOtp: string;
-  countryCode: string;
-  phoneNumber: string;
-  companyName: string;
+
   role: "buyer" | "seller";
   name: string;
+  companyName: string;
+
+  phoneNumber: string;
 }
 
 export default function RegisterForm() {
@@ -35,6 +41,7 @@ export default function RegisterForm() {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<RegisterFormValues>({
     defaultValues: {
@@ -42,39 +49,58 @@ export default function RegisterForm() {
       password: "",
       confirmPassword: "",
       emailOtp: "",
-      countryCode: "+971 [UAE]",
-      phoneNumber: "",
       role: "buyer",
-      companyName: "",
       name: "",
+      companyName: "",
+      phoneNumber: "",
     },
   });
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const passwordValue = watch("password");
   const emailValue = watch("email");
+  const roleValue = watch("role");
 
   async function onSubmit(values: RegisterFormValues) {
-    if (step === "details") return setStep("email");
-    if (step === "email") return setStep("phone");
-
     try {
-      const res = await RegisterAction(values);
+      if (step === "details") {
+        if (values.role === "buyer") {
+          const res = await RegisterBuyerAction(values);
+          toast.success(res.message || "OTP sent to your email", {
+            duration: 1500,
+          });
+          setValue("phoneNumber", "");
+          setValue("companyName", "");
+          setValue("password", "");
+          setValue("confirmPassword", "");
+          setValue("name","")
+          setStep("otp");
+        } else {
+          const res = await RegisterSellerAction(values);
+          toast.success(res.message || "OTP sent to your email", {
+            duration: 1500,
+          });
+        }
 
-      toast.success(res.message || "Registered successfully", {
-        duration: 1500,
+        setStep("otp");
+        return;
+      }
+
+      const res = await VerifyOtpAction({
+        role: values.role,
+        email: values.email,
+        otp: values.emailOtp,
       });
+
+      toast.success(res.message || "Verified successfully", { duration: 1500 });
       router.push(`/${lang}/auth/login`);
     } catch (e) {
-      const msg = e instanceof Error ? e.message : "Registration failed";
-      toast.error(msg, {
-        duration: 3000,
-      });
+      const msg = e instanceof Error ? e.message : "Request failed";
+      toast.error(msg, { duration: 3000 });
     }
   }
 
-  const progressWidth =
-    step === "details" ? "w-1/3" : step === "email" ? "w-2/3" : "w-full";
+  const progressWidth = step === "details" ? "w-1/2" : "w-full";
 
   const stepLabelClass = (s: RegisterStep) =>
     `flex-1 text-center text-xs font-medium ${
@@ -82,11 +108,7 @@ export default function RegisterForm() {
     }`;
 
   const subtitle =
-    step === "details"
-      ? "Fill in your details to get started"
-      : step === "email"
-      ? "Verify your email address"
-      : "Verify your phone number";
+    step === "details" ? "Fill in your details to get started" : "Verify OTP";
 
   return (
     <>
@@ -108,11 +130,8 @@ export default function RegisterForm() {
             <span title="Details" className={stepLabelClass("details")}>
               Details
             </span>
-            <span title="Email" className={stepLabelClass("email")}>
-              Email
-            </span>
-            <span title="Phone" className={stepLabelClass("phone")}>
-              Phone
+            <span title="OTP" className={stepLabelClass("otp")}>
+              OTP
             </span>
           </div>
         </div>
@@ -123,24 +142,28 @@ export default function RegisterForm() {
             errors={errors}
             isSubmitting={isSubmitting}
             passwordValue={passwordValue}
+            roleValue={roleValue}
           />
         )}
 
-        {step === "email" && (
+        {step === "otp" && (
           <RegisterEmailStep
             register={register}
             errors={errors}
             isSubmitting={isSubmitting}
             emailValue={emailValue}
-          />
-        )}
-
-        {step === "phone" && (
-          <RegisterPhoneStep
-            role={watch("role")}
-            register={register}
-            errors={errors}
-            isSubmitting={isSubmitting}
+            onResend={async () => {
+              try {
+                const res = await ResendOtpAction({
+                  role: roleValue,
+                  email: emailValue,
+                });
+                toast.success(res.message || "OTP resent", { duration: 1500 });
+              } catch (e) {
+                const msg = e instanceof Error ? e.message : "Resend failed";
+                toast.error(msg, { duration: 3000 });
+              }
+            }}
           />
         )}
 

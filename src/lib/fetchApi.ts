@@ -15,7 +15,7 @@ export async function fetchApi<TData = unknown>(
   const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL as string;
   if (!baseUrl) throw new Error("NEXT_PUBLIC_API_BASE_URL is missing");
 
-  const URL = `${baseUrl}/${endpoint}`;
+  const URL = `${baseUrl.replace(/\/+$/, "")}/${endpoint.replace(/^\/+/, "")}`;
 
   const apiOptions: FetchServerDataOptions = {
     cache: "force-cache",
@@ -45,4 +45,3 @@ export interface ResShape<TData = unknown> {
   data: TData;
   error_code: string;
 }
-

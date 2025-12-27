@@ -6,7 +6,8 @@ function RegisterEmailStep({
   errors,
   isSubmitting,
   emailValue,
-}: StepBaseProps & { emailValue: string }) {
+  onResend,
+}: StepBaseProps & { emailValue: string; onResend?: () => void }) {
   return (
     <div className="mt-4 space-y-5">
       <div className="flex flex-col items-center gap-4">
@@ -56,11 +57,12 @@ function RegisterEmailStep({
         disabled={isSubmitting}
         className="mt-1 cursor-pointer h-11 w-full rounded-full bg-[#7C3AED] text-sm font-semibold text-white shadow-[0_6px_18px_rgba(124,58,237,0.45)] transition hover:bg-[#6D28D9] disabled:cursor-not-allowed disabled:opacity-70"
       >
-        {isSubmitting ? "Verifying…" : "Verify Email"}
+        {isSubmitting ? "Verifying…" : "Verify OTP"}
       </button>
 
       <button
         type="button"
+        onClick={onResend}
         className="mt-1 cursor-pointer text-center text-xs font-semibold text-foreground hover:underline"
       >
         Resend OTP
@@ -68,4 +70,5 @@ function RegisterEmailStep({
     </div>
   );
 }
+
 export default RegisterEmailStep;

@@ -8,7 +8,6 @@ export interface StepBaseProps {
   register: UseFormRegister<RegisterFormValues>;
   errors: FieldErrors<RegisterFormValues>;
   isSubmitting: boolean;
-  role?: "buyer" | "seller";
 }
 
 function RegisterDetailsStep({
@@ -16,33 +15,45 @@ function RegisterDetailsStep({
   errors,
   isSubmitting,
   passwordValue,
-}: StepBaseProps & { passwordValue: string }) {
-  const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [showConfirmPassword, setShowConfirmPassword] =
-    useState<boolean>(false);
+  roleValue,
+}: StepBaseProps & { passwordValue: string; roleValue: "buyer" | "seller" }) {
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   return (
     <div className="mt-4 space-y-4">
+      <AuthInput
+        label="User Name"
+        placeholder="User Name"
+        required
+        error={errors.name?.message}
+        {...register("name", { required: "User Name is required" })}
+      />
+
+      <AuthInput
+        label="Phone Number"
+        placeholder="501234567"
+        autoComplete="tel"
+        required
+        error={errors.phoneNumber?.message}
+        {...register("phoneNumber", { required: "Phone number is required" })}
+      />
       <AuthInput
         label="Email Address"
         placeholder="you@example.com"
         autoComplete="email"
         required
         error={errors.email?.message}
-        {...register("email", {
-          required: "Email is required",
-        })}
+        {...register("email", { required: "Email is required" })}
       />
 
       <div className="space-y-1.5">
-        <div className="flex items-center justify-between">
-          <label
-            htmlFor="register-password"
-            className="text-xs font-medium text-foreground"
-          >
-            Password
-          </label>
-        </div>
+        <label
+          htmlFor="register-password"
+          className="text-xs font-medium text-foreground"
+        >
+          Password
+        </label>
 
         <div className="relative">
           <input
@@ -62,38 +73,31 @@ function RegisterDetailsStep({
           />
           <button
             type="button"
-            onClick={() => setShowPassword((prev) => !prev)}
+            onClick={() => setShowPassword((p) => !p)}
             className="absolute cursor-pointer inset-y-0 right-2 flex items-center rounded-full p-1.5 text-muted-foreground hover:bg-black/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#8b5cf6]"
-            aria-label={showPassword ? "Hide password" : "Show password"}
           >
             {showPassword ? (
-              <EyeOff className="h-4 w-4" aria-hidden="true" />
+              <EyeOff className="h-4 w-4" />
             ) : (
-              <Eye className="h-4 w-4" aria-hidden="true" />
+              <Eye className="h-4 w-4" />
             )}
           </button>
         </div>
 
-        <p className="text-[11px] text-muted-foreground">
-          Must include 1 uppercase, 1 lowercase, and 1 number
-        </p>
-
         {errors.password && (
-          <p className="text-[11px] font-medium text-red-500" role="alert">
+          <p className="text-[11px] font-medium text-red-500">
             {errors.password.message}
           </p>
         )}
       </div>
 
       <div className="space-y-1.5">
-        <div className="flex items-center justify-between">
-          <label
-            htmlFor="register-confirm-password"
-            className="text-xs font-medium text-foreground"
-          >
-            Re-enter Password
-          </label>
-        </div>
+        <label
+          htmlFor="register-confirm-password"
+          className="text-xs font-medium text-foreground"
+        >
+          Re-enter Password
+        </label>
 
         <div className="relative">
           <input
@@ -111,27 +115,26 @@ function RegisterDetailsStep({
           />
           <button
             type="button"
-            onClick={() => setShowConfirmPassword((prev) => !prev)}
+            onClick={() => setShowConfirmPassword((p) => !p)}
             className="absolute cursor-pointer inset-y-0 right-2 flex items-center rounded-full p-1.5 text-muted-foreground hover:bg-black/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#8b5cf6]"
-            aria-label={showConfirmPassword ? "Hide password" : "Show password"}
           >
             {showConfirmPassword ? (
-              <EyeOff className="h-4 w-4" aria-hidden="true" />
+              <EyeOff className="h-4 w-4" />
             ) : (
-              <Eye className="h-4 w-4" aria-hidden="true" />
+              <Eye className="h-4 w-4" />
             )}
           </button>
         </div>
 
         {errors.confirmPassword && (
-          <p className="text-[11px] font-medium text-red-500" role="alert">
+          <p className="text-[11px] font-medium text-red-500">
             {errors.confirmPassword.message}
           </p>
         )}
       </div>
 
       <div className="space-y-1.5">
-        <span className="text-xs font-medium">Login as</span>
+        <span className="text-xs font-medium">Register as</span>
 
         <div className="grid grid-cols-2 gap-2">
           <div>
@@ -144,9 +147,8 @@ function RegisterDetailsStep({
             />
             <label
               htmlFor="login-role-buyer"
-              className="flex h-11 w-full cursor-pointer items-center justify-center rounded-lg border border-gray-300 bg-gray-50 text-xs sm:text-sm font-medium text-gray-700 transition
-                   hover:bg-gray-100
-                   peer-checked:border-[#8b5cf6] peer-checked:bg-[#ede9fe] peer-checked:text-[#4c1d95] peer-checked:shadow-sm"
+              className="flex h-11 w-full cursor-pointer items-center justify-center rounded-lg border border-gray-300 bg-gray-50 text-xs sm:text-sm font-medium text-gray-700 transition hover:bg-gray-100
+              peer-checked:border-[#8b5cf6] peer-checked:bg-[#ede9fe] peer-checked:text-[#4c1d95] peer-checked:shadow-sm"
             >
               Buyer
             </label>
@@ -162,28 +164,36 @@ function RegisterDetailsStep({
             />
             <label
               htmlFor="login-role-seller"
-              className="flex h-11 w-full cursor-pointer items-center justify-center rounded-lg border border-gray-300 bg-gray-50 text-xs sm:text-sm font-medium text-gray-700 transition
-                   hover:bg-gray-100
-                   peer-checked:border-[#8b5cf6] peer-checked:bg-[#ede9fe] peer-checked:text-[#4c1d95] peer-checked:shadow-sm"
+              className="flex h-11 w-full cursor-pointer items-center justify-center rounded-lg border border-gray-300 bg-gray-50 text-xs sm:text-sm font-medium text-gray-700 transition hover:bg-gray-100
+              peer-checked:border-[#8b5cf6] peer-checked:bg-[#ede9fe] peer-checked:text-[#4c1d95] peer-checked:shadow-sm"
             >
               Seller
             </label>
           </div>
         </div>
-
-        {errors.role && (
-          <p className="text-[11px] text-red-500">{errors.role.message}</p>
-        )}
       </div>
+
+      {roleValue === "seller" && (
+        <AuthInput
+          label="Company Name"
+          placeholder="Company Name"
+          required
+          error={errors.companyName?.message}
+          {...register("companyName", {
+            required: "Company Name is required",
+          })}
+        />
+      )}
 
       <button
         type="submit"
         disabled={isSubmitting}
         className="mt-2 cursor-pointer h-11 w-full rounded-full bg-[#7C3AED] text-sm font-semibold text-white shadow-[0_6px_18px_rgba(124,58,237,0.45)] transition hover:bg-[#6D28D9] disabled:cursor-not-allowed disabled:opacity-70"
       >
-        {isSubmitting ? "Signing up…" : "Sign Up"}
+        {isSubmitting ? "Sending OTP…" : "Continue"}
       </button>
     </div>
   );
 }
+
 export default RegisterDetailsStep;

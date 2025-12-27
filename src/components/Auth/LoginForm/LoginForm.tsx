@@ -35,6 +35,7 @@ export default function LoginForm() {
 
   async function onSubmit(values: LoginInput) {
     await login(values);
+    console.log(values)
     const { isAuthenticated } = useAuthStore.getState();
     if (isAuthenticated) router.push(`/${lang}/${values.role}/profile`);
   }
