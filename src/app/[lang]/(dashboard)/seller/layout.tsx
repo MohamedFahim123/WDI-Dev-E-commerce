@@ -10,7 +10,10 @@ interface BuyerLayoutProps {
   params: Promise<{ lang: string }>;
 }
 
-export default async function SellerLayout({ children, params }: BuyerLayoutProps) {
+export default async function BuyerLayout({
+  children,
+  params,
+}: BuyerLayoutProps) {
   const token = await getAuthTokenFromCookieServer();
   const role = await getRoleFromCookieServer();
   const { lang } = await params;
