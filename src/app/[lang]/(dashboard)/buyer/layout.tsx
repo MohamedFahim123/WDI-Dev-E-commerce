@@ -1,25 +1,16 @@
 import { BuyerLayoutShell } from "@/src/components/Dashboard/Buyer/BuyerLayoutShell/BuyerLayoutShell";
-import {
-  getAuthTokenFromCookieServer,
-  getRoleFromCookieServer,
-} from "@/src/lib/authCookies";
-import { redirect } from "next/navigation";
-
-interface BuyerLayoutProps {
-  children: React.ReactNode;
-  params: Promise<{ lang: string }>;
-}
+import { requireRole } from "@/src/lib/guards/serverRoleGuard";
 
 export default async function BuyerLayout({
   children,
   params,
-}: BuyerLayoutProps) {
-  const token = await getAuthTokenFromCookieServer();
-  const role = await getRoleFromCookieServer();
+}: {
+  children: React.ReactNode;
+  params: Promise<{ lang: string }>;
+}) {
   const { lang } = await params;
 
-  if (!token && !role) {
-    redirect(`/${lang}/auth/login`);
-  }
+  await requireRole({ lang, role: "buyer" });
+
   return <BuyerLayoutShell>{children}</BuyerLayoutShell>;
 }

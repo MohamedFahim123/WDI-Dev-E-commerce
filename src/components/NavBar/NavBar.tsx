@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
+import { useAuthStore } from "@/src/stores/authStore";
 import { useParams, usePathname } from "next/navigation";
 import Container from "../Container/Container";
 import GlobalSearchBar from "../GlobalSearchBar/GlobalSearchBar";
@@ -17,6 +18,7 @@ export default function Navbar() {
   const [isNavOpen, setIsNavOpen] = useState(false);
   const params = useParams();
   const lang = (params?.lang as string) || "en";
+  const role = useAuthStore((s) => s.role);
 
   if (
     pathname.includes("/auth") ||

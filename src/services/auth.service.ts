@@ -14,7 +14,7 @@ import {
   setRoleCookieServer,
 } from "../lib/authCookies";
 
-const clearCookies = async () => {
+export const clearAllCookies = async () => {
   await clearAuthTokenCookieServer();
   await clearAuthCookieServer();
   await clearRoleCookieServer();
@@ -32,7 +32,7 @@ async function LoginAction(input: LoginInput) {
       }),
     }
   );
-  console.log(res)
+  console.log(res);
 
   if (!res.success) {
     throw new Error(res.message || "Unable to login");
@@ -64,7 +64,6 @@ async function LogoutAction() {
     throw new Error(res.message || "Unable to Logout");
   }
 
-  await clearCookies();
   return { success: true };
 }
 
@@ -80,7 +79,7 @@ type RegisterData = {
  * Step 1 (Details): Buyer Signup
  * POST auth/buyer/signup
  * body: { name, email, password, phone }
- */
+*/
 async function RegisterBuyerAction(data: RegisterFormValues) {
   const response = await fetchApi<RegisterData>(`auth/buyer/signup`, {
     method: "POST",
@@ -135,18 +134,15 @@ type VerifyOtpInput = {
 };
 
 async function VerifyOtpAction(input: VerifyOtpInput) {
-  const response = await fetchApi<{ verified: boolean }>(
-    `auth/${input.role}/verify-otp`,
-    {
-      method: "POST",
-      cache: "no-store",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: input.email,
-        otp: input.otp,
-      }),
-    }
-  );
+  const response = await fetchApi<{ verified: boolean }>(`auth/otp/verify`, {
+    method: "POST",
+    cache: "no-store",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      email: input.email,
+      otp: input.otp,
+    }),
+  });
 
   if (!response.success) {
     throw new Error(response.message || "Unable to verify OTP");

@@ -1,4 +1,5 @@
 import ShopProducts from "@/src/components/ShopProducts/ShopProducts";
+import { withBlockSeller } from "@/src/hoc/roleGuards";
 import { products } from "@/src/stores/products";
 import { Metadata } from "next";
 
@@ -7,6 +8,10 @@ export const metadata: Metadata = {
   description: "Explore Our Products!",
 };
 
-export default function ProductsPage() {
+function ProductsPage() {
   return <ShopProducts products={products} />;
 }
+
+export default withBlockSeller(ProductsPage, {
+  redirectTo: (lang: string) => `/${lang}`,
+});

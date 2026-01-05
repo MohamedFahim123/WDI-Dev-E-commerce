@@ -1,7 +1,8 @@
-import type { Metadata } from "next";
-import { getProductBySlug } from "@/src/services/productService";
-import { ProductDetailsFullPage } from "@/src/components/ProductDetailsFullPage/ProductDetailsFullPage";
 import Container from "@/src/components/Container/Container";
+import { ProductDetailsFullPage } from "@/src/components/ProductDetailsFullPage/ProductDetailsFullPage";
+import { withBlockSeller } from "@/src/hoc/roleGuards";
+import { getProductBySlug } from "@/src/services/productService";
+import type { Metadata } from "next";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -25,7 +26,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function ProductPage({ params }: Props) {
+async function ProductPage({ params }: Props) {
   const { slug } = await params;
 
   return (
@@ -36,3 +37,7 @@ export default async function ProductPage({ params }: Props) {
     </section>
   );
 }
+
+export default withBlockSeller(ProductPage, {
+  redirectTo: (lang: string) => `/${lang}`,
+});

@@ -42,6 +42,7 @@ export default function AuthMenu({
       <div className="relative" ref={authRef}>
         <button
           type="button"
+          title="My Profile"
           onClick={() => {
             setAuthOpen((p) => !p);
             setLangOpen(false);
@@ -64,6 +65,8 @@ export default function AuthMenu({
               My Account
             </Link>
             <button
+              type="button"
+              title="Logout"
               onClick={async () => {
                 await logout();
                 setAuthOpen(false);
@@ -83,6 +86,7 @@ export default function AuthMenu({
     <div className="relative" ref={authRef}>
       <button
         type="button"
+        title="Sign In / Up"
         onClick={() => {
           setAuthOpen((p) => !p);
           setLangOpen(false);

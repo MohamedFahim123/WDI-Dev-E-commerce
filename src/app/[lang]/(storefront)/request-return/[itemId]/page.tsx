@@ -1,17 +1,19 @@
 import ReturnedItemRequestSection from "@/src/components/Request-Returns/ReturnItemRequestPage/ReturnedItemRequestSection";
 import { RETURN_ITEMS } from "@/src/components/Request-Returns/ReturnRequestData";
+import { withBlockSeller } from "@/src/hoc/roleGuards";
 import { Metadata } from "next";
 
 type Props = {
   params: Promise<{ lang: string; itemId: string }>;
 };
 
-export default async function ReturnItemPage({ params }: Props) {
+async function ReturnItemPage({ params }: Props) {
   const { itemId } = await params;
   const item = RETURN_ITEMS.find((i) => i.id === itemId) ?? RETURN_ITEMS[0];
 
   return <ReturnedItemRequestSection item={item} />;
 }
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { itemId } = await params;
   const item = RETURN_ITEMS.find((i) => i.id === itemId);
@@ -30,3 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }, priced at AED ${item.price.toFixed(2)}.`,
   };
 }
+
+export default withBlockSeller(ReturnItemPage, {
+  redirectTo: (lang: string) => `/${lang}`,
+});

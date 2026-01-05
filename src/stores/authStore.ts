@@ -2,7 +2,11 @@
 
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import { LoginAction, LogoutAction } from "../services/auth.service";
+import {
+  clearAllCookies,
+  LoginAction,
+  LogoutAction,
+} from "../services/auth.service";
 
 import {
   ClientAuthUser,
@@ -103,6 +107,7 @@ export const useAuthStore = create<AuthState>()(
         const message = err instanceof Error ? err.message : "Unable to logout";
         set({ error: message });
       } finally {
+        await clearAllCookies();
         set({
           user: null,
           role: null,

@@ -4,7 +4,7 @@ import { useAuthStore } from "@/src/stores/authStore";
 import { useCartStore } from "@/src/stores/cartStore";
 import { useWishlistStore } from "@/src/stores/wishlistStore";
 import { useParams, usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import AuthMenu from "./AuthMenu";
 import CartButton from "./CartButton";
@@ -23,10 +23,12 @@ export default function NavCartContent() {
   const authRef = useRef<HTMLDivElement | null>(null);
 
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const role = useAuthStore((s) => s.role);
   const hydrateFromServer = useAuthStore((s) => s.hydrateFromServer);
   const quantity = useCartStore((s) => s.getQuantity());
   const wishListQuantity = useWishlistStore((s) => s.getQuantity());
   const loading = useAuthStore((s) => s.loading);
+  const logout = useAuthStore((s) => s.logout);
 
   const currentLang = typeof params?.lang === "string" ? params.lang : "en";
 
@@ -39,6 +41,12 @@ export default function NavCartContent() {
     })();
   }, [hydrateFromServer]);
 
+  const isSeller = useMemo(
+    () => role?.trim()?.toLowerCase() === "seller",
+    [role,logout]
+  );
+
+  console.log(role)
   useOutsideClose(langRef, () => setLangOpen(false));
   useOutsideClose(authRef, () => setAuthOpen(false), true);
 
@@ -55,8 +63,12 @@ export default function NavCartContent() {
 
       {isAuthenticated && <NotificationsMenu currentLang={currentLang} />}
 
-      <WishlistButton currentLang={currentLang} count={wishListQuantity} />
-      <CartButton currentLang={currentLang} count={quantity} />
+      {!isSeller && (
+        <>
+          <WishlistButton currentLang={currentLang} count={wishListQuantity} />
+          <CartButton currentLang={currentLang} count={quantity} />
+        </>
+      )}
 
       <AuthMenu
         authOpen={authOpen}

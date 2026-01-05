@@ -1,5 +1,6 @@
 import Checkout from "@/src/components/Checkout/Checkout";
 import Container from "@/src/components/Container/Container";
+import { withBlockSeller } from "@/src/hoc/roleGuards";
 import { Metadata } from "next";
 
 export const metadat: Metadata = {
@@ -7,7 +8,7 @@ export const metadat: Metadata = {
   description: "Complete Your Purchase here!",
 };
 
-export default function CheckoutFullPage() {
+function CheckoutFullPage() {
   return (
     <section className="py-8 lg:py-10 min-h-screen bg-zinc-50">
       <Container>
@@ -16,3 +17,7 @@ export default function CheckoutFullPage() {
     </section>
   );
 }
+
+export default withBlockSeller(CheckoutFullPage, {
+  redirectTo: (lang: string) => `/${lang}`,
+});

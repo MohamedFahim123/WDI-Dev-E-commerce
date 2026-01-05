@@ -4,7 +4,10 @@ import FeaturesSectionSkeleton from "@/src/components/Skeletons/FeaturesSectionS
 import FlashDealsSkeleton from "@/src/components/Skeletons/FlashDealsSkeleton/FlashDealsSkeleton";
 import ImagesBannerSkeleton from "@/src/components/Skeletons/ImagesBannerSkeleton/ImagesBannerSkeleton";
 import SuperOfferSkeleton from "@/src/components/Skeletons/SuperOfferSkeleton/SuperOfferSkeleton";
+import { useRouteLang } from "@/src/hooks/useLang";
+import { useAuthStore } from "@/src/stores/authStore";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/navigation";
 
 const FeaturesSection = dynamic(
   () => import("@/src/components/FeaturesSection/FeaturesSection"),
@@ -40,13 +43,21 @@ const SuperOffer = dynamic(
 );
 
 export default function HomePage() {
+  const role = useAuthStore((s) => s.role);
+
   return (
     <>
       <HeroSection />
-      <FeaturesSection />
-      <ImagesBanner />
-      <FlashDeals />
-      <SuperOffer />
+      {role === "seller" ? (
+        <></>
+      ) : (
+        <>
+          <FeaturesSection />
+          <ImagesBanner />
+          <FlashDeals />
+          <SuperOffer />
+        </>
+      )}
     </>
   );
 }

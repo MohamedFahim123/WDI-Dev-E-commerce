@@ -4,6 +4,7 @@ import { useAuthStore } from "@/src/stores/authStore";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useMemo } from "react";
 
 type NavLinksProps = {
   direction?: "row" | "column";
@@ -17,26 +18,30 @@ export default function NavLinks({
   lang,
 }: NavLinksProps) {
   const pathname = usePathname();
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const role = useAuthStore((s) => s.role);
 
-  const navLinks = [
-    { label: "Home", href: `/${lang}` },
-    { label: "Shop", href: `/${lang}/shop` },
-    {
-      label: "Flash Deals",
-      href: `/${lang}/flash-deals`,
-    },
-    { label: "Request Return", href: `/${lang}/request-return` },
-    { label: "My Orders", href: `/${lang}/my-orders` },
-    {
-      label: "Create Store",
-      href: `/${lang}/create-store`,
-    },
-  ];
+  const isSeller = role?.trim()?.toLowerCase() === "seller";
 
-  const updatedNavLinks = isAuthenticated
-    ? navLinks.filter((l) => l.label !== "Create Store")
-    : navLinks;
+  const navLinks = useMemo(() => {
+    let baseLinks = [
+      { label: "Home", href: `/${lang}` },
+      { label: "Shop", href: `/${lang}/shop` },
+      { label: "Stores", href: `/${lang}/stores` },
+      { label: "Flash Deals", href: `/${lang}/flash-deals` },
+      { label: "Request Return", href: `/${lang}/request-return` },
+      { label: "My Orders", href: `/${lang}/my-orders` },
+    ];
+
+    if (isSeller) {
+      baseLinks = [
+        { label: "Home", href: `/${lang}` },
+        { label: "My Orders", href: `/${lang}/my-orders` },
+        { label: "Create Store", href: `/${lang}/create-store` },
+      ];
+    }
+
+    return baseLinks;
+  }, [lang, isSeller]);
 
   const isRow = direction === "row";
 
@@ -48,7 +53,7 @@ export default function NavLinks({
           : "flex flex-col divide-y divide-gray-100"
       }
     >
-      {updatedNavLinks.map((link) => {
+      {navLinks.map((link) => {
         const isActive = pathname === link.href;
         const base = "transition-all duration-200";
 
