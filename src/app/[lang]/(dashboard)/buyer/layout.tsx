@@ -14,14 +14,12 @@ export default async function BuyerLayout({
   children,
   params,
 }: BuyerLayoutProps) {
-  const { lang } = await params;
-
   const token = await getAuthTokenFromCookieServer();
   const role = await getRoleFromCookieServer();
+  const { lang } = await params;
 
-  if (!token) redirect(`/${lang}/auth/login`);
-
-  if (role !== "buyer") redirect(`/${lang}`);
-
+  if (!token && !role) {
+    redirect(`/${lang}/auth/login`);
+  }
   return <BuyerLayoutShell>{children}</BuyerLayoutShell>;
 }
