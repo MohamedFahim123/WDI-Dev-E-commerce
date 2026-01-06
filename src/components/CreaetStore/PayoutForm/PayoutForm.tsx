@@ -3,28 +3,86 @@
 import { useCreateStore } from "@/src/stores/StepsCreateStore";
 import {
   payoutSchema,
-  PayoutSchema,
+  type PayoutSchema,
 } from "@/src/validation/CreateStoreSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import * as React from "react";
+import { Path, useForm } from "react-hook-form";
+
 import { AuthInput } from "../../Auth/Fields/AuthInput";
 import AuthSelect from "../../Auth/Fields/AuthSelect";
+
+import ActionRow from "./ActionRow";
+import FieldRow from "./FieldRow";
 import Header from "./Header";
 import InfoNote from "./InfoNote";
-import FieldRow from "./FieldRow";
-import ActionRow from "./ActionRow";
 
-type Props = { onBack: () => void; onSubmit: () => void; submitting?: boolean };
+type Props = {
+  onBack: () => void;
+  onSubmit: () => void;
+  submitting?: boolean;
+  serverErrors?: Record<string, string>;
+  serverErrorsVersion: string;
+  clearClientError: (key: string) => void;
+  clearServerError: (key: string) => void;
+};
 
-export default function PayoutForm({ onBack, onSubmit, submitting }: Props) {
+export default function PayoutForm({
+  onBack,
+  onSubmit,
+  submitting,
+  serverErrors,
+  serverErrorsVersion,
+  clearServerError,
+  clearClientError,
+}: Props) {
   const payout = useCreateStore((s) => s.payoutInfo);
   const update = useCreateStore((s) => s.updatePayoutInfo);
 
-  const { register, handleSubmit, formState } = useForm<PayoutSchema>({
-    defaultValues: payout as PayoutSchema,
+  const {
+    register,
+    handleSubmit,
+    setError,
+    clearErrors,
+    formState: { errors, isSubmitting },
+  } = useForm<PayoutSchema>({
+    defaultValues: payout,
     resolver: zodResolver(payoutSchema),
     mode: "onTouched",
+    reValidateMode: "onChange",
   });
+
+  React.useEffect(() => {
+    if (!serverErrors) return;
+
+    const payoutKeys = new Set([
+      "holderName",
+      "bankName",
+      "bankCountry",
+      "currency",
+      "iban",
+      "accountNumber",
+      "swift",
+      "branch",
+      "branchCode",
+      "address",
+    ]);
+
+    for (const [k, msg] of Object.entries(serverErrors)) {
+      if (!msg) continue;
+      if (!payoutKeys.has(k)) continue;
+      setError(k as Path<PayoutSchema>, { type: "server", message: msg });
+    }
+  }, [serverErrorsVersion, serverErrors, setError]);
+
+  const reg = <T extends Path<PayoutSchema>>(name: T) =>
+    register(name, {
+      onChange: () => {
+        clearErrors(name);
+        clearClientError(String(name));
+        clearServerError(String(name));
+      },
+    });
 
   function onFormSubmit(values: PayoutSchema) {
     update(values);
@@ -49,35 +107,32 @@ export default function PayoutForm({ onBack, onSubmit, submitting }: Props) {
           label="Account Holder Name *"
           placeholder="John Doe"
           autoComplete="name"
-          {...register("holderName")}
-          error={formState.errors.holderName?.message as string | undefined}
+          {...reg("holderName")}
+          error={errors.holderName?.message}
         />
-        <p className="text-xs text-slate-400 mt-1">
-          Must match KYC name/entity exactly
-        </p>
       </div>
 
       <FieldRow>
         <div>
           <AuthInput
             label="Bank Name *"
-            placeholder="Emirates NBD"
+            placeholder="National Bank"
             autoComplete="organization"
-            {...register("bankName")}
-            error={formState.errors.bankName?.message as string | undefined}
+            {...reg("bankName")}
+            error={errors.bankName?.message}
           />
         </div>
+
         <div>
           <AuthSelect
             label="Bank Country *"
-            {...register("bankCountry")}
-            error={formState.errors.bankCountry?.message as string | undefined}
-     
+            {...reg("bankCountry")}
+            error={errors.bankCountry?.message}
           >
             <option value="">Select Country</option>
-            <option>United Arab Emirates</option>
-            <option>United States</option>
-            <option>United Kingdom</option>
+            <option value="United Arab Emirates">United Arab Emirates</option>
+            <option value="United States">United States</option>
+            <option value="United Kingdom">United Kingdom</option>
           </AuthSelect>
         </div>
       </FieldRow>
@@ -85,17 +140,14 @@ export default function PayoutForm({ onBack, onSubmit, submitting }: Props) {
       <div>
         <AuthSelect
           label="Settlement Currency *"
-          {...register("currency")}
-          error={formState.errors.currency?.message as string | undefined}
+          {...reg("currency")}
+          error={errors.currency?.message}
         >
           <option value="">Select Currency</option>
           <option value="AED">AED - UAE Dirham</option>
           <option value="USD">USD - US Dollar</option>
           <option value="EUR">EUR - Euro</option>
         </AuthSelect>
-        <p className="text-xs text-slate-400 mt-1">
-          Currency must be supported by your bank and country
-        </p>
       </div>
 
       <FieldRow>
@@ -104,8 +156,8 @@ export default function PayoutForm({ onBack, onSubmit, submitting }: Props) {
             label="IBAN"
             placeholder="AE070331234567890123456"
             autoComplete="off"
-            {...register("iban")}
-            error={formState.errors.iban?.message as string | undefined}
+            {...reg("iban")}
+            error={errors.iban?.message}
           />
         </div>
         <div>
@@ -113,10 +165,8 @@ export default function PayoutForm({ onBack, onSubmit, submitting }: Props) {
             label="Account Number"
             placeholder="1234567890"
             autoComplete="off"
-            {...register("accountNumber")}
-            error={
-              formState.errors.accountNumber?.message as string | undefined
-            }
+            {...reg("accountNumber")}
+            error={errors.accountNumber?.message}
           />
         </div>
       </FieldRow>
@@ -125,38 +175,45 @@ export default function PayoutForm({ onBack, onSubmit, submitting }: Props) {
         <div>
           <AuthInput
             label="SWIFT/BIC Code"
-            placeholder="EBILAEAD"
+            placeholder="NBICUS33"
             autoComplete="off"
-            {...register("swift")}
-            error={formState.errors.swift?.message as string | undefined}
+            {...reg("swift")}
+            error={errors.swift?.message}
           />
-          <p className="text-xs text-slate-400 mt-1">8 or 11 characters</p>
         </div>
         <div>
           <AuthInput
-            label="Branch Name / Code"
-            placeholder="Dubai Main Branch"
+            label="Branch Name"
+            placeholder="Main Branch"
             autoComplete="off"
-            {...register("branch")}
-            error={formState.errors.branch?.message as string | undefined}
+            {...reg("branch")}
+            error={errors.branch?.message}
           />
-          <p className="text-xs text-slate-400 mt-1">
-            Optional, if required by country
-          </p>
         </div>
       </FieldRow>
 
-      <div>
-        <AuthInput
-          label="Bank Address (Optional)"
-          placeholder="123 Financial District, Dubai, UAE"
-          autoComplete="street-address" 
-          {...register("address")}
-          error={formState.errors.address?.message as string | undefined}
-        />
-      </div>
+      <FieldRow>
+        <div>
+          <AuthInput
+            label="Branch Code"
+            placeholder="001"
+            autoComplete="off"
+            {...reg("branchCode")}
+            error={errors.branchCode?.message}
+          />
+        </div>
+        <div>
+          <AuthInput
+            label="Bank Address"
+            placeholder="456 Bank Street, City"
+            autoComplete="street-address"
+            {...reg("address")}
+            error={errors.address?.message}
+          />
+        </div>
+      </FieldRow>
 
-      <ActionRow onBack={onBack} submitting={!!submitting} />
+      <ActionRow onBack={onBack} submitting={!!submitting || isSubmitting} />
     </form>
   );
 }

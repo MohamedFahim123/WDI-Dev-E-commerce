@@ -3,9 +3,9 @@
 import * as React from "react";
 import { Shield } from "lucide-react";
 import { useCreateStore } from "@/src/stores/StepsCreateStore";
-import { kycSchema, KycSchema } from "@/src/validation/CreateStoreSchemas";
+import { kycSchema, type KycSchema } from "@/src/validation/CreateStoreSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { Path, SubmitHandler, useForm } from "react-hook-form";
 import AuthInput from "../../Auth/Fields/AuthInput";
 import AuthSelect from "../../Auth/Fields/AuthSelect";
 
@@ -19,7 +19,14 @@ import SellerTypeToggle from "./SellerTypeToggle";
 import DocumentUploads from "./DocumentUploads";
 import DeclarationsConsents from "./DeclarationsConsents";
 
-type Props = { onBack: () => void; onNext: () => void };
+type Props = {
+  onBack: () => void;
+  onNext: () => void;
+  serverErrors?: Record<string, string>;
+  serverErrorsVersion: string;
+  clearClientError: (key: string) => void;
+  clearServerError: (key: string) => void;
+};
 
 type FileKey = "idFront" | "idBack" | "selfie" | "proofOfAddress";
 type Preview = { url?: string; name?: string; size?: number } | null;
@@ -31,7 +38,14 @@ function filesizeToString(bytes: number) {
   return `${(bytes / Math.pow(1024, i)).toFixed(1)} ${sizes[i]}`;
 }
 
-export default function KycForm({ onBack, onNext }: Props) {
+export default function KycForm({
+  onBack,
+  onNext,
+  serverErrors,
+  serverErrorsVersion,
+  clearClientError,
+  clearServerError,
+}: Props) {
   const kyc = useCreateStore((s) => s.kycInfo);
   const update = useCreateStore((s) => s.updateKycInfo);
 
@@ -39,19 +53,62 @@ export default function KycForm({ onBack, onNext }: Props) {
     register,
     handleSubmit,
     setValue,
+    setError,
+    clearErrors,
     register: rhfRegister,
     formState: { errors, isSubmitting },
   } = useForm<KycSchema>({
-    defaultValues: kyc as KycSchema,
+    defaultValues: kyc,
     resolver: zodResolver(kycSchema),
     mode: "onTouched",
+    reValidateMode: "onChange",
   });
 
   React.useEffect(() => {
+    rhfRegister("kycType");
     rhfRegister("consents.infoCorrect");
     rhfRegister("consents.identityScreening");
     rhfRegister("consents.terms");
-  }, []);
+  }, [rhfRegister]);
+
+  React.useEffect(() => {
+    if (!serverErrors) return;
+
+    const allowed = new Set([
+      "kycType",
+      "firstName",
+      "lastName",
+      "dob",
+      "nationality",
+      "idType",
+      "idNumber",
+      "idIssueDate",
+      "idExpiryDate",
+      "idIssuingCountry",
+      "idFront",
+      "idBack",
+      "selfie",
+      "proofOfAddress",
+      "consents.infoCorrect",
+      "consents.identityScreening",
+      "consents.terms",
+    ]);
+
+    for (const [k, msg] of Object.entries(serverErrors)) {
+      if (!msg) continue;
+      if (!allowed.has(k)) continue;
+      setError(k as Path<KycSchema>, { type: "server", message: msg });
+    }
+  }, [serverErrorsVersion, serverErrors, setError]);
+
+  const reg = <T extends Path<KycSchema>>(name: T) =>
+    register(name, {
+      onChange: () => {
+        clearErrors(name);
+        clearClientError(String(name));
+        clearServerError(String(name));
+      },
+    });
 
   const createdUrlsRef = React.useRef<string[]>([]);
   const initialPreviewState: Record<FileKey, Preview> = {
@@ -60,6 +117,7 @@ export default function KycForm({ onBack, onNext }: Props) {
     selfie: null,
     proofOfAddress: null,
   };
+
   const [previews, setPreviews] = React.useState<Record<FileKey, Preview>>(
     () => ({ ...initialPreviewState })
   );
@@ -67,21 +125,21 @@ export default function KycForm({ onBack, onNext }: Props) {
   React.useEffect(() => {
     const keys: FileKey[] = ["idFront", "idBack", "selfie", "proofOfAddress"];
     const next: Record<FileKey, Preview> = { ...initialPreviewState };
-    let didCreate = false;
 
     keys.forEach((key) => {
-      const file = kyc[key] as File | undefined | null;
+      const file = kyc[key];
       if (file instanceof File) {
         const url = file.type.startsWith("image/")
           ? URL.createObjectURL(file)
           : undefined;
         if (url) createdUrlsRef.current.push(url);
         next[key] = { url, name: file.name, size: file.size };
-        didCreate = true;
-      } else next[key] = null;
+      } else {
+        next[key] = null;
+      }
     });
 
-    if (didCreate) setPreviews(next);
+    setPreviews(next);
 
     return () => {
       createdUrlsRef.current.forEach((u) => {
@@ -91,6 +149,7 @@ export default function KycForm({ onBack, onNext }: Props) {
       });
       createdUrlsRef.current = [];
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function revokePreviewUrl(url?: string) {
@@ -104,15 +163,18 @@ export default function KycForm({ onBack, onNext }: Props) {
   function updatePreview(name: FileKey, file?: File | null) {
     const old = previews[name];
     if (old?.url) revokePreviewUrl(old.url);
+
     if (!file) {
       setPreviews((s) => ({ ...s, [name]: null }));
       return;
     }
+
     let url: string | undefined;
     if (file.type.startsWith("image/")) {
       url = URL.createObjectURL(file);
       createdUrlsRef.current.push(url);
     }
+
     setPreviews((s) => ({
       ...s,
       [name]: { url, name: file.name, size: file.size },
@@ -120,8 +182,14 @@ export default function KycForm({ onBack, onNext }: Props) {
   }
 
   function handleFileChangeForFileKey(name: FileKey, file?: File | null) {
-    setValue(name, file ?? undefined, { shouldDirty: true, shouldTouch: true });
-    update({ [name]: file } as Partial<KycSchema>);
+    clearErrors(name);
+    clearClientError(name);
+
+    setValue(name, file ?? null, {
+      shouldDirty: true,
+      shouldTouch: true,
+    });
+    update({ [name]: file ?? null });
     updatePreview(name, file ?? null);
   }
 
@@ -144,22 +212,46 @@ export default function KycForm({ onBack, onNext }: Props) {
   }
 
   const fileKeys: FileKey[] = ["idFront", "idBack", "selfie", "proofOfAddress"];
-  const [sellerType, setSellerType] = React.useState<"individual" | "business">(
-    "individual"
-  );
 
-  function onSubmit(values: KycSchema) {
+  const onSubmit: SubmitHandler<KycSchema> = (values) => {
     update(values);
     onNext();
+  };
+
+  function handleSellerTypeChange(v: "individual" | "business") {
+    clearErrors("kycType");
+    clearClientError("kycType");
+
+    setValue("kycType", v, { shouldDirty: true, shouldTouch: true });
+    update({ kycType: v });
+  }
+
+  function handleConsentsChange(c: KycSchema["consents"]) {
+    clearErrors("consents.infoCorrect");
+    clearErrors("consents.identityScreening");
+    clearErrors("consents.terms");
+    clearClientError("consents.infoCorrect");
+    clearClientError("consents.identityScreening");
+    clearClientError("consents.terms");
+
+    setValue("consents.infoCorrect", c.infoCorrect, {
+      shouldDirty: true,
+      shouldTouch: true,
+    });
+    setValue("consents.identityScreening", c.identityScreening, {
+      shouldDirty: true,
+      shouldTouch: true,
+    });
+    setValue("consents.terms", c.terms, {
+      shouldDirty: true,
+      shouldTouch: true,
+    });
+
+    update({ consents: c });
   }
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="space-y-6"
-      noValidate
-      aria-labelledby="kyc-heading"
-    >
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
       <Panel>
         <PanelHeader
           icon={
@@ -169,85 +261,90 @@ export default function KycForm({ onBack, onNext }: Props) {
           }
           title="KYC Verification"
         />
+
         <PanelBody className="space-y-6">
           <SellerTypeToggle
-            sellerType={sellerType}
-            setSellerType={setSellerType}
+            sellerType={kyc.kycType}
+            setSellerType={handleSellerTypeChange}
           />
 
           <FieldRow>
             <AuthInput
               label="First Name *"
-              {...register("firstName")}
+              {...reg("firstName")}
               required
-              error={errors.firstName?.message as string | undefined}
+              error={errors.firstName?.message}
               placeholder="Mohamed"
               autoComplete="given-name"
             />
             <AuthInput
               label="Last Name *"
-              {...register("lastName")}
+              {...reg("lastName")}
               required
-              error={errors.lastName?.message as string | undefined}
+              error={errors.lastName?.message}
               placeholder="Ahmed"
               autoComplete="family-name"
             />
             <AuthInput
               label="Date of Birth *"
-              {...register("dob")}
+              {...reg("dob")}
               required
-              error={errors.dob?.message as string | undefined}
-              placeholder="dd/mm/yyyy"
+              error={errors.dob?.message}
+              placeholder="1990-01-15"
               autoComplete="bday"
             />
             <AuthInput
               label="Nationality *"
-              {...register("nationality")}
+              {...reg("nationality")}
               required
-              error={errors.nationality?.message as string | undefined}
+              error={errors.nationality?.message}
               placeholder="United Arab Emirates"
               autoComplete="country-name"
             />
           </FieldRow>
 
           <FieldRow>
-            <AuthSelect
-              label="ID Type *"
-              {...register("idType")}
-              required
-              aria-label="ID Type"
-            >
+            <AuthSelect label="ID Type *" {...reg("idType")} required>
               <option value="">Select ID type</option>
-              <option>National ID</option>
-              <option>Passport</option>
-              <option>Driving License</option>
+              <option value="national_id">National ID</option>
+              <option value="passport">Passport</option>
+              <option value="driving_license">Driving License</option>
             </AuthSelect>
 
             <AuthInput
               label="ID Number *"
-              {...register("idNumber")}
+              {...reg("idNumber")}
               required
-              error={errors.idNumber?.message as string | undefined}
+              error={errors.idNumber?.message}
               placeholder="784-1234-5678901-2"
               autoComplete="off"
             />
             <AuthInput
               label="ID Issue Date *"
-              {...register("idIssueDate")}
+              {...reg("idIssueDate")}
               required
-              error={errors.idIssueDate?.message as string | undefined}
-              placeholder="dd/mm/yyyy"
+              error={errors.idIssueDate?.message}
+              placeholder="2020-01-01"
               autoComplete="off"
             />
             <AuthInput
               label="ID Expiry Date *"
-              {...register("idExpiryDate")}
+              {...reg("idExpiryDate")}
               required
-              error={errors.idExpiryDate?.message as string | undefined}
-              placeholder="dd/mm/yyyy"
+              error={errors.idExpiryDate?.message}
+              placeholder="2030-01-01"
               autoComplete="off"
             />
           </FieldRow>
+
+          <AuthInput
+            label="ID Issuing Country *"
+            {...reg("idIssuingCountry")}
+            required
+            error={errors.idIssuingCountry?.message}
+            placeholder="US"
+            autoComplete="country-name"
+          />
 
           <div>
             <div className="text-sm font-medium mb-3">Document Uploads</div>
@@ -267,7 +364,7 @@ export default function KycForm({ onBack, onNext }: Props) {
             setValue={setValue}
             errors={errors}
             consents={kyc.consents}
-            updateConsents={(c) => update({ consents: c })}
+            updateConsents={handleConsentsChange}
           />
         </PanelBody>
 
@@ -276,14 +373,14 @@ export default function KycForm({ onBack, onNext }: Props) {
             <button
               onClick={onBack}
               type="button"
-              className="h-10 cursor-pointer rounded-md border px-4 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#7C3BED]"
+              className="h-10 rounded-md border px-4 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#7C3BED]"
             >
               ← Back
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="h-11 rounded-md cursor-pointer bg-[#7C3BED] text-white px-5 font-semibold shadow-sm hover:bg-[#6d30d6] focus:outline-none focus:ring-2 focus:ring-[#7C3BED] disabled:opacity-70"
+              className="h-11 rounded-md bg-[#7C3BED] text-white px-5 font-semibold shadow-sm hover:bg-[#6d30d6] disabled:opacity-70"
             >
               Continue
             </button>

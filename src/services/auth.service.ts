@@ -32,7 +32,6 @@ async function LoginAction(input: LoginInput) {
       }),
     }
   );
-  console.log(res);
 
   if (!res.success) {
     throw new Error(res.message || "Unable to login");

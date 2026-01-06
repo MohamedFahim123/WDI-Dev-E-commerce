@@ -12,6 +12,7 @@ export default function DocumentUploads({
   removeFile,
   makeDropHandlersFor,
   errors,
+  filesizeToString,
 }: {
   fileKeys: FileKey[];
   previews: Record<FileKey, Preview>;
@@ -28,6 +29,7 @@ export default function DocumentUploads({
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
       {fileKeys.map((key) => {
         const p = previews[key];
+
         const labelText =
           key === "idFront"
             ? "ID Document (Front) *"
@@ -37,12 +39,17 @@ export default function DocumentUploads({
             ? "Selfie / Liveness Check *"
             : "Proof of Address *";
 
+        const helper =
+          p?.name && p?.size
+            ? `${p.name} • ${filesizeToString(p.size)}`
+            : "PNG, JPG or PDF — max 10MB";
+
         return (
           <div key={key}>
             <DocumentUploadField
               label={labelText}
               preview={p}
-              helper="PNG, JPG or PDF — max 10MB"
+              helper={helper}
               onChange={(f) => handleFileChangeForFileKey(key, f)}
               onRemove={() => removeFile(key)}
               dropHandlers={makeDropHandlersFor(key)}

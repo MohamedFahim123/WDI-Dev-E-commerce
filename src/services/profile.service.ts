@@ -34,7 +34,7 @@ export async function getMyProfileAction(): Promise<SessionResult> {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log("first")
+    ("first")
 
     if (!res?.success || !res?.data) {
       await clearAuthTokenCookieServer();

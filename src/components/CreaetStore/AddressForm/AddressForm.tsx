@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import { useCreateStore } from "@/src/stores/StepsCreateStore";
 import {
   addressSchema,
@@ -8,29 +9,70 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LocateIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
-import AuthInput from "../../Auth/Fields/AuthInput";
 
+import AuthInput from "../../Auth/Fields/AuthInput";
 import FieldRow from "../Common/FieldRow";
 import Panel from "../Common/Panel";
 import PanelBody from "../Common/PanelBody";
 import PanelFooter from "../Common/PanelFooter";
 import PanelHeader from "../Common/PanelHeader";
 
-type Props = { onBack: () => void; onNext: () => void };
+type Props = {
+  onBack: () => void;
+  onNext: () => void;
+  serverErrors?: Record<string, string>;
+  serverErrorsVersion: string;
+  clearClientError: (key: string) => void;
+  clearServerError: (key: string) => void;
+};
 
-export default function AddressForm({ onBack, onNext }: Props) {
+export default function AddressForm({
+  onBack,
+  onNext,
+  serverErrors,
+  serverErrorsVersion,
+  clearClientError,
+  clearServerError,
+}: Props) {
   const addressInfo = useCreateStore((s) => s.addressInfo);
   const update = useCreateStore((s) => s.updateAddressInfo);
 
   const {
     register,
     handleSubmit,
+    setError,
+    clearErrors,
     formState: { errors, isSubmitting },
   } = useForm<AddressSchema>({
     defaultValues: addressInfo,
     resolver: zodResolver(addressSchema),
     mode: "onTouched",
+    reValidateMode: "onChange",
   });
+
+  React.useEffect(() => {
+    if (!serverErrors) return;
+    const keys: Array<keyof AddressSchema> = [
+      "city",
+      "region",
+      "street",
+      "unit",
+      "postal",
+    ];
+    keys.forEach((k) => {
+      const msg = serverErrors[k as string];
+      if (msg) setError(k, { type: "server", message: msg });
+    });
+  }, [serverErrorsVersion, serverErrors, setError]);
+
+  const reg = <T extends keyof AddressSchema>(name: T) =>
+    register(name, {
+      onChange: () => {
+        clearErrors(name);
+        clearClientError(String(name));
+        clearServerError(String(name));
+      },
+    });
 
   function onSubmit(values: AddressSchema) {
     update(values);
@@ -38,11 +80,7 @@ export default function AddressForm({ onBack, onNext }: Props) {
   }
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      noValidate
-      aria-labelledby="business-address-heading"
-    >
+    <form onSubmit={handleSubmit(onSubmit)} noValidate>
       <Panel>
         <PanelHeader
           icon={
@@ -53,21 +91,22 @@ export default function AddressForm({ onBack, onNext }: Props) {
           title="Business Address"
           subtitle="Provide the address where your business operates."
         />
+
         <PanelBody className="space-y-6">
           <FieldRow>
             <AuthInput
               label="City"
-              {...register("city")}
+              {...reg("city")}
               required
-              error={errors.city?.message as string | undefined}
+              error={errors.city?.message}
               placeholder="Dubai"
               autoComplete="address-level2"
             />
             <AuthInput
               label="Region/State"
-              {...register("region")}
+              {...reg("region")}
               required
-              error={errors.region?.message as string | undefined}
+              error={errors.region?.message}
               placeholder="Dubai"
               autoComplete="address-level1"
             />
@@ -76,9 +115,9 @@ export default function AddressForm({ onBack, onNext }: Props) {
           <div>
             <AuthInput
               label="Street Address"
-              {...register("street")}
+              {...reg("street")}
               required
-              error={errors.street?.message as string | undefined}
+              error={errors.street?.message}
               placeholder="123 Main Street"
               autoComplete="street-address"
             />
@@ -90,16 +129,16 @@ export default function AddressForm({ onBack, onNext }: Props) {
           <FieldRow>
             <AuthInput
               label="Unit/Apartment (optional)"
-              {...register("unit")}
-              error={errors.unit?.message as string | undefined}
+              {...reg("unit")}
+              error={errors.unit?.message}
               placeholder="Apt 4B"
               autoComplete="address-line2"
             />
             <AuthInput
               label="Postal/ZIP Code"
-              {...register("postal")}
+              {...reg("postal")}
               required
-              error={errors.postal?.message as string | undefined}
+              error={errors.postal?.message}
               placeholder="000000"
               autoComplete="postal-code"
             />
@@ -111,14 +150,14 @@ export default function AddressForm({ onBack, onNext }: Props) {
             <button
               type="button"
               onClick={onBack}
-              className="h-10 cursor-pointer rounded-md border px-4 bg-white text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#7C3BED] transition"
+              className="h-10 rounded-md border px-4 bg-white text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#7C3BED]"
             >
               ← Back
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="h-10 rounded-md cursor-pointer bg-[#7C3BED] text-white px-4 sm:px-5 text-sm font-semibold shadow hover:bg-[#6d30d6] focus:outline-none focus:ring-2 focus:ring-[#7C3BED] disabled:opacity-70 transition"
+              className="h-10 rounded-md bg-[#7C3BED] text-white px-5 text-sm font-semibold hover:bg-[#6d30d6] disabled:opacity-70"
             >
               Continue
             </button>

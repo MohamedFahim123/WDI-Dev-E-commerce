@@ -36,6 +36,7 @@ export default function NavLinks({
       baseLinks = [
         { label: "Home", href: `/${lang}` },
         { label: "My Orders", href: `/${lang}/my-orders` },
+        { label: "My Stores", href: `/${lang}/my-stores` },
         { label: "Create Store", href: `/${lang}/create-store` },
       ];
     }

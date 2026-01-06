@@ -7,17 +7,29 @@ export const storeInfoSchema = z.object({
     .string()
     .min(5, "Enter phone number")
     .refine((v) => /^\+?[0-9\s\-()]+$/.test(v), "Invalid phone format"),
+  email: z.string().email("Enter a valid email"),
+  description: z
+    .string()
+    .min(5, "Enter a short description (5+ chars)")
+    .max(500),
 });
 export type StoreInfoSchema = z.infer<typeof storeInfoSchema>;
 
 export const addressSchema = z.object({
   city: z.string().min(1, "City is required"),
-  region: z.string().min(1, "Region is required"),
+  region: z.string().min(1, "Region/State is required"),
   street: z.string().min(1, "Street is required"),
   unit: z.string().optional(),
   postal: z.string().min(1, "Postal/ZIP is required"),
 });
 export type AddressSchema = z.infer<typeof addressSchema>;
+
+/**
+ * IMPORTANT:
+ * Your Zustand KycInfo uses File | null,
+ * so we must allow null in RHF/Zod too to avoid TS defaultValues errors.
+ */
+const fileOrNull = z.union([z.instanceof(File), z.null()]).optional();
 
 const consentsSchema = z.object({
   infoCorrect: z
@@ -32,6 +44,10 @@ const consentsSchema = z.object({
 });
 
 export const kycSchema = z.object({
+  kycType: z.enum(["individual", "business"], {
+    message: "Select seller type",
+  }),
+
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
   dob: z.string().min(1, "Date of birth is required"),
@@ -41,11 +57,12 @@ export const kycSchema = z.object({
   idNumber: z.string().min(1, "ID number is required"),
   idIssueDate: z.string().min(1, "ID issue date is required"),
   idExpiryDate: z.string().min(1, "ID expiry date is required"),
+  idIssuingCountry: z.string().min(1, "ID issuing country is required"),
 
-  idFront: z.instanceof(File).optional(),
-  idBack: z.instanceof(File).optional(),
-  selfie: z.instanceof(File).optional(),
-  proofOfAddress: z.instanceof(File).optional(),
+  idFront: fileOrNull,
+  idBack: fileOrNull,
+  selfie: fileOrNull,
+  proofOfAddress: fileOrNull,
 
   consents: consentsSchema,
 });
@@ -60,6 +77,7 @@ export const payoutSchema = z.object({
   accountNumber: z.string().optional(),
   swift: z.string().optional(),
   branch: z.string().optional(),
+  branchCode: z.string().optional(),
   address: z.string().optional(),
 });
 export type PayoutSchema = z.infer<typeof payoutSchema>;

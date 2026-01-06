@@ -1,10 +1,11 @@
 import { create } from "zustand";
 
-
 export type StoreInfo = {
   nameEn: string;
   nameAr: string;
   phone: string;
+  email: string;
+  description: string;
 };
 
 export type AddressInfo = {
@@ -16,10 +17,24 @@ export type AddressInfo = {
 };
 
 export type KycInfo = {
+  kycType: "individual" | "business";
+
+  firstName: string;
+  lastName: string;
+  dob: string;
+  nationality: string;
+
+  idType: string;
+  idNumber: string;
+  idIssueDate: string;
+  idExpiryDate: string;
+  idIssuingCountry: string;
+
   idFront?: File | null;
   idBack?: File | null;
   selfie?: File | null;
   proofOfAddress?: File | null;
+
   consents: {
     infoCorrect: boolean;
     identityScreening: boolean;
@@ -32,11 +47,12 @@ export type PayoutInfo = {
   bankName: string;
   bankCountry: string;
   currency: string;
-  iban?: string;
   accountNumber?: string;
   swift?: string;
   branch?: string;
+  branchCode?: string;
   address?: string;
+  iban?: string;
 };
 
 type CreateStoreState = {
@@ -45,6 +61,7 @@ type CreateStoreState = {
   addressInfo: AddressInfo;
   kycInfo: KycInfo;
   payoutInfo: PayoutInfo;
+
   setStep: (n: number) => void;
   updateStoreInfo: (v: Partial<StoreInfo>) => void;
   updateAddressInfo: (v: Partial<AddressInfo>) => void;
@@ -55,15 +72,47 @@ type CreateStoreState = {
 
 export const useCreateStore = create<CreateStoreState>((set) => ({
   step: 1,
-  storeInfo: { nameEn: "", nameAr: "", phone: "" },
-  addressInfo: { city: "", region: "", street: "", unit: "", postal: "" },
+
+  storeInfo: {
+    nameEn: "",
+    nameAr: "",
+    phone: "",
+    email: "",
+    description: "",
+  },
+
+  addressInfo: {
+    city: "",
+    region: "",
+    street: "",
+    unit: "",
+    postal: "",
+  },
+
   kycInfo: {
+    kycType: "individual",
+    firstName: "",
+    lastName: "",
+    dob: "",
+    nationality: "",
+    idType: "",
+    idNumber: "",
+    idIssueDate: "",
+    idExpiryDate: "",
+    idIssuingCountry: "",
+
     idFront: null,
     idBack: null,
     selfie: null,
     proofOfAddress: null,
-    consents: { infoCorrect: false, identityScreening: false, terms: false },
+
+    consents: {
+      infoCorrect: false,
+      identityScreening: false,
+      terms: false,
+    },
   },
+
   payoutInfo: {
     holderName: "",
     bankName: "",
@@ -73,22 +122,45 @@ export const useCreateStore = create<CreateStoreState>((set) => ({
     accountNumber: "",
     swift: "",
     branch: "",
+    branchCode: "",
     address: "",
   },
 
   setStep: (n) => set({ step: n }),
+
   updateStoreInfo: (v) => set((s) => ({ storeInfo: { ...s.storeInfo, ...v } })),
+
   updateAddressInfo: (v) =>
     set((s) => ({ addressInfo: { ...s.addressInfo, ...v } })),
+
   updateKycInfo: (v) => set((s) => ({ kycInfo: { ...s.kycInfo, ...v } })),
+
   updatePayoutInfo: (v) =>
     set((s) => ({ payoutInfo: { ...s.payoutInfo, ...v } })),
+
   reset: () =>
-    set({
+    set((s) => ({
+      ...s,
       step: 1,
-      storeInfo: { nameEn: "", nameAr: "", phone: "" },
+      storeInfo: {
+        nameEn: "",
+        nameAr: "",
+        phone: "",
+        email: "",
+        description: "",
+      },
       addressInfo: { city: "", region: "", street: "", unit: "", postal: "" },
       kycInfo: {
+        kycType: "individual",
+        firstName: "",
+        lastName: "",
+        dob: "",
+        nationality: "",
+        idType: "",
+        idNumber: "",
+        idIssueDate: "",
+        idExpiryDate: "",
+        idIssuingCountry: "",
         idFront: null,
         idBack: null,
         selfie: null,
@@ -108,7 +180,8 @@ export const useCreateStore = create<CreateStoreState>((set) => ({
         accountNumber: "",
         swift: "",
         branch: "",
+        branchCode: "",
         address: "",
       },
-    }),
+    })),
 }));

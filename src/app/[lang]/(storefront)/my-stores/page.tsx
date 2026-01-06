@@ -1,15 +1,15 @@
 import StoresView from "@/src/components/StoresView/StoresView";
-import { withBlockSeller } from "@/src/hoc/roleGuards";
+import { withSellerOnly } from "@/src/hoc/roleGuards";
 import { mapApiStoresToStores } from "@/src/lib/api/mappers/store.mapper";
 import { fetchStoresList } from "@/src/lib/api/stores";
-import type { Metadata } from "next";
+import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "WDI - Stores",
-  description: "Browse all stores!",
+  title: "WDI - My Stores",
+  description: "Find out all stores You've created through us in here!",
 };
 
-async function StoresPage({
+async function MyStores({
   params,
   searchParams,
 }: {
@@ -31,7 +31,7 @@ async function StoresPage({
   };
 
   try {
-    const res = await fetchStoresList("store/list", { limit, offset });
+    const res = await fetchStoresList("seller/stores", { limit, offset });
     storesData = {
       stores: mapApiStoresToStores(res.data.stores),
       serverTotal: res.data.total,
@@ -43,6 +43,7 @@ async function StoresPage({
     const message = e instanceof Error ? e.message : "Unknown error";
     storesData.apiError = message;
   }
+  console.log(storesData)
 
   return (
     <StoresView
@@ -55,6 +56,6 @@ async function StoresPage({
     />
   );
 }
-export default withBlockSeller(StoresPage, {
+export default withSellerOnly(MyStores, {
   redirectTo: (lang: string) => `/${lang}`,
 });

@@ -10,6 +10,7 @@ export default function SellerTypeToggle({
       <div className="text-sm font-medium mb-2">
         Select Seller Type <span className="text-red-500">*</span>
       </div>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <label
           className={`flex items-start gap-3 rounded-lg border p-3 cursor-pointer ${
@@ -22,7 +23,7 @@ export default function SellerTypeToggle({
           <input
             type="radio"
             name="sellerType"
-            autoComplete={sellerType}
+            autoComplete="off"
             value="individual"
             className="peer sr-only"
             checked={sellerType === "individual"}
@@ -52,7 +53,7 @@ export default function SellerTypeToggle({
           onClick={() => setSellerType("business")}
         >
           <input
-            autoComplete={sellerType}
+            autoComplete="off"
             type="radio"
             name="sellerType"
             value="business"

@@ -46,7 +46,6 @@ export default function NavCartContent() {
     [role,logout]
   );
 
-  console.log(role)
   useOutsideClose(langRef, () => setLangOpen(false));
   useOutsideClose(authRef, () => setAuthOpen(false), true);
 
