@@ -85,12 +85,12 @@ function createServerGuard(config: {
 
 export const withBlockSeller = createServerGuard({
   denyRoles: ["seller"],
-  requireAuth: true,
+  requireAuth: false,
 });
 
 export const withBlockBuyer = createServerGuard({
   denyRoles: ["buyer"],
-  requireAuth: true,
+  requireAuth: false,
 });
 
 export const withSellerOnly = createServerGuard({
