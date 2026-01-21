@@ -107,13 +107,6 @@ export default function AuthMenu({
             Login
           </Link>
           <Link
-            href={`/${currentLang}/create-store`}
-            className="block px-3 py-2 text-sm hover:bg-gray-100"
-            onClick={() => setAuthOpen(false)}
-          >
-            Create Store
-          </Link>
-          <Link
             href={`/${currentLang}/auth/register`}
             className="block px-3 py-2 text-sm hover:bg-gray-100"
             onClick={() => setAuthOpen(false)}

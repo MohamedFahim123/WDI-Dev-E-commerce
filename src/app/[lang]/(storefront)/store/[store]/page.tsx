@@ -1,5 +1,4 @@
 import StoreProfileView from "@/src/components/StoreProfileView/StoreProfileView";
-import { withBlockSeller } from "@/src/hoc/roleGuards";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -7,7 +6,7 @@ export const metadata: Metadata = {
   description: "Explore all Store products!",
 };
 
-async function StorePage({ params }: { params: Promise<{ store: string }> }) {
+export default async function StorePage({ params }: { params: Promise<{ store: string }> }) {
   const param = await params;
   const store = param.store;
   console.log(store)
@@ -15,6 +14,3 @@ async function StorePage({ params }: { params: Promise<{ store: string }> }) {
   return <StoreProfileView />;
 }
 
-export default withBlockSeller(StorePage, {
-  redirectTo: (lang: string) => `/${lang}`,
-});
