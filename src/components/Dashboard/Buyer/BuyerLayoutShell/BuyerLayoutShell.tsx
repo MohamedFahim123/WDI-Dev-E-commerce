@@ -88,7 +88,7 @@ export function BuyerLayoutShell({ children }: BuyerLayoutShellProps) {
           "lg:overflow-auto"
         )}
       >
-        <BuyerSidebar user={user} navItems={navItems} collapsed={collapsed} />
+        <BuyerSidebar  navItems={navItems} collapsed={collapsed} />
       </div>
 
       <div
