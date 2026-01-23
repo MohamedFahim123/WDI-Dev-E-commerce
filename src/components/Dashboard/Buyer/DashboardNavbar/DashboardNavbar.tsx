@@ -1,6 +1,6 @@
 "use client";
 
-import LangDropDown from "@/src/components/NavCartContent/LangDropDown";
+// import LangDropDown from "@/src/components/NavCartContent/LangDropDown";
 import NotificationsMenu from "@/src/components/NavCartContent/NotificationsMenu";
 import { useRouteLang } from "@/src/hooks/useLang";
 import { useAuthStore } from "@/src/stores/authStore";
@@ -58,7 +58,7 @@ export default function DashboardNavbar({
 
         <div className="flex items-center gap-4">
           <NotificationsMenu loginType={loginType} currentLang={lang} />
-
+          {/* 
           <LangDropDown
             langRef={langRef}
             currentLang={lang}
@@ -66,7 +66,7 @@ export default function DashboardNavbar({
             langOpen={langOpen}
             setAuthOpen={() => {}}
             getPathForLang={(l) => `/${l}/${loginType}/profile`}
-          />
+          /> */}
 
           <button
             type="button"

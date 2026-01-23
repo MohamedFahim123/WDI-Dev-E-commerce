@@ -4,14 +4,18 @@ import { fetchApi } from "@/src/lib/fetchApi";
 import { AuthUser } from "@/src/types/auth";
 import { LoginInput } from "@/src/validation/LoginSchema";
 import { RegisterFormValues } from "../components/Auth/RegisterForm/RegisterForm";
+
 import {
   clearAuthCookieServer,
+  setResetEmailCookieServer,
   clearAuthTokenCookieServer,
   clearRoleCookieServer,
   getAuthTokenFromCookieServer,
   setAuthCookieServer,
   setAuthTokenCookieServer,
   setRoleCookieServer,
+  getResetEmailFromCookieServer,
+  clearResetEmailCookieServer,
 } from "../lib/authCookies";
 
 export const clearAllCookies = async () => {
@@ -30,7 +34,7 @@ async function LoginAction(input: LoginInput) {
         email: input.identifier,
         password: input.password,
       }),
-    }
+    },
   );
 
   if (!res.success) {
@@ -78,7 +82,7 @@ type RegisterData = {
  * Step 1 (Details): Buyer Signup
  * POST auth/buyer/signup
  * body: { name, email, password, phone }
-*/
+ */
 async function RegisterBuyerAction(data: RegisterFormValues) {
   const response = await fetchApi<RegisterData>(`auth/buyer/signup`, {
     method: "POST",
@@ -169,7 +173,7 @@ async function ResendOtpAction(input: ResendOtpInput) {
       body: JSON.stringify({
         email: input.email,
       }),
-    }
+    },
   );
 
   if (!response.success) {
@@ -179,6 +183,114 @@ async function ResendOtpAction(input: ResendOtpInput) {
   return response;
 }
 
+type ResetPasswordRequestResponse = {
+  sent: boolean;
+};
+
+async function RequestPasswordResetAction(email: string) {
+  const res = await fetchApi<ResetPasswordRequestResponse>(
+    "auth/password/reset/request",
+    {
+      method: "POST",
+      cache: "no-store",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    },
+  );
+
+  if (!res.success) {
+    throw new Error(res.message || "Unable to request password reset");
+  }
+
+  await setResetEmailCookieServer(email);
+
+  return res;
+}
+
+type VerifyResetOtpResponse = {
+  verified: boolean;
+};
+
+async function VerifyResetPasswordOtpAction(otp: string) {
+  const email = await getResetEmailFromCookieServer();
+
+  if (!email) {
+    throw new Error(
+      "Reset email is missing. Please restart the password reset flow.",
+    );
+  }
+
+  const res = await fetchApi<VerifyResetOtpResponse>(
+    "auth/password/reset/verify",
+    {
+      method: "POST",
+      cache: "no-store",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, otp }),
+    },
+  );
+
+  if (!res.success) {
+    throw new Error(res.message || "Unable to verify OTP");
+  }
+
+  return res;
+}
+
+async function ClearResetPasswordFlowAction() {
+  await clearResetEmailCookieServer();
+  return { success: true };
+}
+
+async function ResendResetOtpAction() {
+  const email = await getResetEmailFromCookieServer();
+  if (!email) throw new Error("Reset email is missing.");
+
+  const res = await fetchApi<{ sent: boolean }>("auth/password/reset/request", {
+    method: "POST",
+    cache: "no-store",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
+
+  if (!res.success) throw new Error(res.message || "Unable to resend code");
+  return res;
+}
+
+type ResetUpdateResponse = {
+  success: boolean;
+  message?: string;
+};
+
+export async function ResetPasswordUpdateAction(newPassword: string) {
+  const email = await getResetEmailFromCookieServer();
+
+  if (!email) {
+    throw new Error("Reset email is missing. Please restart the reset flow.");
+  }
+
+  const res = await fetchApi<ResetUpdateResponse>(
+    "auth/password/reset/update",
+    {
+      method: "POST",
+      cache: "no-store",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email,
+        new_password: newPassword,
+      }),
+    },
+  );
+
+  if (!res.success) {
+    throw new Error(res.message || "Unable to update password");
+  }
+
+  await clearResetEmailCookieServer();
+
+  return res;
+}
+
 export {
   LoginAction,
   LogoutAction,
@@ -186,4 +298,8 @@ export {
   RegisterSellerAction,
   VerifyOtpAction,
   ResendOtpAction,
+  RequestPasswordResetAction,
+  VerifyResetPasswordOtpAction,
+  ClearResetPasswordFlowAction,
+  ResendResetOtpAction,
 };

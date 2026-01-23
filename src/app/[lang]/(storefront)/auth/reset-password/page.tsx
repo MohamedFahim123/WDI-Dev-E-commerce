@@ -1,6 +1,16 @@
 import { ResetPasswordForm } from "@/src/components/Auth/ResetPasswordForm/ResetPasswordForm";
-import React from "react";
+import { getResetEmailFromCookieServer } from "@/src/lib/authCookies";
+import { redirect } from "next/navigation";
 
-export default function ResetPasswordPage() {
+export default async function ResetPasswordPage({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}) {
+  const email = await getResetEmailFromCookieServer();
+  const { lang } = await params;
+
+  if (!email) redirect(`/${lang}/auth/forgot-password`);
+
   return <ResetPasswordForm />;
 }

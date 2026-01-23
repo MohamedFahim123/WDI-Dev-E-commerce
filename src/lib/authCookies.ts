@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 const AUTH_COOKIE_NAME = "isLoggedIn";
 const ROLE_COOKIE_NAME = "role";
 const TOKEN_COOKIE_NAME = "authToken";
+const RESET_EMAIL_COOKIE = "reset_email";
 
 const isProd = process.env.NODE_ENV === "production";
 
@@ -98,3 +99,24 @@ export async function clearAuthTokenCookieServer() {
     secure: isProd,
   });
 }
+
+export async function getResetEmailFromCookieServer(): Promise<string | null> {
+  const cookieStore = await cookies();
+  return cookieStore.get(RESET_EMAIL_COOKIE)?.value ?? null;
+}
+export async function setResetEmailCookieServer(email: string, days = 1) {
+  const cookieStore = await cookies();
+  const maxAge = days * 24 * 60 * 60;
+
+  cookieStore.set(RESET_EMAIL_COOKIE, email, {
+    path: "/",
+    maxAge,
+    sameSite: "lax",
+    httpOnly: true,
+    secure: isProd,
+  });
+}
+export const clearResetEmailCookieServer = async () => {
+  const cookie = await cookies();
+  cookie.delete(RESET_EMAIL_COOKIE);
+};

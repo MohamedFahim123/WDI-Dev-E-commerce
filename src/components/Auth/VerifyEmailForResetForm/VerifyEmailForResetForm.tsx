@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouteLang } from "@/src/hooks/useLang";
+import { ResendResetOtpAction, VerifyResetPasswordOtpAction } from "@/src/services/auth.service";
 import { useAuthStore } from "@/src/stores/authStore";
 import { Globe2 } from "lucide-react";
 import Link from "next/link";
@@ -29,11 +30,12 @@ export function VerifyEmailForResetForm({ email }: VerifyEmailFormProps) {
   });
 
   async function onSubmit(values: VerifyEmailValues) {
-    console.log(values);
+    await VerifyResetPasswordOtpAction(values.code);
     router.push(`/${lang}/auth/reset-password`);
   }
-
-  function handleResend() {}
+  async function handleResend() {
+    await ResendResetOtpAction();
+  }
 
   return (
     <form

@@ -8,7 +8,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import AuthMenu from "./AuthMenu";
 import CartButton from "./CartButton";
-import LangDropDown from "./LangDropDown";
 import NotificationsMenu from "./NotificationsMenu";
 import useOutsideClose from "./useOutsideClose";
 import WishlistButton from "./WishlistButton";
@@ -51,14 +50,14 @@ export default function NavCartContent() {
 
   return (
     <div className="flex items-center gap-2.5 sm:gap-3">
-      <LangDropDown
+      {/* <LangDropDown
         langOpen={langOpen}
         currentLang={currentLang}
         langRef={langRef}
         setAuthOpen={setAuthOpen}
         getPathForLang={getPathForLang}
         setLangOpen={setLangOpen}
-      />
+      /> */}
 
       {isAuthenticated && <NotificationsMenu currentLang={currentLang} />}
 

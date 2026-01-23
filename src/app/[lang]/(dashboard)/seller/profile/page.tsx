@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description: "Here You can update your deta, which shows for all users.",
 };
 
-export default function BuyerProfilePage() {
+export default function SellerProfilePage() {
   return (
     <div className="space-y-6">
       <ProfileSection />

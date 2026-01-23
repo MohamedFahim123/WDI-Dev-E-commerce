@@ -1,11 +1,13 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import Link from "next/link";
-import { useForm } from "react-hook-form";
-import { Globe2, Eye, EyeOff } from "lucide-react";
 import { useRouteLang } from "@/src/hooks/useLang";
+import { ResetPasswordUpdateAction } from "@/src/services/auth.service";
 import { useAuthStore } from "@/src/stores/authStore";
+import { Eye, EyeOff, Globe2 } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 
 interface ResetPasswordValues {
   password: string;
@@ -14,8 +16,8 @@ interface ResetPasswordValues {
 
 export function ResetPasswordForm() {
   const lang = useRouteLang();
-  const [passwordValue, setPasswordValue] = useState<string>("");
   const { error: globalError } = useAuthStore();
+  const router = useRouter();
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -32,13 +34,11 @@ export function ResetPasswordForm() {
     },
   });
 
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/incompatible-library
-    setPasswordValue(watch("password"));
-  }, [watch]);
+  const passwordValue = watch("password");
 
   async function onSubmit(values: ResetPasswordValues) {
-    console.log(values);
+    await ResetPasswordUpdateAction(values.password);
+    router.push(`/${lang}/auth/login`);
   }
 
   return (

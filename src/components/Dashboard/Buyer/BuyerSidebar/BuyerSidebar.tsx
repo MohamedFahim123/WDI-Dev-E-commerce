@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/src/components/ui/button";
-import { ClientAuthUser } from "@/src/services/profile.service";
+import { useAuthStore } from "@/src/stores/authStore";
 import { LucideProps } from "lucide-react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
@@ -12,6 +12,7 @@ import {
   SetStateAction,
 } from "react";
 import { Menu, MenuItem, Sidebar } from "react-pro-sidebar";
+
 export interface NavLink {
   href: string;
   label: string;
@@ -19,26 +20,28 @@ export interface NavLink {
     Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>
   >;
 }
+
 interface BuyerSidebarProps {
   collapsed?: boolean;
   navItems: NavLink[];
   setCollapsed?: Dispatch<SetStateAction<boolean>>;
   onNavigate?: () => void;
-  user?: ClientAuthUser;
 }
 
 export default function BuyerSidebar({
   collapsed,
   onNavigate,
   navItems,
-  user,
 }: BuyerSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
 
+  const user = useAuthStore((s) => s.user);
+  const loading = useAuthStore((s) => s.loading);
+
   const handleItemClick = (href: string) => {
     router.push(href);
-    if (onNavigate) onNavigate();
+    onNavigate?.();
   };
 
   return (
@@ -54,29 +57,27 @@ export default function BuyerSidebar({
     >
       <div className="flex flex-col items-center gap-2 py-4">
         <Image
-          src={user?.image ? user?.image : "/assets/dashboard/profile.webp"}
+          src={"/assets/dashboard/profile.jpg"}
           alt="Profile avatar"
           width={56}
           height={56}
           className="h-14 w-14 rounded-full object-cover"
         />
+
         {!collapsed && (
           <div className="text-center">
             <p className="text-sm font-semibold text-[#111827]">
-              {user?.name ? user.name : "Ahmed Al Mansoori"}
+              {loading ? "Loading..." : user?.name || "—"}
             </p>
             <p className="text-xs text-gray-500">
-              {user?.email ? user.email : "ahmed.almansoori@example.com"}
+              {loading ? "" : user?.email || "—"}
             </p>
           </div>
         )}
       </div>
 
       <Menu
-        rootStyles={{
-          paddingTop: "4px",
-          paddingBottom: "8px",
-        }}
+        rootStyles={{ paddingTop: "4px", paddingBottom: "8px" }}
         menuItemStyles={{
           button: ({ active }) => ({
             padding: "8px 16px",
@@ -94,9 +95,7 @@ export default function BuyerSidebar({
             fontSize: "16px",
             color: active ? "#111827" : "#4B5563",
           }),
-          label: {
-            whiteSpace: "nowrap",
-          },
+          label: { whiteSpace: "nowrap" },
         }}
       >
         {navItems.map((item) => {

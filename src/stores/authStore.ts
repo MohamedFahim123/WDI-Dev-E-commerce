@@ -2,21 +2,40 @@
 
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
+
 import {
   clearAllCookies,
   LoginAction,
   LogoutAction,
 } from "../services/auth.service";
-
 import {
   ClientAuthUser,
   getMyProfileAction,
+  updateMyProfileAction,
+  UpdateBuyerProfileInput,
+  UpdateSellerProfileInput,
 } from "../services/profile.service";
 import { LoginInput } from "../validation/LoginSchema";
 
+type Role = "buyer" | "seller";
+
+export type ProfileDraft = {
+  name: string;
+  email: string;
+  phone: string;
+
+  street: string;
+  street2: string; 
+  city: string;
+
+  state_id: number | null;
+  zip: string;
+  country_id: number | null;
+};
+
 interface AuthState {
   user: ClientAuthUser | null;
-  role: "buyer" | "seller" | null;
+  role: Role | null;
 
   loading: boolean;
   isAuthenticated: boolean;
@@ -24,21 +43,23 @@ interface AuthState {
   error: string | null;
 
   setUser: (user: ClientAuthUser | null) => void;
-  setRole: (role: "buyer" | "seller" | null) => void;
+  setRole: (role: Role | null) => void;
 
   hydrateFromServer: () => Promise<void>;
   reset: () => void;
 
   login: (input: LoginInput) => Promise<void>;
   logout: () => Promise<void>;
+
+  updateProfile: (draft: ProfileDraft) => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>()(
   devtools((set, get) => ({
     user: null,
     role: null,
-    loading: true,
 
+    loading: true,
     isAuthenticated: false,
     isInitializing: false,
     error: null,
@@ -118,5 +139,55 @@ export const useAuthStore = create<AuthState>()(
         });
       }
     },
-  }))
+
+    updateProfile: async (draft) => {
+      set({ isInitializing: true, error: null });
+
+      try {
+        const role = get().role;
+        if (!role) throw new Error("Role is missing. Please login again.");
+
+        const payload: UpdateBuyerProfileInput | UpdateSellerProfileInput =
+          role === "buyer"
+            ? {
+                name: draft.name,
+                phone: draft.phone,
+                street: draft.street,
+                city: draft.city,
+                state_id: draft.state_id,
+                zip: draft.zip,
+                country_id: draft.country_id,
+              }
+            : {
+                name: draft.name,
+                email: draft.email,
+                phone: draft.phone,
+                street: draft.street,
+                street2: draft.street2,
+                city: draft.city,
+                state_id: draft.state_id,
+                zip: draft.zip,
+                country_id: draft.country_id,
+              };
+
+        const res = await updateMyProfileAction(payload);
+
+        const current = get().user;
+        const updated: ClientAuthUser | null =
+          res.data ??
+          (current
+            ? {
+                ...current,
+                ...draft,
+              }
+            : null);
+
+        set({ user: updated, isInitializing: false, error: null });
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Unable to update profile";
+        set({ error: message, isInitializing: false });
+      }
+    },
+  })),
 );

@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { AuthInput } from "../Fields/AuthInput";
 import { useRouter } from "next/navigation";
+import { RequestPasswordResetAction } from "@/src/services/auth.service";
 
 interface ForgotPasswordValues {
   email: string;
@@ -26,8 +27,8 @@ export function ForgotPasswordForm() {
   });
 
   async function onSubmit(values: ForgotPasswordValues) {
+    await RequestPasswordResetAction(values.email);
     router.push(`/${lang}/auth/verify-account`);
-    console.log("Forgot password email", values.email);
   }
 
   return (
