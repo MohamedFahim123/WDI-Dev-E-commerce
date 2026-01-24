@@ -3,34 +3,35 @@
 import { Star } from "lucide-react";
 
 type Props = {
-  value: number;
-  count?: number;
+  value?: number | null;
+  count?: number | null;
 };
 
 export function RatingStars({ value, count }: Props) {
-  const rounded = Math.round(value * 2) / 2;
+  const safeValue = Number.isFinite(value as number) ? (value as number) : 0;
+
+  const full = Math.floor(safeValue);
+  const hasHalf = safeValue - full >= 0.5;
 
   return (
-    <div className="flex items-center gap-1 text-sm">
-      <div className="flex items-center">
+    <div className="flex items-center gap-2">
+      <div className="flex items-center gap-0.5">
         {Array.from({ length: 5 }).map((_, i) => {
-          const index = i + 1;
-          const filled = index <= Math.floor(rounded);
-          const half = !filled && index - 0.5 === rounded;
+          const filled = i < full || (i === full && hasHalf);
 
           return (
             <Star
-              key={index}
+              key={i}
               className={`h-4 w-4 ${
-                filled || half
-                  ? "fill-yellow-400 text-yellow-400"
-                  : "text-zinc-300"
+                filled ? "fill-yellow-400 text-yellow-400" : "text-zinc-300"
               }`}
             />
           );
         })}
       </div>
-      <span className="font-medium text-zinc-900">{value.toFixed(1)}</span>
+
+      <span className="font-medium text-zinc-900">{safeValue.toFixed(1)}</span>
+
       {typeof count === "number" && (
         <span className="text-xs text-zinc-500">({count} reviews)</span>
       )}

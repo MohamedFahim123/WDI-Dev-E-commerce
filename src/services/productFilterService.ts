@@ -1,12 +1,11 @@
-import { Product } from "@/src/types/product.types";
-import { FilterState } from "@/src/stores/shopStore";
+import type { Product } from "@/src/types/product.types";
+import type { FilterState } from "@/src/stores/shopStore";
 
 export const applyFiltersAndSort = (
   products: Product[],
-  filters: FilterState
+  filters: FilterState,
 ): Product[] => {
   let result = [...products];
-
 
   const ratingFilter = filters["rating"];
   if (ratingFilter && ratingFilter !== "any") {
@@ -17,7 +16,6 @@ export const applyFiltersAndSort = (
     }
   }
 
-
   const sortKey = filters["sort"];
 
   if (sortKey === "rating_desc") {
@@ -26,12 +24,10 @@ export const applyFiltersAndSort = (
     result.sort(
       (a, b) =>
         (a.price ?? Number.MAX_SAFE_INTEGER) -
-        (b.price ?? Number.MAX_SAFE_INTEGER)
+        (b.price ?? Number.MAX_SAFE_INTEGER),
     );
   } else if (sortKey === "price_desc") {
-    result.sort(
-      (a, b) => (b.price ?? 0) - (a.price ?? 0)
-    );
+    result.sort((a, b) => (b.price ?? 0) - (a.price ?? 0));
   }
 
   return result;

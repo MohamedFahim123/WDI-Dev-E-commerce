@@ -1,12 +1,14 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { Product } from "@/src/types/product.types";
+import type { Product } from "@/src/types/product.types";
 import Container from "../Container/Container";
 import { useShopProducts } from "@/src/hooks/useShopProducts";
 import ProductCardSkeleton from "../Skeletons/ProductCardSkeleton/ProductCardSkeleton";
 import FilterBarSkeleton from "../Skeletons/FilterBarSkeleton/FilterBarSkeleton";
 import { useRouteLang } from "@/src/hooks/useLang";
+import { useEffect, useMemo } from "react";
+import { useProductsStore } from "@/src/stores/productsStore";
 
 const FilterBar = dynamic(() => import("../Filters/FilterBar"), {
   ssr: false,
@@ -18,25 +20,39 @@ const ProductCard = dynamic(() => import("../ProductCard/ProductCard"), {
 });
 
 type ProductsSectionProps = {
-  products: Product[];
+  initialProducts?: Product[];
   initialCount?: number;
   step?: number;
 };
 
 export default function ShopProducts({
-  products,
+  initialProducts = [],
   initialCount = 9,
   step = 9,
 }: ProductsSectionProps) {
+  const lang: string = useRouteLang();
+
+  const storeList = useProductsStore((s) => s.list);
+  const setList = useProductsStore((s) => s.setList);
+
+  useEffect(() => {
+    if (initialProducts.length > 0 && storeList.length === 0) {
+      setList(initialProducts);
+    }
+  }, [initialProducts, setList, storeList.length]);
+
+  const baseProducts = useMemo(
+    () => (storeList.length > 0 ? storeList : initialProducts),
+    [storeList, initialProducts],
+  );
+
   const { visibleProducts, hasMore, handleViewMore } = useShopProducts({
-    products,
+    products: baseProducts,
     initialCount,
     step,
   });
 
-  const lang: string = useRouteLang();
-
-  const showSkeletonGrid = visibleProducts.length === 0;
+  const showSkeletonGrid = baseProducts.length === 0;
 
   return (
     <section className="py-10">
@@ -52,6 +68,12 @@ export default function ShopProducts({
                 <ProductCard key={product.id} product={product} lang={lang} />
               ))}
         </div>
+
+        {!showSkeletonGrid && visibleProducts.length === 0 && (
+          <div className="py-10 text-center text-sm text-gray-500">
+            No products found.
+          </div>
+        )}
 
         {!showSkeletonGrid && hasMore && (
           <div className="flex justify-center pt-4">

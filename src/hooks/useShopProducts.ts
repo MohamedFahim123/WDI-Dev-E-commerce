@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo } from "react";
-import { Product } from "@/src/types/product.types";
+import type { Product } from "@/src/types/product.types";
 import { applyFiltersAndSort } from "@/src/services/productFilterService";
 import { useShopStore } from "@/src/stores/shopStore";
 
@@ -22,7 +22,7 @@ export const useShopProducts = ({
 
   const filteredProducts = useMemo(
     () => applyFiltersAndSort(products, filters),
-    [products, filters]
+    [products, filters],
   );
 
   useEffect(() => {
@@ -31,7 +31,7 @@ export const useShopProducts = ({
 
   const visibleProducts = useMemo(
     () => filteredProducts.slice(0, visibleCount),
-    [filteredProducts, visibleCount]
+    [filteredProducts, visibleCount],
   );
 
   const hasMore = visibleCount < filteredProducts.length;

@@ -1,17 +1,23 @@
 "use client";
 
-import { Review } from "@/src/types/product.types";
+import { useReviews } from "@/src/hooks/useReviews";
+import { Product } from "@/src/types/product.types";
 import { RatingStars } from "../RatingStars/RatingStars";
 import { ReviewForm } from "../ReviewForm/ReviewForm";
-import { useReviews } from "@/src/hooks/useReviews";
 
 type Props = {
+  product: Product;
   productId: string;
   rating: number;
   reviewCount: number;
 };
 
-export function ProductReviews({ productId, rating, reviewCount }: Props) {
+export function ProductReviews({
+  product,
+  productId,
+  rating,
+  reviewCount,
+}: Props) {
   const { reviews, loading, addReview } = useReviews(productId);
 
   const totalReviews = reviews.length || reviewCount || 0;
@@ -36,6 +42,7 @@ export function ProductReviews({ productId, rating, reviewCount }: Props) {
             <div className="text-sm font-medium text-zinc-600">
               Average rating
             </div>
+
             <div className="mt-2 space-y-1.5">
               {distribution.map(({ star, percentage }) => (
                 <div
@@ -43,7 +50,7 @@ export function ProductReviews({ productId, rating, reviewCount }: Props) {
                   className="flex items-center gap-3 text-xs text-zinc-600"
                 >
                   <span className="w-10 text-right">{star} star</span>
-                  <div className="flex-1 h-2 overflow-hidden rounded-full bg-zinc-100">
+                  <div className="h-2 flex-1 overflow-hidden rounded-full bg-zinc-100">
                     <div
                       className="h-full rounded-full bg-zinc-900"
                       style={{ width: `${percentage}%` }}
@@ -59,13 +66,16 @@ export function ProductReviews({ productId, rating, reviewCount }: Props) {
 
           <div className="flex flex-col items-center justify-center text-center">
             <span className="text-4xl font-bold text-zinc-900">
-              {rating.toFixed(1)}
+              {Number(rating).toFixed(1)}
             </span>
             <div className="mt-1">
-              <RatingStars value={rating} />
+              <RatingStars
+                value={product.rating ?? 0}
+                count={product.reviewCount ?? 0}
+              />
             </div>
             <span className="mt-1 text-xs text-zinc-500">
-              {reviewCount.toLocaleString()} reviews
+              {Number(reviewCount).toLocaleString()} reviews
             </span>
           </div>
         </div>
@@ -89,7 +99,7 @@ export function ProductReviews({ productId, rating, reviewCount }: Props) {
           </p>
         )}
 
-        {reviews.map((review: Review) => (
+        {reviews.map((review) => (
           <div
             key={review.id}
             className="rounded-lg border border-zinc-100 bg-white p-4"

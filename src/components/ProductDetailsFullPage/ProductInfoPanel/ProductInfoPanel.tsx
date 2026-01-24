@@ -1,44 +1,47 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
+import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 
-import { Product, ProductVariant } from "@/src/types/product.types";
+import { handleShareThisProduct } from "@/src/lib/ShareProduct";
 import { useCartStore } from "@/src/stores/cartStore";
 import { useWishlistStore } from "@/src/stores/wishlistStore";
-import { handleShareThisProduct } from "@/src/lib/ShareProduct";
+import type { Product, ProductVariant } from "@/src/types/product.types";
 
+import { useRouteLang } from "@/src/hooks/useLang";
 import { ProductMainInfoCard } from "./ProductMainInfoCard";
 import { ProductPaymentCard } from "./ProductPaymentCard";
-import { ProductShippingReturnsCard } from "./ProductShippingReturnsCard";
 import { ProductSellerInfoCard } from "./ProductSellerInfoCard";
-import { useRouteLang } from "@/src/hooks/useLang";
+import { ProductShippingReturnsCard } from "./ProductShippingReturnsCard";
 
 type Props = {
   product: Product;
 };
 
 export function ProductInfoPanel({ product }: Props) {
-  const addItem = useCartStore((s) => s.addItem);
   const lang = useRouteLang();
-
-  const toggleWishlist = useWishlistStore((s) => s.toggle);
-  const wishlisted = useWishlistStore((s) => s.productIds.includes(product.id));
-
   const pathname = usePathname();
 
+  const addItem = useCartStore((s) => s.addItem);
+  const wishlistIds = useWishlistStore((s) => s.productIds);
+  const toggleWishlist = useWishlistStore((s) => s.toggle);
+
+  const pid = String(product.id);
+  const wishlisted = wishlistIds.includes(pid);
+
   const [selectedColorId, setSelectedColorId] = useState(
-    product.colors?.[0]?.id
+    product.colors?.[0]?.id,
   );
   const [quantity, setQuantity] = useState(1);
 
-  const variant: ProductVariant | undefined = useMemo(
-    () =>
-      product.variants?.find((v) => v.colorId === selectedColorId) ??
-      product.variants?.[0],
-    [product, selectedColorId]
-  );
+  const variant: ProductVariant | undefined = useMemo(() => {
+    if (!product.variants || product.variants.length === 0) return undefined;
+    return (
+      product.variants.find((v) => v.colorId === selectedColorId) ??
+      product.variants[0]
+    );
+  }, [product.variants, selectedColorId]);
 
   const outOfStock = !variant || variant.stock <= 0;
 
@@ -49,15 +52,15 @@ export function ProductInfoPanel({ product }: Props) {
     }
 
     addItem({
-      productId: product.id,
+      productId: pid,
       variantId: variant.id,
       quantity,
     });
-  }, [variant, outOfStock, addItem, product.id, quantity]);
+  }, [addItem, outOfStock, pid, quantity, variant]);
 
   const handleWishlistClick = useCallback(() => {
-    toggleWishlist(product.id);
-  }, [toggleWishlist, product.id]);
+    toggleWishlist(pid, product.name);
+  }, [pid, product.name, toggleWishlist]);
 
   const handleShareClick = useCallback(() => {
     handleShareThisProduct(pathname, product);

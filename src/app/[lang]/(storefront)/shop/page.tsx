@@ -1,6 +1,7 @@
 import ShopProducts from "@/src/components/ShopProducts/ShopProducts";
 import { withBlockSeller } from "@/src/hoc/roleGuards";
-import { products } from "@/src/stores/products";
+import { getFilters } from "@/src/services/filter.service";
+import { getProductsList } from "@/src/services/product.service";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -8,8 +9,15 @@ export const metadata: Metadata = {
   description: "Explore Our Products!",
 };
 
-function ProductsPage() {
-  return <ShopProducts products={products} />;
+async function ProductsPage() {
+  const [filters, productList] = await Promise.all([
+    getFilters(),
+    getProductsList({ limit: 20, offset: 0 }, { revalidateSeconds: 300 }),
+  ]);
+
+  console.log(filters);
+
+  return <ShopProducts initialProducts={productList.products} />;
 }
 
 export default withBlockSeller(ProductsPage, {

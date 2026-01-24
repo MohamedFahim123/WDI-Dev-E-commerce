@@ -98,11 +98,11 @@ function normalizeProfile(
   };
 }
 
-export async function getMyProfileAction(): Promise<GetProfileResult> {
+export async function getMyProfileAction(): Promise<GetProfileResult | null> {
   const token = await getAuthTokenFromCookieServer();
   const role = await getRoleFromCookieServer();
 
-  if (!token || !role) throw new Error("Not authenticated");
+  if (!token || !role) return null;
 
   const endpoint = role === "seller" ? "seller/profile" : "buyer/get-profile";
 
@@ -117,7 +117,6 @@ export async function getMyProfileAction(): Promise<GetProfileResult> {
       },
     },
   );
-  console.log(res)
 
   if (!res.success) throw new Error(res.message || "Unable to fetch profile");
 

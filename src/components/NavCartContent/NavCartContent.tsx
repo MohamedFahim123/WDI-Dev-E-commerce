@@ -3,7 +3,7 @@
 import { useAuthStore } from "@/src/stores/authStore";
 import { useCartStore } from "@/src/stores/cartStore";
 import { useWishlistStore } from "@/src/stores/wishlistStore";
-import { useParams, usePathname } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import AuthMenu from "./AuthMenu";
@@ -14,7 +14,6 @@ import WishlistButton from "./WishlistButton";
 
 export default function NavCartContent() {
   const params = useParams();
-  const pathname = usePathname();
   const [langOpen, setLangOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
 
@@ -31,9 +30,6 @@ export default function NavCartContent() {
 
   const currentLang = typeof params?.lang === "string" ? params.lang : "en";
 
-  const getPathForLang = (lang: string) =>
-    pathname ? pathname.replace(`/${currentLang}`, `/${lang}`) : `/${lang}`;
-
   useEffect(() => {
     (async () => {
       await hydrateFromServer();
@@ -42,7 +38,7 @@ export default function NavCartContent() {
 
   const isSeller = useMemo(
     () => role?.trim()?.toLowerCase() === "seller",
-    [role,logout]
+    [role, logout],
   );
 
   useOutsideClose(langRef, () => setLangOpen(false));

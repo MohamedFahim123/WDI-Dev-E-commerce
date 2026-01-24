@@ -11,8 +11,8 @@ import {
 import {
   ClientAuthUser,
   getMyProfileAction,
-  updateMyProfileAction,
   UpdateBuyerProfileInput,
+  updateMyProfileAction,
   UpdateSellerProfileInput,
 } from "../services/profile.service";
 import { LoginInput } from "../validation/LoginSchema";
@@ -25,7 +25,7 @@ export type ProfileDraft = {
   phone: string;
 
   street: string;
-  street2: string; 
+  street2: string;
   city: string;
 
   state_id: number | null;
@@ -76,70 +76,6 @@ export const useAuthStore = create<AuthState>()(
         error: null,
         loading: false,
       }),
-
-    hydrateFromServer: async () => {
-      set({ loading: true, error: null });
-
-      try {
-        const session = await getMyProfileAction();
-        set({
-          user: session.user,
-          role: session.role,
-          isAuthenticated: session.isAuthenticated,
-          loading: false,
-        });
-      } catch (err) {
-        const message =
-          err instanceof Error ? err.message : "Unable to hydrate";
-        set({ error: message, loading: false });
-      }
-    },
-
-    login: async (input) => {
-      set({ isInitializing: true, loading: true, error: null });
-
-      try {
-        const res = await LoginAction(input);
-
-        const user = res.data as unknown as ClientAuthUser;
-        if (!user) throw new Error("Login succeeded but user is missing");
-
-        get().setUser(user);
-        get().setRole(input.role);
-
-        set({
-          isAuthenticated: true,
-          isInitializing: false,
-          loading: false,
-          error: null,
-        });
-      } catch (err) {
-        const message = err instanceof Error ? err.message : "Unable to login";
-        set({ error: message, isInitializing: false, loading: false });
-      }
-    },
-
-    logout: async () => {
-      set({ isInitializing: true, loading: true, error: null });
-
-      try {
-        await LogoutAction();
-      } catch (err) {
-        const message = err instanceof Error ? err.message : "Unable to logout";
-        set({ error: message });
-      } finally {
-        await clearAllCookies();
-        set({
-          user: null,
-          role: null,
-          isAuthenticated: false,
-          isInitializing: false,
-          error: null,
-          loading: false,
-        });
-      }
-    },
-
     updateProfile: async (draft) => {
       set({ isInitializing: true, error: null });
 
@@ -187,6 +123,87 @@ export const useAuthStore = create<AuthState>()(
         const message =
           err instanceof Error ? err.message : "Unable to update profile";
         set({ error: message, isInitializing: false });
+      }
+    },
+
+    hydrateFromServer: async () => {
+      set({ loading: true, error: null });
+
+      try {
+        const session = await getMyProfileAction();
+
+        if (!session) {
+          set({
+            user: null,
+            role: null,
+            isAuthenticated: false,
+            loading: false,
+          });
+          return;
+        }
+
+        set({
+          user: session.user,
+          role: session.role,
+          isAuthenticated: session.isAuthenticated,
+          loading: false,
+        });
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Unable to hydrate";
+
+        set({
+          error: message,
+          user: null,
+          role: null,
+          isAuthenticated: false,
+          loading: false,
+        });
+      }
+    },
+
+    login: async (input) => {
+      set({ isInitializing: true, loading: true, error: null });
+
+      try {
+        const res = await LoginAction(input);
+
+        const user = res.data as unknown as ClientAuthUser;
+        if (!user) throw new Error("Login succeeded but user is missing");
+
+        get().setUser(user);
+        get().setRole(input.role);
+
+        set({
+          isAuthenticated: true,
+          isInitializing: false,
+          loading: false,
+          error: null,
+        });
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Unable to login";
+        set({ error: message, isInitializing: false, loading: false });
+      }
+    },
+
+    logout: async () => {
+      set({ isInitializing: true, loading: true, error: null });
+
+      try {
+        await LogoutAction();
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Unable to logout";
+        set({ error: message });
+      } finally {
+        await clearAllCookies();
+        set({
+          user: null,
+          role: null,
+          isAuthenticated: false,
+          isInitializing: false,
+          error: null,
+          loading: false,
+        });
       }
     },
   })),

@@ -16,7 +16,7 @@ const Lightbox = dynamic(
   () => import("@/src/components/ui/Lightbox/Lightbox"),
   {
     ssr: false,
-  }
+  },
 );
 
 type Props = {
@@ -29,14 +29,12 @@ export function ProductGallery({ product }: Props) {
       delay: 3500,
       stopOnInteraction: true,
       stopOnMouseEnter: true,
-    })
+    }),
   );
 
   const [api, setApi] = useState<CarouselApi | null>(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-
-  const images = product?.images;
 
   useEffect(() => {
     if (!api) return;
@@ -53,6 +51,8 @@ export function ProductGallery({ product }: Props) {
     };
   }, [api]);
 
+  const images = useMemo(() => product.images ?? [], [product.images]);
+
   const handleThumbClick = (index: number) => {
     api?.scrollTo(index);
   };
@@ -68,8 +68,18 @@ export function ProductGallery({ product }: Props) {
         src: img.url,
         alt: img.alt,
       })),
-    [images]
+    [images],
   );
+
+  if (images.length === 0) {
+    return (
+      <div className="space-y-4">
+        <div className="relative aspect-square overflow-hidden rounded-xl bg-zinc-100 flex items-center justify-center text-sm text-zinc-500">
+          No image
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
