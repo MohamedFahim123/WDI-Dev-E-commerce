@@ -32,6 +32,13 @@ export type ApiResponse<TData> = {
   data: TData;
   error_code: string;
 };
+export type Review = {
+  id: string;
+  userName: string;
+  rating: number;
+  comment: string;
+  createdAt: string; 
+};
 
 export type ApiProduct = {
   id: number;
@@ -63,7 +70,6 @@ export type ApiProduct = {
   active?: boolean;
 
   item_condition?: string;
-
 };
 
 export type ApiProductDetails = ApiProduct & {
@@ -139,7 +145,7 @@ export type ProductVariant = {
 };
 
 export type Product = {
-  id: string; 
+  id: string;
 
   name: string;
 
