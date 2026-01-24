@@ -1,55 +1,72 @@
 "use server";
 
-import { fetchApi } from "@/src/lib/fetchApi";
-import { getAuthTokenFromCookieServer } from "@/src/lib/authCookies";
+import { cookies } from "next/headers";
 
-const COMMERCE_BASE = process.env.COMMERCE_API_BASE_URL || "";
+const COMMERCE_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+const TOKEN_COOKIE_NAME = "authToken";
 
-type ApiResponse<T> = {
-  success: boolean;
-  status: number;
+export type ResShape<TData = unknown> = {
   message: string;
-  data: T;
-  timestamp?: string;
+  status: number;
+  success: boolean;
+  timestamp: string;
+  data: TData;
+  error_code: string;
 };
 
 function assertBase() {
-  if (!COMMERCE_BASE) {
-    throw new Error("COMMERCE_API_BASE_URL is missing");
-  }
+  if (!COMMERCE_BASE) throw new Error("API_BASE_URL is missing");
 }
 
-function authHeader(token: string | null): Record<string, string> {
-  return token ? { Authorization: `Bearer ${token}` } : {};
+async function getTokenFromCookies(): Promise<string | null> {
+  const cookieStore = await cookies();
+  return cookieStore.get(TOKEN_COOKIE_NAME)?.value ?? null;
+}
+
+function buildUrl(endpoint: string) {
+  return `${COMMERCE_BASE.replace(/\/+$/, "")}/${endpoint.replace(/^\/+/, "")}`;
+}
+
+async function commerceFetch<TData>(
+  endpoint: string,
+  init: RequestInit,
+): Promise<ResShape<TData>> {
+  assertBase();
+  const url = buildUrl(endpoint);
+
+  const res = await fetch(url, {
+    ...init,
+    cache: "no-store",
+  });
+
+  return (await res.json()) as ResShape<TData>;
 }
 
 export type WishlistResponse = unknown;
 
 export async function getWishlistService(): Promise<
-  ApiResponse<WishlistResponse>
+  ResShape<WishlistResponse>
 > {
-  assertBase();
-  const token = await getAuthTokenFromCookieServer();
+  const token = await getTokenFromCookies();
+  if (!token) throw new Error("UNAUTHENTICATED");
 
-  return fetchApi<WishlistResponse>("wishlist", {
+  return commerceFetch<WishlistResponse>("wishlist", {
     method: "GET",
-    cache: "no-store",
     headers: {
-      ...authHeader(token),
+      Authorization: `Bearer ${token}`,
     },
   });
 }
 
 export async function addWishlistService(product_id: number) {
-  assertBase();
-  const token = await getAuthTokenFromCookieServer();
+  const token = await getTokenFromCookies();
+  if (!token) throw new Error("UNAUTHENTICATED");
 
-  const res = await fetchApi<unknown>("wishlist/add", {
+  const res = await commerceFetch<unknown>("wishlist/add", {
     method: "POST",
-    cache: "no-store",
     headers: {
       "Content-Type": "application/json",
-      ...authHeader(token),
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({ product_id }),
   });
@@ -59,15 +76,14 @@ export async function addWishlistService(product_id: number) {
 }
 
 export async function removeWishlistService(product_id: number) {
-  assertBase();
-  const token = await getAuthTokenFromCookieServer();
+  const token = await getTokenFromCookies();
+  if (!token) throw new Error("UNAUTHENTICATED");
 
-  const res = await fetchApi<unknown>("wishlist/remove", {
+  const res = await commerceFetch<unknown>("wishlist/remove", {
     method: "DELETE",
-    cache: "no-store",
     headers: {
       "Content-Type": "application/json",
-      ...authHeader(token),
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({ product_id }),
   });
@@ -80,15 +96,14 @@ export async function removeWishlistService(product_id: number) {
 export async function moveWishlistToCartService(
   payload: Record<string, unknown>,
 ) {
-  assertBase();
-  const token = await getAuthTokenFromCookieServer();
+  const token = await getTokenFromCookies();
+  if (!token) throw new Error("UNAUTHENTICATED");
 
-  const res = await fetchApi<unknown>("wishlist/move-to-cart", {
+  const res = await commerceFetch<unknown>("wishlist/move-to-cart", {
     method: "POST",
-    cache: "no-store",
     headers: {
       "Content-Type": "application/json",
-      ...authHeader(token),
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(payload),
   });

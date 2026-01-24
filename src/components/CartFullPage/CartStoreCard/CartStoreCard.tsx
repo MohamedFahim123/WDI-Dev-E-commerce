@@ -1,4 +1,4 @@
-import { Product } from "@/src/types/product.types";
+import type { Product } from "@/src/types/product.types";
 import type { CartItem } from "@/src/stores/cartStore";
 import CartCardItem from "../CartItem/CartItem";
 
@@ -15,8 +15,8 @@ export type StoreGroup = {
 type CartStoreCardProps = {
   group: StoreGroup;
   isWishlisted: (productId: string) => boolean;
-  onIncreaseQuantity: (key: CartItem["key"], quantity: number) => void;
-  onDecreaseQuantity: (key: CartItem["key"], quantity: number) => void;
+  onIncreaseQuantity: (key: CartItem["key"], currentQty: number) => void;
+  onDecreaseQuantity: (key: CartItem["key"], currentQty: number) => void;
   onRemoveItem: (key: CartItem["key"]) => void;
   onSaveForLater: (item: CartProductItem) => void;
 };
@@ -53,7 +53,7 @@ export default function CartStoreCard({
           <CartCardItem
             key={item.key}
             item={item}
-            isWishlisted={isWishlisted(item.product.id)}
+            isWishlisted={isWishlisted(String(item.product.id))}
             onIncrease={() => onIncreaseQuantity(item.key, item.quantity)}
             onDecrease={() => onDecreaseQuantity(item.key, item.quantity)}
             onRemove={() => onRemoveItem(item.key)}

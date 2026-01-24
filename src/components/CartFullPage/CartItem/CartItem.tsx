@@ -26,7 +26,7 @@ function CartItem({
     <div className="flex gap-4 px-5 py-4">
       <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-zinc-100">
         <Image
-          src={product.img}
+          src={product.img || "/assets/products/placeholder.png"}
           alt={product.name}
           fill
           className="object-cover"

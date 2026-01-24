@@ -1,18 +1,46 @@
 "use server";
 
-import { getAuthTokenFromCookieServer } from "@/src/lib/authCookies";
-import { fetchApi } from "@/src/lib/fetchApi";
+import { cookies } from "next/headers";
 
-type ApiResponse<T> = {
-  success: boolean;
-  status: number;
+const COMMERCE_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+const TOKEN_COOKIE_NAME = "authToken";
+
+export type ResShape<TData = unknown> = {
   message: string;
-  data: T;
-  timestamp?: string;
+  status: number;
+  success: boolean;
+  timestamp: string;
+  data: TData;
+  error_code: string;
 };
 
-function authHeader(token: string | null): Record<string, string> {
-  return token ? { Authorization: `Bearer ${token}` } : {};
+function assertBase() {
+  if (!COMMERCE_BASE) throw new Error("API_BASE_URL is missing");
+}
+
+async function getTokenFromCookies(): Promise<string | null> {
+  const cookieStore = await cookies();
+  return cookieStore.get(TOKEN_COOKIE_NAME)?.value ?? null;
+}
+
+function buildUrl(endpoint: string) {
+  return `${COMMERCE_BASE.replace(/\/+$/, "")}/${endpoint.replace(/^\/+/, "")}`;
+}
+
+async function commerceFetch<TData>(
+  endpoint: string,
+  init: RequestInit,
+): Promise<ResShape<TData>> {
+  assertBase();
+  const url = buildUrl(endpoint);
+
+  const res = await fetch(url, {
+    ...init,
+    cache: "no-store",
+  });
+
+  const json = (await res.json()) as ResShape<TData>;
+  return json;
 }
 
 export type CartResponse = unknown;
@@ -27,29 +55,29 @@ export type UpdateCartInput = {
   quantity: number;
 };
 
-export async function getCartService(): Promise<ApiResponse<CartResponse>> {
-  const token = await getAuthTokenFromCookieServer();
+export async function getCartService(): Promise<ResShape<CartResponse>> {
+  const token = await getTokenFromCookies();
+  if (!token) throw new Error("UNAUTHENTICATED");
 
-  return fetchApi<CartResponse>("cart", {
+  return commerceFetch<CartResponse>("cart", {
     method: "GET",
-    cache: "no-store",
     headers: {
-      ...authHeader(token),
+      Authorization: `Bearer ${token}`,
     },
   });
 }
 
 export async function addToCartService(
   input: AddToCartInput,
-): Promise<ApiResponse<unknown>> {
-  const token = await getAuthTokenFromCookieServer();
+): Promise<ResShape<unknown>> {
+  const token = await getTokenFromCookies();
+  if (!token) throw new Error("UNAUTHENTICATED");
 
-  const res = await fetchApi<unknown>("cart/add", {
+  const res = await commerceFetch<unknown>("cart/add", {
     method: "POST",
-    cache: "no-store",
     headers: {
       "Content-Type": "application/json",
-      ...authHeader(token),
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(input),
   });
@@ -60,15 +88,15 @@ export async function addToCartService(
 
 export async function updateCartService(
   input: UpdateCartInput,
-): Promise<ApiResponse<unknown>> {
-  const token = await getAuthTokenFromCookieServer();
+): Promise<ResShape<unknown>> {
+  const token = await getTokenFromCookies();
+  if (!token) throw new Error("UNAUTHENTICATED");
 
-  const res = await fetchApi<unknown>("cart/update", {
+  const res = await commerceFetch<unknown>("cart/update", {
     method: "PUT",
-    cache: "no-store",
     headers: {
       "Content-Type": "application/json",
-      ...authHeader(token),
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(input),
   });
@@ -77,61 +105,56 @@ export async function updateCartService(
   return res;
 }
 
-export async function validateCartStockService(): Promise<
-  ApiResponse<unknown>
-> {
-  const token = await getAuthTokenFromCookieServer();
+export async function validateCartStockService(): Promise<ResShape<unknown>> {
+  const token = await getTokenFromCookies();
+  if (!token) throw new Error("UNAUTHENTICATED");
 
-  return fetchApi<unknown>("cart/validate-stock", {
+  return commerceFetch<unknown>("cart/validate-stock", {
     method: "GET",
-    cache: "no-store",
-
     headers: {
-      ...authHeader(token),
+      Authorization: `Bearer ${token}`,
     },
   });
 }
 
-export async function getAvailableRewardsService(): Promise<
-  ApiResponse<unknown>
-> {
-  const token = await getAuthTokenFromCookieServer();
+export async function getAvailableRewardsService(): Promise<ResShape<unknown>> {
+  const token = await getTokenFromCookies();
+  if (!token) throw new Error("UNAUTHENTICATED");
 
-  return fetchApi<unknown>("cart/available-rewards", {
+  return commerceFetch<unknown>("cart/available-rewards", {
     method: "GET",
-    cache: "no-store",
-
     headers: {
-      ...authHeader(token),
+      Authorization: `Bearer ${token}`,
     },
   });
 }
 
 export async function getBuyerCouponsService(
   include_public = true,
-): Promise<ApiResponse<unknown>> {
-  const token = await getAuthTokenFromCookieServer();
+): Promise<ResShape<unknown>> {
+  const token = await getTokenFromCookies();
+  if (!token) throw new Error("UNAUTHENTICATED");
 
-  return fetchApi<unknown>(`buyer/coupons?include_public=${include_public}`, {
-    method: "GET",
-    cache: "no-store",
-
-    headers: {
-      ...authHeader(token),
+  return commerceFetch<unknown>(
+    `buyer/coupons?include_public=${include_public}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     },
-  });
+  );
 }
 
 export async function applyCouponService(payload: Record<string, unknown>) {
-  const token = await getAuthTokenFromCookieServer();
+  const token = await getTokenFromCookies();
+  if (!token) throw new Error("UNAUTHENTICATED");
 
-  const res = await fetchApi<unknown>("cart/apply-coupon", {
+  const res = await commerceFetch<unknown>("cart/apply-coupon", {
     method: "POST",
-    cache: "no-store",
-
     headers: {
       "Content-Type": "application/json",
-      ...authHeader(token),
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(payload),
   });
@@ -143,15 +166,14 @@ export async function applyCouponService(payload: Record<string, unknown>) {
 export async function removeCouponService(
   payload: Record<string, unknown> = {},
 ) {
-  const token = await getAuthTokenFromCookieServer();
+  const token = await getTokenFromCookies();
+  if (!token) throw new Error("UNAUTHENTICATED");
 
-  const res = await fetchApi<unknown>("cart/remove-coupon", {
+  const res = await commerceFetch<unknown>("cart/remove-coupon", {
     method: "POST",
-    cache: "no-store",
-
     headers: {
       "Content-Type": "application/json",
-      ...authHeader(token),
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(payload),
   });
@@ -161,15 +183,14 @@ export async function removeCouponService(
 }
 
 export async function claimRewardService(payload: Record<string, unknown>) {
-  const token = await getAuthTokenFromCookieServer();
+  const token = await getTokenFromCookies();
+  if (!token) throw new Error("UNAUTHENTICATED");
 
-  const res = await fetchApi<unknown>("cart/claim-reward", {
+  const res = await commerceFetch<unknown>("cart/claim-reward", {
     method: "POST",
-    cache: "no-store",
-
     headers: {
       "Content-Type": "application/json",
-      ...authHeader(token),
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(payload),
   });

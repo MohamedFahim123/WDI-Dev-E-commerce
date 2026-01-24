@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
-
+import { useEffect, useMemo } from "react";
 import Container from "@/src/components/Container/Container";
 import { useRouteLang } from "@/src/hooks/useLang";
 import { useCartStore, type CartItem } from "@/src/stores/cartStore";
@@ -24,7 +23,7 @@ type StoreGroup = {
 };
 
 function buildStoreName(product: Product): string {
-  const category = product.specs?.Category;
+  const category = product.specs?.["Category"];
 
   if (
     category === "Bags & Accessories" ||
@@ -37,32 +36,70 @@ function buildStoreName(product: Product): string {
   return "TechStore Official";
 }
 
+function toUiProduct(p: unknown): Product | null {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const x = p as any;
+  if (!x) return null;
+
+  const id = x.id ?? x.productId ?? null;
+  if (id == null) return null;
+
+  return {
+    id:id,
+    name: String(x.name ?? x.title ?? "Product"),
+    description: String(x.description ?? ""),
+    featureBulletPointsHtml: String(x.featureBulletPointsHtml ?? ""),
+    price: Number(x.price ?? 0),
+    currency: String(x.currency ?? "EGP"),
+    imageUrl: x.imageUrl ?? x.img ?? null,
+    images: Array.isArray(x.images) ? x.images : [],
+    colors: x.colors ?? [],
+    variants: x.variants ?? [],
+    features: Array.isArray(x.features) ? x.features : [],
+    specs: x.specs ?? {},
+    rating: typeof x.rating === "number" ? x.rating : undefined,
+    reviewCount: typeof x.reviewCount === "number" ? x.reviewCount : undefined,
+    badge: x.badge,
+    discountCount: x.discountCount ?? null,
+    originalPrice: x.originalPrice ?? null,
+    categoryId: x.categoryId ?? null,
+    categoryName: x.categoryName ?? null,
+  };
+}
+
 export default function CartFullPage() {
   const lang = useRouteLang();
 
   const items = useCartStore((s) => s.items);
+  const hydrateCart = useCartStore((s) => s.hydrate);
   const updateQuantity = useCartStore((s) => s.updateQuantity);
   const removeItem = useCartStore((s) => s.removeItem);
 
   const wishlistToggle = useWishlistStore((s) => s.toggle);
   const isWishlisted = useWishlistStore((s) => s.isWishlisted);
+  const hydrateWishlist = useWishlistStore((s) => s.hydrate);
+
+  useEffect(() => {
+    hydrateCart({ lang });
+    hydrateWishlist({ lang });
+  }, [hydrateCart, hydrateWishlist, lang]);
 
   const groupedStores: StoreGroup[] = useMemo(() => {
     const groups: Record<string, StoreGroup> = {};
 
     for (const item of items) {
-      const product = products.find((p) => p.id === item.productId);
+      const raw = products.find(
+        (p) => String((p )?.id) === item.productId,
+      );
+      const product = toUiProduct(raw);
+
       if (!product) continue;
 
       const storeName = buildStoreName(product);
       const key = storeName.toLowerCase().replace(/\s+/g, "-");
 
       if (!groups[key]) {
-        groups[key] = {
-          id: key,
-          name: storeName,
-          items: [],
-        };
+        groups[key] = { id: key, name: storeName, items: [] };
       }
 
       groups[key].items.push({ ...item, product });
@@ -71,15 +108,17 @@ export default function CartFullPage() {
     return Object.values(groups);
   }, [items]);
 
-  const subtotal = groupedStores.reduce((sum, group) => {
-    return (
-      sum +
-      group.items.reduce(
-        (inner, item) => inner + item.product.price * item.quantity,
-        0
-      )
-    );
-  }, 0);
+  const subtotal = useMemo(() => {
+    return groupedStores.reduce((sum, group) => {
+      return (
+        sum +
+        group.items.reduce(
+          (inner, item) => inner + (item.product.price ?? 0) * item.quantity,
+          0,
+        )
+      );
+    }, 0);
+  }, [groupedStores]);
 
   const shipping = items.length > 0 ? 11.99 : 0;
   const vatRate = 0.15;
@@ -104,16 +143,20 @@ export default function CartFullPage() {
                   key={group.id}
                   group={group}
                   isWishlisted={isWishlisted}
-                  onIncreaseQuantity={(key, quantity) =>
-                    updateQuantity(key, quantity + 1)
+                  onIncreaseQuantity={(key, currentQty) =>
+                    updateQuantity(key, currentQty + 1, { lang })
                   }
-                  onDecreaseQuantity={(key, quantity) =>
-                    updateQuantity(key, quantity > 1 ? quantity - 1 : 1)
+                  onDecreaseQuantity={(key, currentQty) =>
+                    updateQuantity(key, currentQty > 1 ? currentQty - 1 : 1, {
+                      lang,
+                    })
                   }
-                  onRemoveItem={removeItem}
+                  onRemoveItem={(key) => removeItem(key, { lang })}
                   onSaveForLater={(item) => {
-                    wishlistToggle(item.product.id);
-                    removeItem(item.key);
+                    wishlistToggle(String(item.product.id), item.product.name, {
+                      lang,
+                    });
+                    removeItem(item.key, { lang });
                   }}
                 />
               ))}

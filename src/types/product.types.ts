@@ -78,6 +78,7 @@ export type ApiProductDetails = ApiProduct & {
   is_published?: boolean;
   has_variants?: boolean;
   variant_count?: number;
+  prod_features?: string;
 
   variants?: ApiProductVariant[];
   attribute_lines?: ApiAttributeLine[];
@@ -138,7 +139,8 @@ export type ProductVariant = {
 };
 
 export type Product = {
-  id: number;
+  id: string; 
+
   name: string;
 
   description: string;
@@ -165,4 +167,9 @@ export type Product = {
 
   categoryId?: number | null;
   categoryName?: string | null;
+
+  subtitle?: string;
+  img?: string;
+  oldPrice?: number;
+  badges?: string[];
 };

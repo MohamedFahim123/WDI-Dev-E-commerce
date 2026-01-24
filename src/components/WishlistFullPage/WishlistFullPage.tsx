@@ -1,21 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 
 import Container from "@/src/components/Container/Container";
 import { useRouteLang } from "@/src/hooks/useLang";
 import { useCartStore } from "@/src/stores/cartStore";
-import { products } from "@/src/stores/products";
 import { useWishlistStore } from "@/src/stores/wishlistStore";
 import type { Product } from "@/src/types/product.types";
+
 import EmptyWishlist from "./EmptyWishlist/EmptyWishlist";
 import WishlistItemRow from "./WishlistItemRow/WishlistItemRow";
 import WishlistSummarySidebar from "./WishlistSummarySidebar/WishlistSummarySidebar";
 
-type WishlistProductItem = {
-  product: Product;
-};
+type WishlistProductItem = { product: Product };
 
 type StoreGroup = {
   id: string;
@@ -24,7 +22,7 @@ type StoreGroup = {
 };
 
 function buildStoreName(product: Product): string {
-  const category = product.specs?.Category;
+  const category = product.specs?.["Category"];
 
   if (
     category === "Bags & Accessories" ||
@@ -40,51 +38,54 @@ function buildStoreName(product: Product): string {
 export default function WishlistFullPage() {
   const lang = useRouteLang();
 
-  const productIds = useWishlistStore((s) => s.productIds);
+  const wishlistItems = useWishlistStore((s) => s.items);
   const toggleWishlist = useWishlistStore((s) => s.toggle);
   const wishlistCount = useWishlistStore((s) => s.getQuantity());
+  const hydrateWishlist = useWishlistStore((s) => s.hydrate);
 
   const addItem = useCartStore((s) => s.addItem);
+  const hydrateCart = useCartStore((s) => s.hydrate);
+
+  useEffect(() => {
+    hydrateWishlist({ lang });
+    hydrateCart({ lang });
+  }, [hydrateWishlist, hydrateCart, lang]);
 
   const groupedStores: StoreGroup[] = useMemo(() => {
     const groups: Record<string, StoreGroup> = {};
 
-    for (const productId of productIds) {
-      const product = products.find((p) => p.id === productId);
-      if (!product) continue;
-
+    for (const product of wishlistItems) {
       const storeName = buildStoreName(product);
       const key = storeName.toLowerCase().replace(/\s+/g, "-");
 
       if (!groups[key]) {
-        groups[key] = {
-          id: key,
-          name: storeName,
-          items: [],
-        };
+        groups[key] = { id: key, name: storeName, items: [] };
       }
 
       groups[key].items.push({ product });
     }
 
     return Object.values(groups);
-  }, [productIds]);
+  }, [wishlistItems]);
 
   const isEmpty = wishlistCount === 0;
 
-  const estimatedTotal = groupedStores.reduce((sum, group) => {
-    return (
-      sum +
-      group.items.reduce((inner, item) => inner + (item.product.price ?? 0), 0)
-    );
-  }, 0);
+  const estimatedTotal = useMemo(() => {
+    return groupedStores.reduce((sum, group) => {
+      return (
+        sum +
+        group.items.reduce(
+          (inner, item) => inner + (item.product.price ?? 0),
+          0,
+        )
+      );
+    }, 0);
+  }, [groupedStores]);
+
+  const currency = wishlistItems[0]?.currency || "EGP";
 
   const handleAddProductToCart = (product: Product) => {
-    addItem({
-      productId: product.id,
-      quantity: 1,
-      variantId: undefined,
-    });
+    addItem({ productId: String(product.id), quantity: 1 }, { lang });
   };
 
   const handleMoveAllToCart = () => {
@@ -92,18 +93,14 @@ export default function WishlistFullPage() {
 
     groupedStores.forEach((group) => {
       group.items.forEach(({ product }) => {
-        addItem({
-          productId: product.id,
-          quantity: 1,
-          variantId: undefined,
-        });
-        toggleWishlist(product.id);
+        handleAddProductToCart(product);
+        toggleWishlist(product.id, product.name, { lang });
       });
     });
   };
 
-  const handleRemoveFromWishlist = (productId: string) => {
-    toggleWishlist(productId);
+  const handleRemoveFromWishlist = (productId: string | number) => {
+    toggleWishlist(productId, undefined, { lang });
   };
 
   return (
@@ -115,10 +112,10 @@ export default function WishlistFullPage() {
           <header className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <h1 className="text-2xl font-bold text-zinc-900">My Wishlist</h1>
             <p className="text-sm text-zinc-500">
-              You have
+              You have{" "}
               <span className="font-semibold text-zinc-900">
                 {wishlistCount}
-              </span>
+              </span>{" "}
               item{wishlistCount === 1 ? "" : "s"} saved for later.
             </p>
           </header>
@@ -179,6 +176,7 @@ export default function WishlistFullPage() {
             <WishlistSummarySidebar
               itemCount={wishlistCount}
               estimatedTotal={estimatedTotal}
+              currency={currency}
               onMoveAllToCart={handleMoveAllToCart}
               isEmpty={isEmpty}
             />

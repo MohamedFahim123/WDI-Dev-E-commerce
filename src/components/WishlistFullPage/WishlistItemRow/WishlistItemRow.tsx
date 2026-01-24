@@ -12,17 +12,30 @@ type Props = {
   onMoveToCart: () => void;
 };
 
+function resolveImageUrl(imageUrl: string | null | undefined): string {
+  if (!imageUrl) return "/assets/products/placeholder.png";
+
+  if (/^https?:\/\//i.test(imageUrl)) return imageUrl;
+
+  const base = "https://wdione.com";
+  const normalizedPath = imageUrl.startsWith("/") ? imageUrl : `/${imageUrl}`;
+  return `${base}${normalizedPath}`;
+}
+
 export default function WishlistItemRow({
   product,
   lang,
   onRemove,
   onMoveToCart,
 }: Props) {
+  const currency = product.currency || "AED";
+  const imgSrc = resolveImageUrl(product.imageUrl);
+
   return (
     <article className="flex gap-4 px-5 py-4">
       <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-zinc-100">
         <Image
-          src={product.img}
+          src={imgSrc}
           alt={product.name}
           fill
           className="object-cover"
@@ -38,23 +51,18 @@ export default function WishlistItemRow({
                 {product.name}
               </p>
             </Link>
-            {product.subtitle && (
-              <p className="text-xs text-zinc-500">{product.subtitle}</p>
-            )}
           </div>
 
-          {typeof product.price === "number" && (
-            <div className="flex items-baseline gap-2">
-              <span className="text-sm font-semibold text-[#7C3BED]">
-                AED {product.price.toFixed(2)}
+          <div className="flex items-baseline gap-2">
+            <span className="text-sm font-semibold text-[#7C3BED]">
+              {currency} {product.price.toFixed(2)}
+            </span>
+            {typeof product.originalPrice === "number" && (
+              <span className="text-xs text-zinc-500 line-through">
+                {currency} {product.originalPrice.toFixed(2)}
               </span>
-              {typeof product.oldPrice === "number" && (
-                <span className="text-xs text-zinc-500 line-through">
-                  AED {product.oldPrice.toFixed(2)}
-                </span>
-              )}
-            </div>
-          )}
+            )}
+          </div>
 
           <div className="flex flex-wrap items-center gap-3 text-xs">
             <button
@@ -76,7 +84,6 @@ export default function WishlistItemRow({
             </button>
           </div>
         </div>
-
       </div>
     </article>
   );

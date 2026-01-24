@@ -1,36 +1,31 @@
+"use client";
+
 import { create } from "zustand";
 import type { Product } from "@/src/types/product.types";
 
-type ProductsStoreState = {
+type ProductsState = {
+  byId: Record<string, Product>;
   list: Product[];
-  byId: Record<number, Product>;
-
-  setList: (products: Product[]) => void;
+  setProducts: (products: Product[]) => void;
   upsertMany: (products: Product[]) => void;
-
-  getById: (id: number) => Product | undefined;
+  getById: (id: string) => Product | undefined;
 };
 
-function indexById(products: Product[]) {
-  const byId: Record<number, Product> = {};
-  for (const p of products) byId[p.id] = p;
-  return byId;
-}
-
-export const useProductsStore = create<ProductsStoreState>((set, get) => ({
-  list: [],
+export const useProductsStore = create<ProductsState>((set, get) => ({
   byId: {},
+  list: [],
 
-  setList: (products) =>
-    set((state) => ({
-      list: products,
-      byId: { ...state.byId, ...indexById(products) },
-    })),
+  setProducts: (products) => {
+    const byId: Record<string, Product> = {};
+    for (const p of products) byId[p.id] = p;
+    set({ list: products, byId });
+  },
 
-  upsertMany: (products) =>
-    set((state) => ({
-      byId: { ...state.byId, ...indexById(products) },
-    })),
+  upsertMany: (products) => {
+    const next = { ...get().byId };
+    for (const p of products) next[p.id] = p;
+    set({ byId: next, list: Object.values(next) });
+  },
 
   getById: (id) => get().byId[id],
 }));

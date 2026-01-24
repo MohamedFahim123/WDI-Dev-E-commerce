@@ -1,23 +1,23 @@
-import ShopProducts from "@/src/components/ShopProducts/ShopProducts";
 import { withBlockSeller } from "@/src/hoc/roleGuards";
-import { getFilters } from "@/src/services/filter.service";
+import ShopProducts from "@/src/components/ShopProducts/ShopProducts";
 import { getProductsList } from "@/src/services/product.service";
-import { Metadata } from "next";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "WDI - Shop",
   description: "Explore Our Products!",
 };
 
-async function ProductsPage() {
-  const [filters, productList] = await Promise.all([
-    getFilters(),
-    getProductsList({ limit: 20, offset: 0 }, { revalidateSeconds: 300 }),
-  ]);
+type Props = {
+  params: Promise<{ lang: string }>;
+};
 
-  console.log(filters);
+async function ProductsPage({ params }: Props) {
+  const { lang } = await params;
 
-  return <ShopProducts initialProducts={productList.products} />;
+  const { products } = await getProductsList({}, { revalidateSeconds: 300 });
+
+  return <ShopProducts products={products} lang={lang} />;
 }
 
 export default withBlockSeller(ProductsPage, {

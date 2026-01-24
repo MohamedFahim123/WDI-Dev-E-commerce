@@ -43,7 +43,6 @@ async function MyStores({
     const message = e instanceof Error ? e.message : "Unknown error";
     storesData.apiError = message;
   }
-  console.log(storesData)
 
   return (
     <StoresView

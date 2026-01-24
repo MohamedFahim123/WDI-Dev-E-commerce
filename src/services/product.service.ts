@@ -1,18 +1,17 @@
+import { fetchApi } from "@/src/lib/fetchApi";
 import type {
+  ApiAttributeValue,
   ApiProduct,
   ApiProductDetails,
   ApiProductListData,
   ApiResponse,
   Product,
-  ProductImage,
-  ProductVariant,
   ProductColor,
-  ApiAttributeValue,
+  ProductImage,
   ProductListParams,
   ProductListResult,
+  ProductVariant,
 } from "@/src/types/product.types";
-
-import { fetchApi, type ResShape } from "../lib/fetchApi";
 
 function getBackendBaseUrl(): string {
   return (
@@ -49,8 +48,9 @@ function stripHtml(input: string): string {
 }
 
 function extractFeatures(details: ApiProductDetails): string[] {
-  const html = details.feature_bullet_points ?? "";
-  const combined = stripHtml(html).trim();
+  const a = stripHtml(details.feature_bullet_points ?? "");
+  const b = stripHtml(details.prod_features ?? "");
+  const combined = `${a}\n${b}`.trim();
   if (!combined) return [];
   return combined
     .split(/[\n•\-]+/g)
@@ -60,14 +60,10 @@ function extractFeatures(details: ApiProductDetails): string[] {
 
 function buildSpecs(details: ApiProductDetails): Record<string, string> {
   const specs: Record<string, string> = {};
-
   const put = (k: string, v: unknown) => {
-    if (v === null || v === undefined) return;
+    if (v == null) return;
     if (typeof v === "string" && !v.trim()) return;
-    if (typeof v === "number" && !Number.isFinite(v)) return;
-
-    if (typeof v === "number" && v === 0) return;
-
+    if (typeof v === "number" && (!Number.isFinite(v) || v === 0)) return;
     specs[k] = String(v);
   };
 
@@ -79,7 +75,6 @@ function buildSpecs(details: ApiProductDetails): Record<string, string> {
   put("Model Name", details.model_name);
   put("Barcode", details.barcode);
   put("Default Code", details.default_code);
-
   put("UOM", details.uom_name);
   put("Weight", details.weight);
   put("Volume", details.volume);
@@ -106,18 +101,15 @@ function findColorSize(attributeValues: ApiAttributeValue[] = []) {
 
   for (const av of attributeValues) {
     const attrName = (av.attribute_name ?? "").toLowerCase();
-
     if (attrName === "color") {
       const id = av.value_id ?? av.id;
       if (id != null) colorId = String(id);
     }
-
     if (attrName === "size") {
       const label = av.value_name ?? av.name;
       if (label) size = String(label);
     }
   }
-
   return { colorId, size };
 }
 
@@ -146,24 +138,20 @@ function extractVariants(details: ApiProductDetails): ProductVariant[] {
 function buildImages(details: ApiProductDetails): ProductImage[] {
   const url = toAbsoluteUrl(details.image_url ?? null);
   if (!url) return [];
-  return [
-    {
-      id: "main",
-      url,
-      alt: details.name ?? "Product image",
-    },
-  ];
+  return [{ id: "main", url, alt: details.name ?? "Product image" }];
 }
 
+/** list -> UI Product */
 export function normalizeProduct(p: ApiProduct): Product {
   const imageUrl = toAbsoluteUrl(p.image_url ?? null);
-  const images = imageUrl
+  const images: ProductImage[] = imageUrl
     ? [{ id: "main", url: imageUrl, alt: p.name ?? "Product image" }]
     : [];
 
   return {
-    id: p.id,
+    id: String(p.id),
     name: p.name ?? "",
+
     description: p.description ?? "",
     featureBulletPointsHtml: p.feature_bullet_points ?? "",
 
@@ -191,18 +179,14 @@ export function normalizeProduct(p: ApiProduct): Product {
   };
 }
 
+/** details -> UI Product */
 export function normalizeProductDetails(details: ApiProductDetails): Product {
   const base = normalizeProduct(details);
-
-  const images = buildImages(details);
-  const colors = extractColors(details);
-  const variants = extractVariants(details);
-
   return {
     ...base,
-    images,
-    colors,
-    variants,
+    images: buildImages(details),
+    colors: extractColors(details),
+    variants: extractVariants(details),
     features: extractFeatures(details),
     specs: buildSpecs(details),
   };
@@ -213,7 +197,6 @@ export async function getProductsList(
   opts?: { revalidateSeconds?: number },
 ): Promise<ProductListResult> {
   const qs = new URLSearchParams();
-
   if (params.category_id != null)
     qs.set("category_id", String(params.category_id));
   if (params.company_id != null)
@@ -221,7 +204,6 @@ export async function getProductsList(
   if (params.search) qs.set("search", params.search);
   if (params.min_price != null) qs.set("min_price", String(params.min_price));
   if (params.max_price != null) qs.set("max_price", String(params.max_price));
-
   qs.set("limit", String(params.limit ?? 20));
   qs.set("offset", String(params.offset ?? 0));
 
@@ -230,9 +212,9 @@ export async function getProductsList(
     next: { revalidate: opts?.revalidateSeconds ?? 300 },
   });
 
-  const typed = res as ApiResponse<ApiProductListData>;
-
-  if (!typed.success) throw new Error("Failed to load products list");
+  const typed = res as unknown as ApiResponse<ApiProductListData>;
+  if (!typed.success)
+    throw new Error(typed.message || "Failed to load products");
 
   return {
     products: typed.data.products.map(normalizeProduct),
@@ -243,14 +225,15 @@ export async function getProductsList(
   };
 }
 
-export async function getProductDetailsService(
-  productId: number,
-): Promise<ResShape<ApiProductDetails>> {
-  return fetchApi<ApiProductDetails>(
+export async function getProductDetails(productId: number): Promise<Product> {
+  const res = await fetchApi<ApiProductDetails>(
     `product/details?product_id=${productId}`,
-    {
-      cache: "force-cache",
-      next: { revalidate: 3600 },
-    },
+    { cache: "force-cache", next: { revalidate: 3600 } },
   );
+
+  const typed = res as unknown as ApiResponse<ApiProductDetails>;
+  if (!typed.success)
+    throw new Error(typed.message || "Failed to load product");
+
+  return normalizeProductDetails(typed.data);
 }

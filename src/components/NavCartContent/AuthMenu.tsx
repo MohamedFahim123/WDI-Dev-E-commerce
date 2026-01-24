@@ -32,7 +32,6 @@ export default function AuthMenu({
       setIsAuthenticated(token ? true : false);
     })();
   }, []);
-  console.log(isAuthenticated)
 
   if (loading) {
     return <AuthMenuSkeleton variant="guest" showMenu={authOpen} />;

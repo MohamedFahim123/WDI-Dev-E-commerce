@@ -1,6 +1,7 @@
 import "@/src/app/globals.css";
 import Footer from "@/src/components/Footer/Footer";
 import Navbar from "@/src/components/NavBar/NavBar";
+import { StoresHydrator } from "@/src/components/StoreHydrator/StoreHydrator";
 import "@/src/i18n/settings";
 import { languages } from "@/src/i18n/settings";
 import { redirect } from "next/navigation";
@@ -21,7 +22,7 @@ export default async function LangLayout({
   return (
     <>
       <Navbar />
-
+      <StoresHydrator />
       <main
         lang={lang}
         className={`flex-1`}

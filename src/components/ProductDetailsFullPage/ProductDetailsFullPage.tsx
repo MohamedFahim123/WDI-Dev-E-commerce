@@ -1,8 +1,6 @@
-"use client";
-
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight } from "lucide-react";
 
 import {
   ProductGallerySkeleton,
@@ -10,15 +8,15 @@ import {
   ProductTabsSkeleton,
 } from "../Skeletons/ProductDetailsSkeleton/ProductDetailsSkeleton";
 
-import { RelatedProducts } from "./RelatedProducts/RelatedProducts";
-import { useRouteLang } from "@/src/hooks/useLang";
 import type { Product } from "@/src/types/product.types";
+import { RelatedProducts } from "./RelatedProducts/RelatedProducts";
 
 type Props = {
   product: Product;
+  lang: string;
 };
 
-const ProductGallery = dynamic<{ product: Product }>(
+const ProductGallery = dynamic(
   () =>
     import("@/src/components/ProductDetailsFullPage/ProductGallery/ProductGallery").then(
       (m) => m.ProductGallery,
@@ -26,7 +24,7 @@ const ProductGallery = dynamic<{ product: Product }>(
   { loading: () => <ProductGallerySkeleton /> },
 );
 
-const ProductTabs = dynamic<{ product: Product; productId: string }>(
+const ProductTabs = dynamic(
   () =>
     import("@/src/components/ProductDetailsFullPage/ProductTabs/ProductTabs").then(
       (m) => m.ProductTabs,
@@ -34,7 +32,7 @@ const ProductTabs = dynamic<{ product: Product; productId: string }>(
   { loading: () => <ProductTabsSkeleton /> },
 );
 
-const ProductInfoPanel = dynamic<{ product: Product }>(
+const ProductInfoPanel = dynamic(
   () =>
     import("@/src/components/ProductDetailsFullPage/ProductInfoPanel/ProductInfoPanel").then(
       (m) => m.ProductInfoPanel,
@@ -42,9 +40,7 @@ const ProductInfoPanel = dynamic<{ product: Product }>(
   { loading: () => <ProductInfoPanelSkeleton /> },
 );
 
-export function ProductDetailsFullPage({ product }: Props) {
-  const lang = useRouteLang();
-
+export function ProductDetailsFullPage({ product, lang }: Props) {
   return (
     <>
       <Link
@@ -62,13 +58,13 @@ export function ProductDetailsFullPage({ product }: Props) {
       <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,1.8fr)_minmax(0,1fr)]">
         <div className="space-y-6">
           <ProductGallery product={product} />
-          <ProductTabs product={product} productId={String(product.id)} />
+          <ProductTabs product={product} productId={product.id} />
         </div>
 
         <ProductInfoPanel product={product} />
       </div>
 
-      <RelatedProducts currentProductId={String(product.id)} lang={lang} />
+      <RelatedProducts currentProductId={product.id} lang={lang} />
     </>
   );
 }

@@ -1,11 +1,12 @@
 "use client";
 
-import { Heart } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
+import { Heart } from "lucide-react";
 
 type Props = {
   itemCount: number;
   estimatedTotal: number;
+  currency: string;
   onMoveAllToCart: () => void;
   isEmpty: boolean;
 };
@@ -13,6 +14,7 @@ type Props = {
 export default function WishlistSummarySidebar({
   itemCount,
   estimatedTotal,
+  currency,
   onMoveAllToCart,
   isEmpty,
 }: Props) {
@@ -32,7 +34,7 @@ export default function WishlistSummarySidebar({
           <div className="flex items-center justify-between">
             <span className="text-zinc-600">Estimated total</span>
             <span className="font-medium text-zinc-900">
-              AED {estimatedTotal.toFixed(2)}
+              {currency} {estimatedTotal.toFixed(2)}
             </span>
           </div>
         </div>

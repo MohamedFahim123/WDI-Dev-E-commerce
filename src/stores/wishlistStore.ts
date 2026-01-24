@@ -1,5 +1,8 @@
+"use client";
+
 import { create } from "zustand";
 import { toast } from "sonner";
+import type { Product, ApiProduct } from "@/src/types/product.types";
 import {
   addWishlistService,
   getWishlistService,
@@ -8,120 +11,177 @@ import {
 
 type WishlistState = {
   productIds: string[];
-  toggle: (productId: string, productName?: string) => void;
-  isWishlisted: (productId: string) => boolean;
+  items: Product[];
+  toggle: (
+    productId: string | number,
+    productName?: string,
+    opts?: { lang?: string },
+  ) => void;
+  isWishlisted: (productId: string | number) => boolean;
   getQuantity: () => number;
-  hydrate: () => void;
+  hydrate: (opts?: { lang?: string }) => void;
 };
 
-type WishlistItemLike = { product_id?: number | string; id?: number | string };
+type WishlistApiRow = {
+  product_template_id?: number | string;
+  product_id?: number | string;
+  product?: ApiProduct;
+  current_price?: number;
+  added_price?: number;
+  currency?: string;
+  wishlist_id?: number;
+};
 
-function getLangFromPath(): string {
-  if (typeof window === "undefined") return "en";
-  const seg = window.location.pathname.split("/").filter(Boolean)[0];
-  return seg || "en";
+function redirectToLogin(lang?: string) {
+  const l = lang || "en";
+  window.location.href = `/${l}/auth/login`;
 }
 
-function redirectToLogin() {
-  if (typeof window === "undefined") return;
-  const lang = getLangFromPath();
-  window.location.assign(`/${lang}/auth/login`);
+function isUnauthError(err: unknown) {
+  const msg = err instanceof Error ? err.message : "";
+  return msg === "UNAUTHENTICATED";
 }
 
-function isUnauth(res: {
-  status?: number;
-  error_code?: string;
-  message?: string;
-}) {
-  return (
-    res?.status === 401 ||
-    res?.status === 403 ||
-    res?.error_code === "UNAUTH" ||
-    (typeof res?.message === "string" &&
-      res.message.toLowerCase().includes("unauthor"))
-  );
+function handleAuthError(err: unknown, lang?: string) {
+  if (isUnauthError(err)) {
+    toast.error("Please login first", {
+      description: "Login to manage wishlist.",
+    });
+    redirectToLogin(lang);
+    return true;
+  }
+  return false;
 }
 
-function extractWishlistIds(payload: unknown): string[] {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const p = payload as any;
+function toProductFromWishlistRow(row: WishlistApiRow): Product | null {
+  const p = row.product;
+  if (!p) return null;
 
-  const items: unknown = p?.wishlist ?? p?.items ?? p ?? [];
+  const id = Number(p.id ?? row.product_template_id ?? row.product_id);
+  if (!Number.isFinite(id)) return null;
 
-  if (!Array.isArray(items)) return [];
+  const name = p.name ?? "Product";
 
-  const ids = (items as WishlistItemLike[])
-    .map((x) => x.product_id ?? x.id)
-    .filter((v) => v != null)
-    .map((v) => String(v));
+  const price =
+    typeof row.current_price === "number"
+      ? row.current_price
+      : typeof p.list_price === "number"
+        ? p.list_price
+        : 0;
 
-  return Array.from(new Set(ids));
+  const currency = row.currency ?? p.currency_name ?? "";
+
+  const imageUrl = p.image_url ?? null;
+  const images = imageUrl ? [{ id: "main", url: imageUrl, alt: name }] : [];
+
+  const specs: Record<string, string> = {};
+  if (p.category_name) specs["Category"] = String(p.category_name);
+
+  return {
+    id: `${id}`,
+    name,
+
+    description: p.description ?? "",
+    featureBulletPointsHtml: p.feature_bullet_points ?? "",
+
+    price,
+    currency,
+
+    imageUrl,
+    images,
+
+    colors: [],
+    variants: [],
+
+    features: [],
+    specs,
+
+    rating: 0,
+    reviewCount: 0,
+
+    badge: undefined,
+    discountCount: null,
+    originalPrice: null,
+
+    categoryId: p.categ_id ?? null,
+    categoryName: p.category_name ?? null,
+  };
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function extractWishlist(res: any): { ids: string[]; items: Product[] } {
+  const rows: unknown =
+    res?.data?.products ??
+    res?.data?.items ??
+    res?.data ??
+    res?.products ??
+    res?.items ??
+    [];
+
+  if (!Array.isArray(rows)) return { ids: [], items: [] };
+
+  const items = (rows as WishlistApiRow[])
+    .map(toProductFromWishlistRow)
+    .filter((x): x is Product => x !== null);
+
+  const ids = Array.from(new Set(items.map((p) => String(p.id))));
+
+  return { ids, items };
 }
 
 export const useWishlistStore = create<WishlistState>((set, get) => ({
   productIds: [],
+  items: [],
 
-  toggle: (productId, productName) => {
+  toggle: (productId, productName, opts) => {
     const pid = String(productId);
+    const exists = get().productIds.includes(pid);
+
+    const tid = toast.loading(
+      exists ? "Removing from wishlist..." : "Adding to wishlist...",
+    );
 
     void (async () => {
-      const exists = get().productIds.includes(pid);
-
       try {
-        const res = exists
-          ? await removeWishlistService(Number(pid))
-          : await addWishlistService(Number(pid));
-
-        if (!res.success) {
-          if (isUnauth(res)) {
-            toast.error("Login required", {
-              description: "Please login first to add items to wishlist.",
-            });
-            redirectToLogin();
-            return;
-          }
-
-          toast.error("Wishlist failed", {
-            description: res.message || "Something went wrong.",
+        if (exists) {
+          await removeWishlistService(Number(pid));
+          toast.success("Removed from Wishlist", {
+            id: tid,
+            description: productName ?? `Product ${pid} removed`,
           });
-          return;
+        } else {
+          await addWishlistService(Number(pid));
+          toast.success("Added to Wishlist ❤️", {
+            id: tid,
+            description: productName ?? `Product ${pid} added`,
+          });
         }
 
-        get().hydrate();
-
-        toast.success(
-          exists ? "Removed from Wishlist" : "Added to Wishlist ❤️",
-          {
-            description: productName ?? `Product ${pid}`,
-          },
-        );
+        get().hydrate(opts);
       } catch (e) {
+        if (handleAuthError(e, opts?.lang)) {
+          toast.dismiss(tid);
+          return;
+        }
         toast.error("Wishlist failed", {
-          description: e instanceof Error ? e.message : "Something went wrong.",
+          id: tid,
+          description: e instanceof Error ? e.message : "Try again",
         });
       }
     })();
   },
 
   isWishlisted: (productId) => get().productIds.includes(String(productId)),
-
   getQuantity: () => get().productIds.length,
 
-  hydrate: () => {
+  hydrate: (opts) => {
     void (async () => {
       try {
         const res = await getWishlistService();
-
-        if (!res.success) {
-          if (isUnauth(res)) {
-            set({ productIds: [] });
-          }
-          return;
-        }
-
-        const ids = extractWishlistIds(res.data);
-        set({ productIds: ids });
-      } catch {
+        const { ids, items } = extractWishlist(res);
+        set({ productIds: ids, items });
+      } catch (e) {
+        if (handleAuthError(e, opts?.lang)) return;
       }
     })();
   },
