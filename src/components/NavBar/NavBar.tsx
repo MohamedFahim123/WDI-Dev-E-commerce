@@ -3,35 +3,42 @@
 import { Menu, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useParams, usePathname } from "next/navigation";
 import { useState } from "react";
 
-import { useAuthStore } from "@/src/stores/authStore";
-import { useParams, usePathname } from "next/navigation";
+import { useProductsStore } from "@/src/stores/productsStore";
+import { Product } from "@/src/types/product.types";
 import Container from "../Container/Container";
 import GlobalSearchBar from "../GlobalSearchBar/GlobalSearchBar";
 import NavCartContent from "../NavCartContent/NavCartContent";
 import NavLinks from "../NavLinks/NavLinks";
 import NavLocationBadge from "../NavLocationBadge/NavLocationBadge";
 
-export default function Navbar() {
+export default function Navbar({
+  initialSeedProducts,
+}: {
+  initialSeedProducts?: Product[];
+}) {
   const pathname = usePathname();
   const [isNavOpen, setIsNavOpen] = useState(false);
+  const setProducts = useProductsStore(s=>s.setProducts);
+
+  setProducts(initialSeedProducts || []);
+
   const params = useParams();
   const lang = (params?.lang as string) || "en";
-  const role = useAuthStore((s) => s.role);
 
-  if (
+  const hideNavbar =
     pathname.includes("/auth") ||
     pathname.includes("/buyer") ||
-    pathname.includes("/seller")
-  ) {
-    return <></>;
-  }
+    pathname.includes("/seller");
+
+  if (hideNavbar) return null;
 
   return (
     <header
       className={`shadow-sm ${
-        pathname.includes("buyer") ? "absolute w-full" : "sticky"
+        pathname.includes("/buyer") ? "absolute w-full" : "sticky"
       } bg-white top-0 z-50`}
     >
       <Container className="grid grid-rows-[auto_1px_auto]">
@@ -124,6 +131,7 @@ export default function Navbar() {
                 fetchPriority="high"
               />
             </Link>
+
             <button
               type="button"
               aria-label="Close menu"
@@ -135,7 +143,7 @@ export default function Navbar() {
           </div>
 
           <div className="p-4 border-b border-[#F4F4F5]">
-            <GlobalSearchBar isInSideBar={true} />
+            <GlobalSearchBar isInSideBar />
           </div>
 
           <div className="flex-1 overflow-y-auto">

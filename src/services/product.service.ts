@@ -179,7 +179,6 @@ export function normalizeProduct(p: ApiProduct): Product {
   };
 }
 
-/** details -> UI Product */
 export function normalizeProductDetails(details: ApiProductDetails): Product {
   const base = normalizeProduct(details);
   return {
@@ -236,4 +235,36 @@ export async function getProductDetails(productId: number): Promise<Product> {
     throw new Error(typed.message || "Failed to load product");
 
   return normalizeProductDetails(typed.data);
+}
+export async function getProductsSeed(opts?: {
+  limit?: number;
+  offset?: number;
+  revalidateSeconds?: number;
+  noStore?: boolean;
+}): Promise<ProductListResult> {
+  const qs = new URLSearchParams();
+
+  qs.set("limit", String(opts?.limit ?? 20));
+  qs.set("offset", String(opts?.offset ?? 0));
+
+  const res = await fetchApi(`product/list?${qs.toString()}`, {
+    cache: opts?.noStore ? "no-store" : "force-cache",
+    next: opts?.noStore
+      ? undefined
+      : { revalidate: opts?.revalidateSeconds ?? 300 },
+  });
+
+  const typed = res as unknown as ApiResponse<ApiProductListData>;
+
+  if (!typed.success) {
+    throw new Error(typed.message || "Failed to load products");
+  }
+
+  return {
+    products: typed.data.products.map(normalizeProduct),
+    total: typed.data.total,
+    limit: typed.data.limit,
+    offset: typed.data.offset,
+    filters: {},
+  };
 }

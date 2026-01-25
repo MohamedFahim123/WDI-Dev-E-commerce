@@ -1,34 +1,44 @@
 import type { Product } from "@/src/types/product.types";
-import type { FilterState } from "@/src/stores/shopStore";
+import type { ShopFilters } from "@/src/stores/shopStore";
 
-export const applyFiltersAndSort = (
-  products: Product[],
-  filters: FilterState,
-): Product[] => {
-  let result = [...products];
+export function parseRange(value: string): { min: number; max: number } | null {
+  const parts = value.split("-");
+  if (parts.length !== 2) return null;
 
-  const ratingFilter = filters["rating"];
-  if (ratingFilter && ratingFilter !== "any") {
-    if (ratingFilter === "4_up") {
-      result = result.filter((p) => (p.rating ?? 0) >= 4);
-    } else if (ratingFilter === "3_up") {
-      result = result.filter((p) => (p.rating ?? 0) >= 3);
+  const min = Number(parts[0]);
+  const max = Number(parts[1]);
+
+  if (!Number.isFinite(min) || !Number.isFinite(max)) return null;
+  return { min, max };
+}
+
+
+export function applyFiltersAndSort(products: Product[], filters: ShopFilters) {
+  let out = products;
+
+  if (filters.categoryId !== "all") {
+    out = out.filter((p) => String(p.categoryId ?? "") === filters.categoryId);
+  }
+
+  if (filters.price !== "all") {
+    const r = parseRange(filters.price);
+    if (r) {
+      out = out.filter(
+        (p) =>
+          typeof p.price === "number" &&
+          Number.isFinite(p.price) &&
+          p.price >= r.min &&
+          p.price <= r.max,
+      );
     }
   }
 
-  const sortKey = filters["sort"];
+  // sort
+  const sort = filters.sort;
+  if (sort === "price_asc") out = [...out].sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
+  if (sort === "price_desc") out = [...out].sort((a, b) => (b.price ?? 0) - (a.price ?? 0));
+  if (sort === "name_asc") out = [...out].sort((a, b) => a.name.localeCompare(b.name));
+  if (sort === "name_desc") out = [...out].sort((a, b) => b.name.localeCompare(a.name));
 
-  if (sortKey === "rating_desc") {
-    result.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
-  } else if (sortKey === "price_asc") {
-    result.sort(
-      (a, b) =>
-        (a.price ?? Number.MAX_SAFE_INTEGER) -
-        (b.price ?? Number.MAX_SAFE_INTEGER),
-    );
-  } else if (sortKey === "price_desc") {
-    result.sort((a, b) => (b.price ?? 0) - (a.price ?? 0));
-  }
-
-  return result;
-};
+  return out;
+}

@@ -15,12 +15,11 @@ const ProductCard = dynamic(() => import("../ProductCard/ProductCard"), {
 
 export default function ProductsGrid() {
   const lang = useRouteLang();
-  const byId = useProductsStore((s) => s.byId);
+  const list = useProductsStore((s) => s.list);
 
   const items: Product[] = useMemo(() => {
-    // convert Record<string, Product> -> Product[]
-    return Object.values(byId).slice(0, 7);
-  }, [byId]);
+    return Object.values(list).slice(0, 7);
+  }, [list]);
 
   return (
     <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4">

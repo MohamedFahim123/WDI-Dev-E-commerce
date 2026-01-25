@@ -82,7 +82,7 @@ export default function WishlistFullPage() {
     }, 0);
   }, [groupedStores]);
 
-  const currency = wishlistItems[0]?.currency || "EGP";
+  const currency = wishlistItems[0]?.currency || "AED";
 
   const handleAddProductToCart = (product: Product) => {
     addItem({ productId: String(product.id), quantity: 1 }, { lang });

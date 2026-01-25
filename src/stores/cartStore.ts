@@ -7,6 +7,7 @@ import {
   getCartService,
   updateCartService,
 } from "@/src/services/cart.service";
+import type { Product } from "@/src/types/product.types";
 
 type CartItemKey = string;
 
@@ -15,36 +16,58 @@ export type CartItem = {
   productId: string;
   variantId?: string;
   quantity: number;
-  lineId?: number;
+  lineId: number;
+  product: Product;
+};
+
+export type CartMeta = {
+  id: number;
+  name: string;
+  state?: string;
+  companyName?: string;
+  currency?: string;
+
+  amountUntaxed?: number;
+  amountTax?: number;
+  amountTotal?: number;
 };
 
 type CartState = {
   items: CartItem[];
-  addItem: (item: Omit<CartItem, "key">, opts?: { lang?: string }) => void;
+  meta: CartMeta | null;
+
+  loading: boolean;
+  error: string | null;
+
+  addItem: (
+    item: { productId: string | number; quantity: number },
+    opts?: { lang?: string },
+  ) => void;
+
   updateQuantity: (
     key: CartItemKey,
     quantity: number,
     opts?: { lang?: string },
   ) => void;
+
   removeItem: (key: CartItemKey, opts?: { lang?: string }) => void;
+
   getQuantity: () => number;
+
   hydrate: (opts?: { lang?: string }) => void;
 };
 
 type OrderLineLike = {
   id?: number | string;
-  line_id?: number | string;
 
   product_id?: number | string;
-  productId?: number | string;
+  product_name?: string;
 
-  variant_id?: number | string;
-  variantId?: number | string;
+  product_uom_qty?: number | string; 
+  price_unit?: number | string;
 
-  quantity?: number | string;
-  product_uom_qty?: number | string;
-
-  product?: { id?: number | string };
+  image_url?: string | null; 
+  currency?: string;
 };
 
 function redirectToLogin(lang?: string) {
@@ -52,11 +75,15 @@ function redirectToLogin(lang?: string) {
   window.location.href = `/${l}/auth/login`;
 }
 
-function handleAuthError(err: unknown, lang?: string) {
+function isUnauthError(err: unknown) {
   const msg = err instanceof Error ? err.message : "";
-  if (msg === "UNAUTHENTICATED") {
+  return msg === "UNAUTHENTICATED";
+}
+
+function handleAuthError(err: unknown, lang?: string) {
+  if (isUnauthError(err)) {
     toast.error("Please login first", {
-      description: "Login to add items to cart.",
+      description: "Login to manage your cart.",
     });
     redirectToLogin(lang);
     return true;
@@ -64,68 +91,117 @@ function handleAuthError(err: unknown, lang?: string) {
   return false;
 }
 
-function buildKeyFromLine(
-  lineId?: number,
-  productId?: string,
-  variantId?: string,
-) {
-  if (lineId) return `line:${lineId}`;
-  if (productId && variantId) return `${productId}:${variantId}`;
-  return productId || `tmp:${Math.random().toString(36).slice(2)}`;
+function buildKeyFromLineId(lineId: number) {
+  return `line:${lineId}`;
+}
+
+function safeNum(v: unknown, fallback = 0) {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : fallback;
+}
+
+function lineToProduct(line: OrderLineLike, currency: string): Product {
+  const id = safeNum(line.product_id);
+  const name = line.product_name ?? "Product";
+
+  const unitPrice = safeNum(line.price_unit);
+
+  const imageUrl = line.image_url ?? null;
+  const images = imageUrl ? [{ id: "main", url: imageUrl, alt: name }] : [];
+
+  return {
+    id:`${id}`,
+    name,
+
+    description: "",
+    featureBulletPointsHtml: "",
+
+    price: unitPrice,
+    currency,
+
+    imageUrl,
+    images,
+
+    colors: [],
+    variants: [],
+
+    features: [],
+    specs: {},
+
+    rating: undefined,
+    reviewCount: undefined,
+
+    badge: undefined,
+    discountCount: null,
+    originalPrice: null,
+
+    categoryId: null,
+    categoryName: null,
+  };
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function extractCartItemsFromRes(res: any): CartItem[] {
-  const lines: unknown =
-    res?.data?.order_lines ??
-    res?.data?.lines ??
-    res?.data?.items ??
-    res?.data ??
-    res?.order_lines ??
-    res?.lines ??
-    res?.items ??
-    [];
+function extractCartFromRes(res: any): {
+  items: CartItem[];
+  meta: CartMeta | null;
+} {
+  const data = res?.data ?? null;
+  if (!data) return { items: [], meta: null };
 
-  if (!Array.isArray(lines)) return [];
+  const currency = String(data.currency_name ?? "AED");
 
-  return (lines as OrderLineLike[])
+  const meta: CartMeta = {
+    id: safeNum(data.id),
+    name: String(data.name ?? ""),
+    state: data.state ? String(data.state) : undefined,
+    companyName: data.company_name ? String(data.company_name) : undefined,
+    currency,
+
+    amountUntaxed:
+      data.amount_untaxed != null ? safeNum(data.amount_untaxed) : undefined,
+    amountTax: data.amount_tax != null ? safeNum(data.amount_tax) : undefined,
+    amountTotal:
+      data.amount_total != null ? safeNum(data.amount_total) : undefined,
+  };
+
+  const lines: unknown = data.order_lines ?? [];
+  if (!Array.isArray(lines)) return { items: [], meta };
+
+  const items: CartItem[] = (lines as OrderLineLike[])
     .map((l): CartItem | null => {
-      const rawProductId = l.product_id ?? l.productId ?? l.product?.id ?? null;
+      const lineId = safeNum(l.id, NaN);
+      const productIdNum =
+        l.product_id != null ? safeNum(l.product_id, NaN) : NaN;
 
-      if (rawProductId == null) return null;
+      if (!Number.isFinite(lineId) || !Number.isFinite(productIdNum))
+        return null;
 
-      const productId = String(rawProductId);
+      const productId = String(productIdNum);
+      const quantity = safeNum(l.product_uom_qty, 0);
 
-      const rawQty = l.quantity ?? l.product_uom_qty ?? 0;
-      const quantity = Number(rawQty);
+      if (quantity <= 0) return null;
 
-      const rawLineId = l.id ?? l.line_id ?? undefined;
-      const lineId = rawLineId != null ? Number(rawLineId) : undefined;
+      const product = lineToProduct(l, currency);
 
-      const rawVariantId = l.variant_id ?? l.variantId ?? undefined;
-      const variantId = rawVariantId != null ? String(rawVariantId) : undefined;
-
-      const safeLineId = Number.isFinite(lineId ?? NaN) ? lineId : undefined;
-      const safeQty = Number.isFinite(quantity) ? quantity : 0;
-
-      const key = buildKeyFromLine(safeLineId, productId, variantId);
-
-      const item: CartItem = {
-        key,
+      return {
+        key: buildKeyFromLineId(lineId),
+        lineId,
         productId,
-        quantity: safeQty,
-        lineId: safeLineId,
-        ...(variantId ? { variantId } : {}),
+        quantity,
+        product,
       };
-
-      return item;
     })
-    .filter((x): x is CartItem => x !== null)
-    .filter((x) => x.quantity > 0);
+    .filter((x): x is CartItem => x !== null);
+
+  return { items, meta };
 }
 
 export const useCartStore = create<CartState>((set, get) => ({
   items: [],
+  meta: null,
+
+  loading: false,
+  error: null,
 
   addItem: (item, opts) => {
     const tid = toast.loading("Adding to cart...");
@@ -159,19 +235,10 @@ export const useCartStore = create<CartState>((set, get) => ({
     void (async () => {
       try {
         const safeQty = Math.max(0, Math.floor(quantity));
-
-        let item = get().items.find((i) => i.key === key);
-
-        if (!item?.lineId) {
-          await new Promise<void>((r) => {
-            get().hydrate(opts);
-            r();
-          });
-          item = get().items.find((i) => i.key === key);
-        }
+        const item = get().items.find((i) => i.key === key);
 
         if (!item?.lineId) {
-          toast.error("Cart not synced yet", {
+          toast.error("Cart line missing", {
             id: tid,
             description: "Please refresh the cart page.",
           });
@@ -204,12 +271,23 @@ export const useCartStore = create<CartState>((set, get) => ({
 
   hydrate: (opts) => {
     void (async () => {
+      set({ loading: true, error: null });
+
       try {
         const res = await getCartService();
-        console.log(res)
-        set({ items: extractCartItemsFromRes(res) });
+        const { items, meta } = extractCartFromRes(res);
+
+        set({ items, meta, loading: false, error: null });
       } catch (e) {
-        if (handleAuthError(e, opts?.lang)) return;
+        if (handleAuthError(e, opts?.lang)) {
+          set({ loading: false });
+          return;
+        }
+
+        set({
+          loading: false,
+          error: e instanceof Error ? e.message : "Failed to load cart",
+        });
       }
     })();
   },

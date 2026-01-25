@@ -1,11 +1,13 @@
 "use client";
 
+import type { MouseEvent } from "react";
+
 type FilterPillProps = {
   label: string;
   active: boolean;
   selectedLabel?: string;
   widthClass?: string;
-  onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  onClick: (e: MouseEvent<HTMLButtonElement>) => void;
 };
 
 export const FilterPill = ({
