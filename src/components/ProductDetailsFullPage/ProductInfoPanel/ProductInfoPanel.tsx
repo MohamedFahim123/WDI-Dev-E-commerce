@@ -53,7 +53,6 @@ export function ProductInfoPanel({ product }: Props) {
 
     addItem({
       productId: pid,
-      variantId: variant.id,
       quantity,
     });
   }, [addItem, outOfStock, pid, quantity, variant]);
