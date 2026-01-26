@@ -1,60 +1,72 @@
-import PageHeader from "@/src/components/Dashboard/Seller/PageHeader/PageHeader";
+import type { Metadata } from "next";
+
 import {
-  NotificationItem,
-  NotificationItemProps,
-} from "@/src/components/Notifications/NotificationItem/NotificationItem";
-import { Metadata } from "next";
+  notificationsListAction,
+  notificationsUnreadCountAction,
+} from "@/src/actions/notifications.actions";
+import NotificationsDashboardClient from "@/src/components/Notifications/NotificationsDashboardClient";
+import { mapBackendToUiItem } from "@/src/lib/notifications/mapToUi";
 
 export const metadata: Metadata = {
   title: "WDI - Dashboard Notifications",
 };
 
+type UnknownRecord = Record<string, unknown>;
+function asRecord(v: unknown): UnknownRecord | null {
+  return v && typeof v === "object" ? (v as UnknownRecord) : null;
+}
+function asArray(v: unknown): unknown[] {
+  return Array.isArray(v) ? v : [];
+}
+function toNumber(v: unknown, fallback: number): number {
+  const n = typeof v === "number" ? v : typeof v === "string" ? Number(v) : NaN;
+  return Number.isFinite(n) ? n : fallback;
+}
+
+function extractList(data: unknown) {
+  const d = asRecord(data);
+  const raw =
+    asArray(d?.notifications) || asArray(d?.items) || asArray(d?.results) || [];
+  const total = toNumber(d?.total ?? d?.count ?? d?.records_total, raw.length);
+  const limit = toNumber(d?.limit, raw.length);
+  return { raw, total, limit };
+}
+
 export default async function NotificationsDashboardPage({
   params,
 }: {
-  params: Promise<{ lang: string }>;
+  params: { lang: string };
 }) {
-  const { lang } = await params;
-  const MOCK_NOTIFICATIONS: NotificationItemProps[] = [
-    {
-      id: "1",
-      title: "Your order #1234 has been shipped",
-      timeLabel: "10m ago",
-      iconSrc: "/assets/products/prod7.webp",
-      iconAlt: "Headphones order",
-      ctaLabel: "View Order",
-      ctaHref: `/${lang}/seller/order-management/1234`,
-    },
-    {
-      id: "2",
-      title: "Your order #1234 has been shipped",
-      timeLabel: "11m ago",
-      iconSrc: "/assets/products/prod7.webp",
-      iconAlt: "Headphones order",
-      ctaLabel: "View Order",
-      ctaHref: `/${lang}/seller/order-management/1234`,
-    },
-    {
-      id: "3",
-      title: "Your order #1234 has been shipped",
-      timeLabel: "12m ago",
-      iconSrc: "/assets/products/prod7.webp",
-      iconAlt: "Headphones order",
-      ctaLabel: "View Order",
-      ctaHref: `/${lang}/seller/order-management/1234`,
-    },
-  ];
+  const { lang } = params;
+
+  const [listRes, countRes] = await Promise.all([
+    notificationsListAction({ unread_only: false, limit: 20, offset: 0 }),
+    notificationsUnreadCountAction(),
+  ]);
+
+  const { raw, total, limit } = extractList(listRes?.data);
+
+  const items = raw
+    .map((x) => {
+      const rec = asRecord(x);
+      return rec ? mapBackendToUiItem(rec, lang) : null;
+    })
+    .filter((x) => x !== null);
+
+  const cd = asRecord(countRes?.data);
+  const unreadCount = toNumber(cd?.unread_count ?? cd?.count, 0);
 
   return (
-    <section className="max-w-7xl mx-auto px-4 py-8 space-y-6 box-border">
-      <PageHeader title="Notfications" subtitle="Check Your Latest Notfications" />
-      <div className="p-4 rounded-md bg-white">
-        <ul className="space-y-2" role="list">
-          {MOCK_NOTIFICATIONS.map((notification) => (
-            <NotificationItem key={notification.id} {...notification} />
-          ))}
-        </ul>
-      </div>
+    <section className="p-4 bg-white">
+      <NotificationsDashboardClient
+        lang={lang}
+        initial={{
+          items: items,
+          total,
+          limit: limit || 20,
+          unreadCount,
+        }}
+      />
     </section>
   );
 }

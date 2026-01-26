@@ -9,13 +9,10 @@ type ProductsState = {
 
   hydrated: boolean;
 
-  // sets only once (first app load)
   hydrateOnce: (products: Product[]) => void;
 
-  // replace list intentionally (if you ever need it)
   setProducts: (products: Product[]) => void;
 
-  // merge/update
   upsertMany: (products: Product[]) => void;
 
   getById: (id: string) => Product | undefined;

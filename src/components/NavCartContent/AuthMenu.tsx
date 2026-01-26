@@ -1,4 +1,7 @@
-import { getAuthTokenFromCookieServer } from "@/src/lib/authCookies";
+import {
+  getAuthTokenFromCookieServer,
+  getRoleFromCookieServer,
+} from "@/src/lib/authCookies";
 import { useAuthStore } from "@/src/stores/authStore";
 import { User } from "lucide-react";
 import Link from "next/link";
@@ -23,13 +26,16 @@ export default function AuthMenu({
   loading,
 }: Props) {
   const logout = useAuthStore((s) => s.logout);
-  const role = useAuthStore((s) => s.role);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [role, setRole] = useState<"buyer" | "seller" | null>(null);
 
   useEffect(() => {
     (async () => {
       const token = await getAuthTokenFromCookieServer();
       setIsAuthenticated(token ? true : false);
+      const storedRole: "buyer" | "seller" | null =
+        await getRoleFromCookieServer();
+      setRole(storedRole);
     })();
   }, []);
 

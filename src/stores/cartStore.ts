@@ -63,10 +63,10 @@ type OrderLineLike = {
   product_id?: number | string;
   product_name?: string;
 
-  product_uom_qty?: number | string; 
+  product_uom_qty?: number | string;
   price_unit?: number | string;
 
-  image_url?: string | null; 
+  image_url?: string | null;
   currency?: string;
 };
 
@@ -110,7 +110,7 @@ function lineToProduct(line: OrderLineLike, currency: string): Product {
   const images = imageUrl ? [{ id: "main", url: imageUrl, alt: name }] : [];
 
   return {
-    id:`${id}`,
+    id: `${id}`,
     name,
 
     description: "",
@@ -272,15 +272,13 @@ export const useCartStore = create<CartState>((set, get) => ({
   hydrate: (opts) => {
     void (async () => {
       set({ loading: true, error: null });
-
       try {
         const res = await getCartService();
         const { items, meta } = extractCartFromRes(res);
-
         set({ items, meta, loading: false, error: null });
       } catch (e) {
-        if (handleAuthError(e, opts?.lang)) {
-          set({ loading: false });
+        if (isUnauthError(e)) {
+          set({ items: [], meta: null, loading: false, error: null });
           return;
         }
 

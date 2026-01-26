@@ -19,7 +19,8 @@ type WishlistState = {
   ) => void;
   isWishlisted: (productId: string | number) => boolean;
   getQuantity: () => number;
-  hydrate: (opts?: { lang?: string }) => void;
+
+  hydrate: (opts?: { lang?: string; silent?: boolean }) => void;
 };
 
 type WishlistApiRow = {
@@ -40,17 +41,6 @@ function redirectToLogin(lang?: string) {
 function isUnauthError(err: unknown) {
   const msg = err instanceof Error ? err.message : "";
   return msg === "UNAUTHENTICATED";
-}
-
-function handleAuthError(err: unknown, lang?: string) {
-  if (isUnauthError(err)) {
-    toast.error("Please login first", {
-      description: "Login to manage wishlist.",
-    });
-    redirectToLogin(lang);
-    return true;
-  }
-  return false;
 }
 
 function toProductFromWishlistRow(row: WishlistApiRow): Product | null {
@@ -125,7 +115,6 @@ function extractWishlist(res: any): { ids: string[]; items: Product[] } {
     .filter((x): x is Product => x !== null);
 
   const ids = Array.from(new Set(items.map((p) => String(p.id))));
-
   return { ids, items };
 }
 
@@ -157,12 +146,17 @@ export const useWishlistStore = create<WishlistState>((set, get) => ({
           });
         }
 
-        get().hydrate(opts);
+        get().hydrate({ ...opts, silent: true });
       } catch (e) {
-        if (handleAuthError(e, opts?.lang)) {
+        if (isUnauthError(e)) {
           toast.dismiss(tid);
+          toast.error("Please login first", {
+            description: "Login to manage wishlist.",
+          });
+          redirectToLogin(opts?.lang);
           return;
         }
+
         toast.error("Wishlist failed", {
           id: tid,
           description: e instanceof Error ? e.message : "Try again",
@@ -175,13 +169,24 @@ export const useWishlistStore = create<WishlistState>((set, get) => ({
   getQuantity: () => get().productIds.length,
 
   hydrate: (opts) => {
+    const silent = opts?.silent ?? true;
+
     void (async () => {
       try {
         const res = await getWishlistService();
         const { ids, items } = extractWishlist(res);
         set({ productIds: ids, items });
       } catch (e) {
-        if (handleAuthError(e, opts?.lang)) return;
+        if (isUnauthError(e)) {
+          set({ productIds: [], items: [] });
+          return;
+        }
+
+        if (!silent) {
+          toast.error("Failed to load wishlist", {
+            description: e instanceof Error ? e.message : "Try again",
+          });
+        }
       }
     })();
   },
