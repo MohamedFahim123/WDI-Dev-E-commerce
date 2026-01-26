@@ -6,6 +6,7 @@ import { useWishlistStore } from "@/src/stores/wishlistStore";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import { getRoleFromCookieServer } from "@/src/lib/authCookies";
 import AuthMenu from "./AuthMenu";
 import CartButton from "./CartButton";
 import NotificationsMenu from "./NotificationsMenu";
@@ -20,8 +21,7 @@ export default function NavCartContent() {
   const langRef = useRef<HTMLDivElement | null>(null);
   const authRef = useRef<HTMLDivElement | null>(null);
 
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
-  const role = useAuthStore((s) => s.role);
+  const [role, setRole] = useState<"buyer" | "seller" | null>(null);
   const hydrateFromServer = useAuthStore((s) => s.hydrateFromServer);
   const quantity = useCartStore((s) => s.getQuantity());
   const wishListQuantity = useWishlistStore((s) => s.getQuantity());
@@ -33,6 +33,7 @@ export default function NavCartContent() {
   useEffect(() => {
     (async () => {
       await hydrateFromServer();
+      await getRoleFromCookieServer().then((r) => setRole(r));
     })();
   }, [hydrateFromServer]);
 
@@ -55,7 +56,7 @@ export default function NavCartContent() {
         setLangOpen={setLangOpen}
       /> */}
 
-      {isAuthenticated && <NotificationsMenu currentLang={currentLang} />}
+      {role && <NotificationsMenu currentLang={currentLang} />}
 
       {!isSeller && (
         <>
