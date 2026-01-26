@@ -1,7 +1,7 @@
 "use client";
 
 import useEmblaCarousel from "embla-carousel-react";
-import { ChevronDown, SlidersHorizontal } from "lucide-react";
+import { ChevronDown, SlidersHorizontal, RotateCcw } from "lucide-react";
 import dynamic from "next/dynamic";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { MouseEvent, useEffect, useMemo, useState } from "react";
@@ -203,6 +203,14 @@ export default function FilterBar({
 
   const actives = useMemo(() => activeCount(filters), [filters]);
 
+  const onResetClick = () => {
+    resetFilters();
+    setDraft(DEFAULT_FILTERS);
+    syncUrl(DEFAULT_FILTERS);
+    setOpenKey(null);
+    setOpenAll(false);
+  };
+
   return (
     <>
       <div className="w-full border-b border-gray-100 pb-2">
@@ -264,14 +272,28 @@ export default function FilterBar({
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={() => setOpenAll(true)}
-            className="inline-flex items-center justify-center gap-2 rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm font-semibold text-zinc-800 hover:bg-zinc-50 md:w-auto"
-          >
-            <SlidersHorizontal className="h-4 w-4" />
-            Filters {actives > 0 ? `(${actives})` : ""}
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setOpenAll(true)}
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-zinc-200 bg-white px-4 py-2 text-sm font-semibold text-zinc-800 hover:bg-zinc-50"
+            >
+              <SlidersHorizontal className="h-4 w-4" />
+              Filters {actives > 0 ? `(${actives})` : ""}
+            </button>
+
+            {actives > 0 && (
+              <button
+                type="button"
+                onClick={onResetClick}
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-[#7C3BED] bg-white px-4 py-2 text-sm font-semibold text-[#7C3BED] hover:bg-violet-50"
+                title="Reset filters"
+              >
+                <RotateCcw className="h-4 w-4" />
+                Reset
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -293,12 +315,7 @@ export default function FilterBar({
         brands={brands}
         colors={colors}
         sizes={sizes}
-        onClear={() => {
-          resetFilters();
-          setDraft(DEFAULT_FILTERS);
-          syncUrl(DEFAULT_FILTERS);
-          setOpenAll(false);
-        }}
+        onClear={onResetClick}
         onApply={() => {
           setAllFilters(draft);
           syncUrl(draft);

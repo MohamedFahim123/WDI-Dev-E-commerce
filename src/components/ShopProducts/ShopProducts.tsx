@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import Container from "../Container/Container";
 import FilterBarSkeleton from "../Skeletons/FilterBarSkeleton/FilterBarSkeleton";
@@ -46,6 +46,9 @@ type Props = {
     min_price?: string;
     max_price?: string;
     sort?: string;
+    search?: string;
+    limit?: string;
+    offset?: string;
   };
 };
 
@@ -61,7 +64,7 @@ function coerceSort(v?: string): SortValue {
   return "relevance";
 }
 
-function EmptyCatalogState({ lang }: { lang: string }) {
+function EmptyCatalogState({ onReset }: { onReset: () => void }) {
   return (
     <div className="rounded-2xl border border-dashed border-zinc-200 bg-white p-10 text-center">
       <p className="text-base font-semibold text-zinc-900">
@@ -71,12 +74,13 @@ function EmptyCatalogState({ lang }: { lang: string }) {
         There are no products to show right now. Please check back later.
       </p>
 
-      <a
-        href={`/${lang}`}
-        className="mt-6 inline-flex items-center justify-center rounded-full bg-[#7C3BED] px-6 py-2 text-sm font-semibold text-white hover:bg-[#6d28d9]"
+      <button
+        type="button"
+        onClick={onReset}
+        className="mt-6 cursor-pointer inline-flex items-center justify-center rounded-full border border-[#7C3BED] bg-white px-6 py-2 text-sm font-semibold text-[#7C3BED] hover:bg-violet-50"
       >
-        Back to Home
-      </a>
+        Reset filters
+      </button>
     </div>
   );
 }
@@ -92,7 +96,7 @@ function NoResultsState({ onReset }: { onReset: () => void }) {
       <button
         type="button"
         onClick={onReset}
-        className="mt-6 inline-flex items-center justify-center rounded-full border border-[#7C3BED] bg-white px-6 py-2 text-sm font-semibold text-[#7C3BED] hover:bg-violet-50"
+        className="mt-6 cursor-pointer inline-flex items-center justify-center rounded-full border border-[#7C3BED] bg-white px-6 py-2 text-sm font-semibold text-[#7C3BED] hover:bg-violet-50"
       >
         Reset filters
       </button>
@@ -117,6 +121,8 @@ export default function ShopProducts({
 
   const setAllFilters = useShopStore((s) => s.setAllFilters);
   const resetFilters = useShopStore((s) => s.resetFilters);
+
+  const [firstProducts] = useState<Product[]>(() => products);
 
   useEffect(() => {
     if (!initialQuery) return;
@@ -149,10 +155,10 @@ export default function ShopProducts({
     hydrateCart({ lang });
   }, [hydrateWishlist, hydrateCart, lang]);
 
-  const categoriesFromProducts: Option[] = useMemo(() => {
+  const categoriesFromFirstProducts: Option[] = useMemo(() => {
     const map = new Map<string, string>();
 
-    for (const p of products) {
+    for (const p of firstProducts) {
       if (p.categoryId == null) continue;
       const id = String(p.categoryId);
 
@@ -169,15 +175,20 @@ export default function ShopProducts({
       .sort((a, b) => a.label.localeCompare(b.label));
 
     return [{ value: "all", label: "All" }, ...list];
-  }, [products]);
+  }, [firstProducts]);
 
-  const priceOptionsFromProducts: Option[] = useMemo(() => {
-    const prices = products
+  const currencyFromFirstProducts = useMemo(() => {
+    return firstProducts.find((p) => p.currency)?.currency ?? "AED";
+  }, [firstProducts]);
+
+  const priceOptionsFromFirstProducts: Option[] = useMemo(() => {
+    const prices = firstProducts
       .map((p) => p.price)
       .filter((v): v is number => typeof v === "number" && Number.isFinite(v))
       .sort((a, b) => a - b);
 
-    const currency = products.find((p) => p.currency)?.currency ?? "EGP";
+    const currency = currencyFromFirstProducts;
+
     if (prices.length === 0) return [{ value: "all", label: "All" }];
 
     const n = prices.length;
@@ -209,7 +220,9 @@ export default function ShopProducts({
 
         return {
           value: `${lo}-${hi}`,
-          label: `${currency} ${formatMoney(lo)} – ${currency} ${formatMoney(hi)}`,
+          label: `${currency} ${formatMoney(lo)} – ${currency} ${formatMoney(
+            hi,
+          )}`,
         } as Option;
       })
       .filter((x): x is Option => x !== null);
@@ -218,7 +231,7 @@ export default function ShopProducts({
     for (const r of ranges) uniq.set(r.value, r);
 
     return [{ value: "all", label: "All" }, ...Array.from(uniq.values())];
-  }, [products]);
+  }, [firstProducts, currencyFromFirstProducts]);
 
   const brands: Option[] = useMemo(() => {
     const rows = filtersData?.brands?.brands ?? [];
@@ -254,24 +267,22 @@ export default function ShopProducts({
   const hasCatalogProducts = products.length > 0;
   const noFilteredResults = hasCatalogProducts && filteredProducts.length === 0;
 
-  const currency = products.find((p) => p.currency)?.currency ?? "EGP";
-
   return (
     <section className="py-10">
       <Container className="space-y-6">
         {hasCatalogProducts ? (
           <FilterBar
-            categories={categoriesFromProducts}
-            priceOptions={priceOptionsFromProducts}
+            categories={categoriesFromFirstProducts}
+            priceOptions={priceOptionsFromFirstProducts}
             brands={brands}
             colors={colors}
             sizes={sizes}
-            priceCurrency={currency}
+            priceCurrency={currencyFromFirstProducts}
           />
         ) : null}
 
         {!hasCatalogProducts ? (
-          <EmptyCatalogState lang={lang} />
+          <EmptyCatalogState onReset={resetFiltersAndUrl} />
         ) : noFilteredResults ? (
           <NoResultsState onReset={resetFiltersAndUrl} />
         ) : (

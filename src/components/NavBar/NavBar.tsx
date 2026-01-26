@@ -21,8 +21,8 @@ export default function Navbar({
 }) {
   const pathname = usePathname();
   const [isNavOpen, setIsNavOpen] = useState(false);
-  const setProducts = useProductsStore(s=>s.setProducts);
-
+  const setProducts = useProductsStore((s) => s.setProducts);
+  console.log(initialSeedProducts);
   setProducts(initialSeedProducts || []);
 
   const params = useParams();

@@ -9,6 +9,7 @@ import { useCartStore, type CartItem } from "@/src/stores/cartStore";
 import { useWishlistStore } from "@/src/stores/wishlistStore";
 import type { Product } from "@/src/types/product.types";
 
+import { CartPageSkeleton } from "../Skeletons/Cart/CartPageSkeleton";
 import CartEmptyState from "./CartEmptyState/CartEmptyState";
 import CartStoreCard from "./CartStoreCard/CartStoreCard";
 import CartSummarySidebar from "./CartSummarySidebar/CartSummarySidebar";
@@ -73,13 +74,7 @@ export default function CartFullPage() {
   const isEmpty = !loading && items.length === 0;
 
   if (loading) {
-    return (
-      <section className="bg-zinc-50">
-        <Container className="py-10">
-          <p className="text-sm text-zinc-500">Loading cart…</p>
-        </Container>
-      </section>
-    );
+    return <CartPageSkeleton />;
   }
 
   if (error) {

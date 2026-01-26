@@ -205,6 +205,7 @@ export const useCartStore = create<CartState>((set, get) => ({
 
   addItem: (item, opts) => {
     const tid = toast.loading("Adding to cart...");
+  console.log(item)
 
     void (async () => {
       try {
@@ -275,6 +276,7 @@ export const useCartStore = create<CartState>((set, get) => ({
 
       try {
         const res = await getCartService();
+        console.log(res)
         const { items, meta } = extractCartFromRes(res);
 
         set({ items, meta, loading: false, error: null });
