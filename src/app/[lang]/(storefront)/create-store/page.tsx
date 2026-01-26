@@ -1,5 +1,5 @@
 import CreateStoreFullPage from "@/src/components/CreaetStore/CreateStoreFullPage";
-import { withBlockBuyer } from "@/src/hoc/roleGuards";
+import { withSellerOnly } from "@/src/hoc/roleGuards";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -15,6 +15,6 @@ function CreateStorePage() {
     </section>
   );
 }
-export default withBlockBuyer(CreateStorePage, {
+export default withSellerOnly(CreateStorePage, {
   redirectTo: (lang: string) => `/${lang}`,
 });

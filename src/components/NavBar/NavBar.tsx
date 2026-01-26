@@ -4,7 +4,7 @@ import { Menu, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useProductsStore } from "@/src/stores/productsStore";
 import { Product } from "@/src/types/product.types";
@@ -22,8 +22,12 @@ export default function Navbar({
   const pathname = usePathname();
   const [isNavOpen, setIsNavOpen] = useState(false);
   const setProducts = useProductsStore((s) => s.setProducts);
-  console.log(initialSeedProducts);
-  setProducts(initialSeedProducts || []);
+
+  useEffect(() => {
+    if (!initialSeedProducts || initialSeedProducts.length === 0) return;
+    setProducts(initialSeedProducts);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialSeedProducts]);
 
   const params = useParams();
   const lang = (params?.lang as string) || "en";

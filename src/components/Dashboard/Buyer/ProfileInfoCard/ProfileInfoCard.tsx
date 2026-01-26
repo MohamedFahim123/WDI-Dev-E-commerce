@@ -36,6 +36,7 @@ function InfoField({ label, icon: Icon, value }: InfoFieldProps) {
 type EditableFieldProps = {
   label: string;
   icon: React.ElementType;
+  disabeled?: boolean;
   value: string;
   onChange: (val: string) => void;
 };
@@ -45,6 +46,7 @@ function EditableField({
   icon: Icon,
   value,
   onChange,
+  disabeled = false,
 }: EditableFieldProps) {
   return (
     <div className="space-y-1.5">
@@ -52,8 +54,9 @@ function EditableField({
       <div className="flex items-center gap-2 rounded-md border border-[#E5E7EB] bg-[#F9FAFB] px-3 py-2">
         <Icon className="h-4 w-4 text-[#9CA3AF]" />
         <input
-          className="w-full border-none bg-transparent text-sm text-[#111827] outline-none placeholder:text-[#9CA3AF]"
+          className={`w-full border-none bg-transparent text-sm text-[#111827] outline-none placeholder:text-[#9CA3AF] ${disabeled ? "cursor-not-allowed" : ""}`}
           value={value}
+          disabled={disabeled}
           onChange={(e) => onChange(e.target.value)}
         />
       </div>
@@ -186,7 +189,8 @@ function ProfileInfoEditForm({
           label="Email"
           icon={Mail}
           value={draft.email}
-          onChange={(val) => setDraft({ ...draft, email: val })}
+          disabeled={true}
+          onChange={() => {}}
         />
         <EditableField
           label="Phone Number"

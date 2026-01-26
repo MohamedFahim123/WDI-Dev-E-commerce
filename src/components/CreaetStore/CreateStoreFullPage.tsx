@@ -1,11 +1,8 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { redirect } from "next/navigation";
 
 import { useCreateStoreWizard } from "@/src/hooks/useCreateStoreWizard";
-import { useRouteLang } from "@/src/hooks/useLang";
-import { useAuthStore } from "@/src/stores/authStore";
 
 import AddressFormSkeleton from "../Skeletons/CreateStore/AddressFormSkeleton";
 import KycFormSkeleton from "../Skeletons/CreateStore/KycFormSkeleton";
@@ -15,33 +12,30 @@ import StoreInfoFormSkeleton from "../Skeletons/CreateStore/StoreInfoFormSkeleto
 
 const Stepper = dynamic(
   () => import("./Stepper/Stepper").then((m) => m.Stepper),
-  { loading: () => <StepperSkeleton />, ssr: false }
+  { loading: () => <StepperSkeleton />, ssr: false },
 );
 
 const StoreInfoForm = dynamic(
   () => import("./StoreInfoForm/StoreInfoForm").then((m) => m.default),
-  { loading: () => <StoreInfoFormSkeleton />, ssr: false }
+  { loading: () => <StoreInfoFormSkeleton />, ssr: false },
 );
 
 const AddressForm = dynamic(
   () => import("./AddressForm/AddressForm").then((m) => m.default),
-  { loading: () => <AddressFormSkeleton />, ssr: false }
+  { loading: () => <AddressFormSkeleton />, ssr: false },
 );
 
 const KycForm = dynamic(
   () => import("./KycForm/KycForm").then((m) => m.default),
-  { loading: () => <KycFormSkeleton />, ssr: false }
+  { loading: () => <KycFormSkeleton />, ssr: false },
 );
 
 const PayoutForm = dynamic(
   () => import("./PayoutForm/PayoutForm").then((m) => m.default),
-  { loading: () => <PayoutFormSkeleton />, ssr: false }
+  { loading: () => <PayoutFormSkeleton />, ssr: false },
 );
 
 export default function CreateStoreFullPage() {
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
-  const lang = useRouteLang();
-
   const {
     state,
     step,
@@ -54,8 +48,6 @@ export default function CreateStoreFullPage() {
     guardStep,
     handleFinalSubmit,
   } = useCreateStoreWizard();
-
-  if (isAuthenticated) redirect(`/${lang}`);
 
   const storeServerErrors = getServerErrorsForStep(1);
   const addressServerErrors = getServerErrorsForStep(2);
