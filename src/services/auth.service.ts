@@ -26,7 +26,7 @@ export const clearAllCookies = async () => {
 
 async function LoginAction(input: LoginInput) {
   const res = await fetchApi<AuthUser>(
-    `auth/${input.role.toLowerCase()}/login`,
+    `auth/${input.role.toLowerCase()}/login?t=${Date.now()}`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -41,9 +41,9 @@ async function LoginAction(input: LoginInput) {
     throw new Error(res.message || "Unable to login");
   }
 
-  await setAuthTokenCookieServer(res?.data.token);
+  await setAuthTokenCookieServer(res?.data);
   await setAuthCookieServer(true);
-  await setRoleCookieServer(input.role);
+  await setRoleCookieServer(input?.role);
 
   const { ...safeUser } = res.data;
 
@@ -54,20 +54,25 @@ async function LoginAction(input: LoginInput) {
 }
 
 async function LogoutAction() {
-  const res = await fetchApi(`auth/logout`, {
-    method: "POST",
-    cache: "no-store",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${await getAuthTokenFromCookieServer()}`,
-    },
-  });
+  try {
+    const token = await getAuthTokenFromCookieServer();
+    const res = await fetchApi(`auth/logout`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-  if (!res.success) {
-    throw new Error(res.message || "Unable to Logout");
+    if (!res.success) {
+      throw new Error(res.message || "Unable to Logout");
+    }
+
+    return { success: true };
+  } catch (err) {
+    console.log(err);
+    return { success: false, error: "Logout failed" };
   }
-
-  return { success: true };
 }
 
 type RegisterData = {

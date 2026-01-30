@@ -76,11 +76,15 @@ export async function getAuthTokenFromCookieServer(): Promise<string | null> {
   return cookieStore.get(TOKEN_COOKIE_NAME)?.value ?? null;
 }
 
-export async function setAuthTokenCookieServer(token: string, days = 7) {
+export async function setAuthTokenCookieServer(
+  data: { token: string },
+  days = 1,
+) {
   const cookieStore = await cookies();
   const maxAge = days * 24 * 60 * 60;
+  if (!data?.token) return;
 
-  cookieStore.set(TOKEN_COOKIE_NAME, token, {
+  cookieStore.set(TOKEN_COOKIE_NAME, data?.token, {
     path: "/",
     maxAge,
     sameSite: "lax",

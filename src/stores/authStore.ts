@@ -168,6 +168,8 @@ export const useAuthStore = create<AuthState>()(
       try {
         const res = await LoginAction(input);
 
+        console.log(res);
+
 
         const user = res.data as unknown as ClientAuthUser;
         if (!user) throw new Error("Login succeeded but user is missing");

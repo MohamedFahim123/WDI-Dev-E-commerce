@@ -11,6 +11,7 @@ import { AuthInput } from "../Fields/AuthInput";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginInput, loginSchema } from "@/src/validation/LoginSchema";
+import { getAuthTokenFromCookieServer } from "@/src/lib/authCookies";
 
 export default function LoginForm() {
   const lang = useRouteLang();
@@ -35,8 +36,8 @@ export default function LoginForm() {
 
   async function onSubmit(values: LoginInput) {
     await login(values);
-    const { isAuthenticated } = useAuthStore.getState();
-    if (isAuthenticated) router.push(`/${lang}/${values.role}/profile`);
+    // const { isAuthenticated } = useAuthStore.getState();
+    // if (isAuthenticated) router.push(`/${lang}/${values.role}/profile`);
   }
 
   return (

@@ -253,6 +253,7 @@ export async function getProductsSeed(opts?: {
       ? undefined
       : { revalidate: opts?.revalidateSeconds ?? 300 },
   });
+  console.log(res);
 
   const typed = res as unknown as ApiResponse<ApiProductListData>;
 
