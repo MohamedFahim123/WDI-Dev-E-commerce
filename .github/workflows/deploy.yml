@@ -23,9 +23,9 @@ jobs:
           port: 22
           script: |
             cd /root/frontend/dev/WDI-Dev-E-commerce
-            cp .env.develop .env
             # Pull from development branch using PAT for authentication
             git pull https://${{ secrets.TOKEN }}@github.com/MohamedFahim123/WDI-Dev-E-commerce.git development
+            cp .env.develop .env
             
             docker build -t wdi-e-commerce .
             
