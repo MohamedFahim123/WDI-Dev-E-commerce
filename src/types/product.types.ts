@@ -30,25 +30,47 @@ export type ApiResponse<TData> = {
   message: string;
   timestamp: string;
   data: TData;
-  error_code: string;
+
+  error_code?: string;
 };
+
 export type Review = {
   id: string;
   userName: string;
   rating: number;
   comment: string;
-  createdAt: string; 
+  createdAt: string;
 };
+
+export type ApiProductImageLike =
+  | string
+  | {
+      id?: number | string;
+      url?: string;
+      image_url?: string;
+      imageUrl?: string;
+      alt?: string;
+    };
 
 export type ApiProduct = {
   id: number;
+
   name?: string;
+  name_ar?: string;
+
   feature_bullet_points?: string;
+  feature_bullet_points_ar?: string;
+
   description?: string;
+  description_ar?: string;
+
   list_price?: number;
   currency_id?: number;
   currency_name?: string;
+
   image_url?: string | null;
+
+  images?: ApiProductImageLike[];
 
   company_id?: number | null;
   company_name?: string | null;
@@ -62,6 +84,10 @@ export type ApiProduct = {
   warranty?: string;
   country_of_origin_id?: number | null;
   country_of_origin_name?: string | null;
+
+  brand_id?: number | null;
+  brand_name?: string | null;
+  brand_name_ar?: string | null;
 
   model_number?: string;
   model_name?: string;
@@ -149,6 +175,10 @@ export type Product = {
 
   name: string;
 
+  nameAr?: string;
+  descriptionAr?: string;
+  featureBulletPointsHtmlAr?: string;
+
   description: string;
   featureBulletPointsHtml: string;
 
@@ -173,6 +203,12 @@ export type Product = {
 
   categoryId?: number | null;
   categoryName?: string | null;
+
+  companyId?: number | null;
+  companyName?: string | null;
+
+  brandId?: number | null;
+  brandName?: string | null;
 
   subtitle?: string;
   img?: string;

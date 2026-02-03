@@ -55,6 +55,4 @@ async function StoresPage({
     />
   );
 }
-export default withBlockSeller(StoresPage, {
-  redirectTo: (lang: string) => `/${lang}`,
-});
+export default StoresPage;

@@ -1,20 +1,26 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
-import type { Product } from "@/src/types/product.types";
 import { applyFiltersAndSort } from "@/src/services/productFilterService";
 import { useShopStore } from "@/src/stores/shopStore";
+import type { Product } from "@/src/types/product.types";
+import { useEffect, useMemo, useRef } from "react";
 
 type UseShopProductsArgs = {
   products: Product[];
   initialCount: number;
   step: number;
+
+  hasMoreRemote?: boolean;
+
+  onNeedMore?: () => void;
 };
 
 export const useShopProducts = ({
   products,
   initialCount,
   step,
+  hasMoreRemote = false,
+  onNeedMore,
 }: UseShopProductsArgs) => {
   const filters = useShopStore((s) => s.filters);
   const visibleCount = useShopStore((s) => s.visibleCount);
@@ -25,19 +31,48 @@ export const useShopProducts = ({
     [products, filters],
   );
 
+  const filtersKey = useMemo(() => JSON.stringify(filters), [filters]);
+  const prevFiltersKey = useRef(filtersKey);
+
   useEffect(() => {
-    setVisibleCount(Math.min(initialCount, filteredProducts.length));
-  }, [initialCount, filteredProducts, setVisibleCount]);
+    const changed = prevFiltersKey.current !== filtersKey;
+    if (changed) {
+      prevFiltersKey.current = filtersKey;
+      setVisibleCount(Math.min(initialCount, filteredProducts.length));
+      return;
+    }
 
-  const visibleProducts = useMemo(
-    () => filteredProducts.slice(0, visibleCount),
-    [filteredProducts, visibleCount],
-  );
+    if (visibleCount === 0) {
+      setVisibleCount(Math.min(initialCount, filteredProducts.length));
+      return;
+    }
 
-  const hasMore = visibleCount < filteredProducts.length;
+    if (visibleCount > filteredProducts.length && !hasMoreRemote) {
+      setVisibleCount(filteredProducts.length);
+    }
+  }, [
+    filtersKey,
+    initialCount,
+    filteredProducts.length,
+    visibleCount,
+    setVisibleCount,
+    hasMoreRemote,
+  ]);
+
+  const visibleProducts = useMemo(() => {
+    const cap = Math.min(visibleCount, filteredProducts.length);
+    return filteredProducts.slice(0, cap);
+  }, [filteredProducts, visibleCount]);
+
+  const hasMore = visibleCount < filteredProducts.length || hasMoreRemote;
 
   const handleViewMore = () => {
-    setVisibleCount(Math.min(visibleCount + step, filteredProducts.length));
+    const next = visibleCount + step;
+    setVisibleCount(next);
+
+    if (next > filteredProducts.length && hasMoreRemote) {
+      onNeedMore?.();
+    }
   };
 
   return {
