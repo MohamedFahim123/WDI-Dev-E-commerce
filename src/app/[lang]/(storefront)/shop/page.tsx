@@ -1,5 +1,4 @@
 import ShopProducts from "@/src/components/ShopProducts/ShopProducts";
-import { withBlockSeller } from "@/src/hoc/roleGuards";
 import { parseShopSearchParams } from "@/src/lib/features/parseShopSearchParams";
 import { getFilters } from "@/src/services/filter.service";
 import { getProductsList } from "@/src/services/product.service";
@@ -40,9 +39,34 @@ async function ProductsPage({ params, searchParams }: Props) {
     getFilters(),
   ]);
 
+  const localizedProducts =
+    lang === "ar"
+      ? list.products.map((p) => ({
+          ...p,
+          name: p.nameAr ?? p.name,
+          description: p.descriptionAr ?? p.description,
+          featureBulletPointsHtml:
+            p.featureBulletPointsHtmlAr ?? p.featureBulletPointsHtml,
+        }))
+      : list.products;
+
   return (
     <ShopProducts
-      products={list.products}
+      key={[
+        lang,
+        initialQuery?.category_id ?? "",
+        initialQuery?.company_id ?? "",
+        initialQuery?.color_id ?? "",
+        initialQuery?.size_id ?? "",
+        initialQuery?.min_price ?? "",
+        initialQuery?.max_price ?? "",
+        initialQuery?.search ?? "",
+        initialQuery?.sort ?? "",
+        initialQuery?.limit ?? "",
+      ].join("|")}
+      products={localizedProducts}
+      total={list.total}
+      limit={list.limit}
       lang={lang}
       filtersData={filtersData}
       initialQuery={initialQuery}
@@ -50,6 +74,4 @@ async function ProductsPage({ params, searchParams }: Props) {
   );
 }
 
-export default withBlockSeller(ProductsPage, {
-  redirectTo: (lang: string) => `/${lang}`,
-});
+export default ProductsPage;

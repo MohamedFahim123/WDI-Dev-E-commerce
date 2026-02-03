@@ -30,6 +30,7 @@ export async function fetchStoresList(
     },
   });
 
+
   if (!res.ok) {
     throw new Error(`Failed to fetch stores: ${res.status} ${res.statusText}`);
   }

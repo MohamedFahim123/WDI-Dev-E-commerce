@@ -2,12 +2,13 @@
 
 import dynamic from "next/dynamic";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 
 import Container from "../Container/Container";
 import FilterBarSkeleton from "../Skeletons/FilterBarSkeleton/FilterBarSkeleton";
 import ProductCardSkeleton from "../Skeletons/ProductCardSkeleton/ProductCardSkeleton";
 
+import { usePaginatedProducts } from "@/src/hooks/usePaginatedProducts";
 import { useShopProducts } from "@/src/hooks/useShopProducts";
 import { useCartStore } from "@/src/stores/cartStore";
 import {
@@ -36,8 +37,13 @@ type Props = {
   products: Product[];
   lang: string;
   filtersData?: FiltersData;
+
+  total?: number;
+  limit?: number;
+
   initialCount?: number;
   step?: number;
+
   initialQuery?: {
     category_id?: string;
     company_id?: string;
@@ -64,46 +70,6 @@ function coerceSort(v?: string): SortValue {
   return "relevance";
 }
 
-function EmptyCatalogState({ onReset }: { onReset: () => void }) {
-  return (
-    <div className="rounded-2xl border border-dashed border-zinc-200 bg-white p-10 text-center">
-      <p className="text-base font-semibold text-zinc-900">
-        No products available
-      </p>
-      <p className="mt-2 text-sm text-zinc-500">
-        There are no products to show right now. Please check back later.
-      </p>
-
-      <button
-        type="button"
-        onClick={onReset}
-        className="mt-6 cursor-pointer inline-flex items-center justify-center rounded-full border border-[#7C3BED] bg-white px-6 py-2 text-sm font-semibold text-[#7C3BED] hover:bg-violet-50"
-      >
-        Reset filters
-      </button>
-    </div>
-  );
-}
-
-function NoResultsState({ onReset }: { onReset: () => void }) {
-  return (
-    <div className="rounded-2xl border border-dashed border-zinc-200 bg-white p-10 text-center">
-      <p className="text-base font-semibold text-zinc-900">No results found</p>
-      <p className="mt-2 text-sm text-zinc-500">
-        Try changing or clearing your filters to see more products.
-      </p>
-
-      <button
-        type="button"
-        onClick={onReset}
-        className="mt-6 cursor-pointer inline-flex items-center justify-center rounded-full border border-[#7C3BED] bg-white px-6 py-2 text-sm font-semibold text-[#7C3BED] hover:bg-violet-50"
-      >
-        Reset filters
-      </button>
-    </div>
-  );
-}
-
 function formatMoney(n: number) {
   return Number.isInteger(n) ? String(n) : n.toFixed(2);
 }
@@ -112,6 +78,8 @@ export default function ShopProducts({
   products,
   lang,
   filtersData,
+  total,
+  limit,
   initialCount = 9,
   step = 9,
   initialQuery,
@@ -122,8 +90,9 @@ export default function ShopProducts({
   const setAllFilters = useShopStore((s) => s.setAllFilters);
   const resetFilters = useShopStore((s) => s.resetFilters);
 
-  const [firstProducts] = useState<Product[]>(() => products);
-
+  // -------------------------
+  // 1) Hydrate store filters from URL (initialQuery)
+  // -------------------------
   useEffect(() => {
     if (!initialQuery) return;
 
@@ -147,6 +116,9 @@ export default function ShopProducts({
     router.replace(pathname, { scroll: false });
   };
 
+  // -------------------------
+  // 2) Hydrate wishlist/cart
+  // -------------------------
   const hydrateWishlist = useWishlistStore((s) => s.hydrate);
   const hydrateCart = useCartStore((s) => s.hydrate);
 
@@ -154,6 +126,48 @@ export default function ShopProducts({
     hydrateWishlist({ lang });
     hydrateCart({ lang });
   }, [hydrateWishlist, hydrateCart, lang]);
+
+  // -------------------------
+  // 3) Pagination hook (remote fetching)
+  //    Only uses the API filters relevant to /product/list
+  // -------------------------
+  const paginationQuery = useMemo(
+    () => ({
+      category_id: initialQuery?.category_id,
+      company_id: initialQuery?.company_id,
+      search: initialQuery?.search,
+      min_price: initialQuery?.min_price,
+      max_price: initialQuery?.max_price,
+      limit: initialQuery?.limit,
+    }),
+    [initialQuery],
+  );
+
+  const {
+    items: loadedProductsRaw,
+    loading: loadingMore,
+    hasMoreRemote,
+    fetchNextPage,
+  } = usePaginatedProducts({
+    initialProducts: products,
+    initialTotal: total,
+    initialLimit: limit,
+    query: paginationQuery,
+  });
+
+  const loadedProducts: Product[] = useMemo(() => {
+    if (lang !== "ar") return loadedProductsRaw;
+
+    return loadedProductsRaw.map((p) => ({
+      ...p,
+      name: p.nameAr ?? p.name,
+      description: p.descriptionAr ?? p.description,
+      featureBulletPointsHtml:
+        p.featureBulletPointsHtmlAr ?? p.featureBulletPointsHtml,
+    }));
+  }, [loadedProductsRaw, lang]);
+
+  const firstProducts = useMemo(() => products, [products]);
 
   const categoriesFromFirstProducts: Option[] = useMemo(() => {
     const map = new Map<string, string>();
@@ -262,9 +276,14 @@ export default function ShopProducts({
   }, [filtersData]);
 
   const { filteredProducts, visibleProducts, hasMore, handleViewMore } =
-    useShopProducts({ products, initialCount, step });
-
-  const hasCatalogProducts = products.length > 0;
+    useShopProducts({
+      products: loadedProducts,
+      initialCount,
+      step,
+      hasMoreRemote,
+      onNeedMore: fetchNextPage,
+    });
+  const hasCatalogProducts = loadedProducts.length > 0;
   const noFilteredResults = hasCatalogProducts && filteredProducts.length === 0;
 
   return (
@@ -282,9 +301,39 @@ export default function ShopProducts({
         ) : null}
 
         {!hasCatalogProducts ? (
-          <EmptyCatalogState onReset={resetFiltersAndUrl} />
+          <div className="rounded-2xl border border-dashed border-zinc-200 bg-white p-10 text-center">
+            <p className="text-base font-semibold text-zinc-900">
+              No products available
+            </p>
+            <p className="mt-2 text-sm text-zinc-500">
+              There are no products to show right now. Please check back later.
+            </p>
+
+            <button
+              type="button"
+              onClick={resetFiltersAndUrl}
+              className="mt-6 cursor-pointer inline-flex items-center justify-center rounded-full border border-[#7C3BED] bg-white px-6 py-2 text-sm font-semibold text-[#7C3BED] hover:bg-violet-50"
+            >
+              Reset filters
+            </button>
+          </div>
         ) : noFilteredResults ? (
-          <NoResultsState onReset={resetFiltersAndUrl} />
+          <div className="rounded-2xl border border-dashed border-zinc-200 bg-white p-10 text-center">
+            <p className="text-base font-semibold text-zinc-900">
+              No results found
+            </p>
+            <p className="mt-2 text-sm text-zinc-500">
+              Try changing or clearing your filters to see more products.
+            </p>
+
+            <button
+              type="button"
+              onClick={resetFiltersAndUrl}
+              className="mt-6 cursor-pointer inline-flex items-center justify-center rounded-full border border-[#7C3BED] bg-white px-6 py-2 text-sm font-semibold text-[#7C3BED] hover:bg-violet-50"
+            >
+              Reset filters
+            </button>
+          </div>
         ) : (
           <>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -302,9 +351,10 @@ export default function ShopProducts({
                 <button
                   type="button"
                   onClick={handleViewMore}
-                  className="rounded-full bg-[#bf5910] px-6 py-2 text-sm font-semibold text-white shadow-md hover:bg-[#ffffff] hover:text-[#bf5910] border-1 border-[#bf5910] cursor-pointer outline-none transition-all duration-300"
+                  disabled={loadingMore}
+                  className="rounded-full bg-[#bf5910] px-6 py-2 text-sm font-semibold text-white shadow-md hover:bg-[#ffffff] hover:text-[#bf5910] border-1 border-[#bf5910] cursor-pointer outline-none transition-all duration-300 disabled:opacity-60"
                 >
-                  View more
+                  {loadingMore ? "Loading..." : "View more"}
                 </button>
               </div>
             )}

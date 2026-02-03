@@ -1,0 +1,42 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: "development" 
+  pull_request:
+    branches:  "development" 
+
+
+
+jobs:
+
+  deploy:
+    name: Deploy to Server
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: 22
+          script: |
+            cd /root/frontend/dev/WDI-Dev-E-commerce
+            # Pull from development branch using PAT for authentication
+            git pull https://${{ secrets.TOKEN }}@github.com/MohamedFahim123/WDI-Dev-E-commerce.git development
+            cp .env.develop .env
+            
+            docker build -t wdi-e-commerce .
+            
+            # Stop and remove old container
+            docker stop app || true
+            docker rm app || true
+            
+            # Run new container
+            docker run -d \
+              --name app \
+              --restart unless-stopped \
+              -p 3000:3000 \
+              -e NODE_ENV=development \
+              wdi-e-commerce

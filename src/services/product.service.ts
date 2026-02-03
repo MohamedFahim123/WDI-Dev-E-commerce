@@ -3,6 +3,7 @@ import type {
   ApiAttributeValue,
   ApiProduct,
   ApiProductDetails,
+  ApiProductImageLike,
   ApiProductListData,
   ApiResponse,
   Product,
@@ -22,6 +23,21 @@ function getBackendBaseUrl(): string {
   );
 }
 
+function baseHasApiSuffix(base: string) {
+  return /\/api\/?$/.test(base);
+}
+
+function withApiPrefix(endpoint: string) {
+  const clean = endpoint.replace(/^\/+/, "");
+  const base = getBackendBaseUrl();
+
+  if (base && baseHasApiSuffix(base)) {
+    return clean.replace(/^api\//, "");
+  }
+
+  return clean.startsWith("api/") ? clean : `api/${clean}`;
+}
+
 function toAbsoluteUrl(maybeRelative: string | null): string | null {
   if (!maybeRelative) return null;
   if (
@@ -38,6 +54,70 @@ function toAbsoluteUrl(maybeRelative: string | null): string | null {
   } catch {
     return maybeRelative;
   }
+}
+
+function extractFirstImageUrl(images: unknown): string | null {
+  if (!Array.isArray(images)) return null;
+  for (const im of images) {
+    if (typeof im === "string" && im.trim()) return im;
+
+    if (im && typeof im === "object") {
+      const anyIm = im as {
+        url?: unknown;
+        image_url?: unknown;
+        imageUrl?: unknown;
+      };
+      const url =
+        (typeof anyIm.url === "string" && anyIm.url) ||
+        (typeof anyIm.image_url === "string" && anyIm.image_url) ||
+        (typeof anyIm.imageUrl === "string" && anyIm.imageUrl) ||
+        null;
+
+      if (url) return url;
+    }
+  }
+  return null;
+}
+
+function normalizeImages(
+  apiImages: ApiProductImageLike[] | undefined,
+  fallbackUrl: string | null,
+  alt: string,
+): ProductImage[] {
+  const out: ProductImage[] = [];
+
+  if (Array.isArray(apiImages) && apiImages.length > 0) {
+    apiImages.forEach((im, idx) => {
+      const url =
+        typeof im === "string"
+          ? im
+          : typeof im?.url === "string"
+            ? im.url
+            : typeof im?.image_url === "string"
+              ? im.image_url
+              : typeof im?.imageUrl === "string"
+                ? im.imageUrl
+                : null;
+
+      const abs = toAbsoluteUrl(url ?? null);
+      if (!abs) return;
+
+      out.push({
+        id: `img-${idx}`,
+        url: abs,
+        alt:
+          typeof im === "object" && im && typeof im.alt === "string"
+            ? im.alt
+            : alt,
+      });
+    });
+  }
+
+  if (out.length === 0 && fallbackUrl) {
+    out.push({ id: "main", url: fallbackUrl, alt });
+  }
+
+  return out;
 }
 
 function stripHtml(input: string): string {
@@ -135,30 +215,29 @@ function extractVariants(details: ApiProductDetails): ProductVariant[] {
   });
 }
 
-function buildImages(details: ApiProductDetails): ProductImage[] {
-  const url = toAbsoluteUrl(details.image_url ?? null);
-  if (!url) return [];
-  return [{ id: "main", url, alt: details.name ?? "Product image" }];
-}
-
-/** list -> UI Product */
 export function normalizeProduct(p: ApiProduct): Product {
-  const imageUrl = toAbsoluteUrl(p.image_url ?? null);
-  const images: ProductImage[] = imageUrl
-    ? [{ id: "main", url: imageUrl, alt: p.name ?? "Product image" }]
-    : [];
+  const firstFromImages = extractFirstImageUrl(p.images);
+  const primary = toAbsoluteUrl(p.image_url ?? firstFromImages ?? null);
+
+  const name = p.name ?? "";
+  const images = normalizeImages(p.images, primary, name || "Product image");
 
   return {
     id: String(p.id),
-    name: p.name ?? "",
+
+    name,
+    nameAr: p.name_ar ?? undefined,
 
     description: p.description ?? "",
+    descriptionAr: p.description_ar ?? undefined,
+
     featureBulletPointsHtml: p.feature_bullet_points ?? "",
+    featureBulletPointsHtmlAr: p.feature_bullet_points_ar ?? undefined,
 
     price: Number(p.list_price ?? 0),
     currency: p.currency_name ?? "",
 
-    imageUrl,
+    imageUrl: primary,
     images,
 
     colors: [],
@@ -176,6 +255,12 @@ export function normalizeProduct(p: ApiProduct): Product {
 
     categoryId: p.categ_id ?? null,
     categoryName: p.category_name ?? null,
+
+    companyId: p.company_id ?? null,
+    companyName: p.company_name ?? null,
+
+    brandId: p.company_id ?? null,
+    brandName: p.brand_name ?? p.company_name ?? null,
   };
 }
 
@@ -183,7 +268,6 @@ export function normalizeProductDetails(details: ApiProductDetails): Product {
   const base = normalizeProduct(details);
   return {
     ...base,
-    images: buildImages(details),
     colors: extractColors(details),
     variants: extractVariants(details),
     features: extractFeatures(details),
@@ -206,7 +290,9 @@ export async function getProductsList(
   qs.set("limit", String(params.limit ?? 20));
   qs.set("offset", String(params.offset ?? 0));
 
-  const res = await fetchApi(`product/list?${qs.toString()}`, {
+  const endpoint = withApiPrefix(`product/list?${qs.toString()}`);
+
+  const res = await fetchApi(endpoint, {
     cache: "force-cache",
     next: { revalidate: opts?.revalidateSeconds ?? 300 },
   });
@@ -225,10 +311,12 @@ export async function getProductsList(
 }
 
 export async function getProductDetails(productId: number): Promise<Product> {
-  const res = await fetchApi<ApiProductDetails>(
-    `product/details?product_id=${productId}`,
-    { cache: "force-cache", next: { revalidate: 3600 } },
-  );
+  const endpoint = withApiPrefix(`product/details?product_id=${productId}`);
+
+  const res = await fetchApi<ApiProductDetails>(endpoint, {
+    cache: "force-cache",
+    next: { revalidate: 3600 },
+  });
 
   const typed = res as unknown as ApiResponse<ApiProductDetails>;
   if (!typed.success)
@@ -236,6 +324,7 @@ export async function getProductDetails(productId: number): Promise<Product> {
 
   return normalizeProductDetails(typed.data);
 }
+
 export async function getProductsSeed(opts?: {
   limit?: number;
   offset?: number;
@@ -243,29 +332,27 @@ export async function getProductsSeed(opts?: {
   noStore?: boolean;
 }): Promise<ProductListResult> {
   const qs = new URLSearchParams();
-
   qs.set("limit", String(opts?.limit ?? 20));
   qs.set("offset", String(opts?.offset ?? 0));
 
-  const res = await fetchApi(`product/list?${qs.toString()}`, {
+  const endpoint = withApiPrefix(`product/list?${qs.toString()}`);
+
+  const res = await fetchApi(endpoint, {
     cache: opts?.noStore ? "no-store" : "force-cache",
     next: opts?.noStore
       ? undefined
       : { revalidate: opts?.revalidateSeconds ?? 300 },
   });
-  console.log(res);
 
   const typed = res as unknown as ApiResponse<ApiProductListData>;
-
-  if (!typed.success) {
+  if (!typed.success)
     throw new Error(typed.message || "Failed to load products");
-  }
 
   return {
     products: typed.data.products.map(normalizeProduct),
     total: typed.data.total,
     limit: typed.data.limit,
     offset: typed.data.offset,
-    filters: {},
+    filters: typed.data.filters ?? {},
   };
 }

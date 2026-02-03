@@ -110,13 +110,13 @@ export async function getMyProfileAction(): Promise<GetProfileResult | null> {
     endpoint,
     {
       method: "GET",
-      cache: "no-store",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     },
   );
+
 
   if (!res.success) throw new Error(res.message || "Unable to fetch profile");
 
