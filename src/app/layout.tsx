@@ -2,8 +2,6 @@ import "@/src/app/globals.css";
 import "@/src/i18n/settings";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { Toaster } from "sonner";
-import AuthHydrator from "../components/AuthHydrator/AuthHydrator";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -24,8 +22,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`min-h-screen flex flex-col ${inter.className}`}>
-        <Toaster position="top-right" duration={1000} richColors />
-        <AuthHydrator />
         {children}
       </body>
     </html>
