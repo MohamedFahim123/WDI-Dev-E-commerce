@@ -1,5 +1,4 @@
 import StoresView from "@/src/components/StoresView/StoresView";
-import { withBlockSeller } from "@/src/hoc/roleGuards";
 import { mapApiStoresToStores } from "@/src/lib/api/mappers/store.mapper";
 import { fetchStoresList } from "@/src/lib/api/stores";
 import type { Metadata } from "next";
