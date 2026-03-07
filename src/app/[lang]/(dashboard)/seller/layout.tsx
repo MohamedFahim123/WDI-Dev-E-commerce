@@ -21,5 +21,10 @@ export default async function BuyerLayout({
   if (!token && !role) {
     redirect(`/${lang}/auth/login`);
   }
-  return <SellerLayoutShell>{children}</SellerLayoutShell>;
+
+  return (
+    <SellerLayoutShell>
+      {children}
+    </SellerLayoutShell>
+  );
 }

@@ -43,6 +43,7 @@ async function StoresPage({
     storesData.apiError = message;
   }
 
+
   return (
     <StoresView
       lang={lang}
