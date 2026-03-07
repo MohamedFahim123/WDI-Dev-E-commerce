@@ -299,7 +299,14 @@ export async function getProductsList(
 
   const typed = res as unknown as ApiResponse<ApiProductListData>;
   if (!typed.success)
-    throw new Error(typed.message || "Failed to load products");
+    return {
+      products: [],
+      total: 0,
+      limit: 0,
+      offset: 0,
+      filters: {},
+    };
+  // throw new Error(typed.message || "Failed to load products");
 
   return {
     products: typed.data.products.map(normalizeProduct),
@@ -319,8 +326,8 @@ export async function getProductDetails(productId: number): Promise<Product> {
   });
 
   const typed = res as unknown as ApiResponse<ApiProductDetails>;
-  if (!typed.success)
-    throw new Error(typed.message || "Failed to load product");
+  if (!typed.success) return normalizeProductDetails({} as ApiProductDetails);
+  // throw new Error(typed.message || "Failed to load product");
 
   return normalizeProductDetails(typed.data);
 }
@@ -346,7 +353,14 @@ export async function getProductsSeed(opts?: {
 
   const typed = res as unknown as ApiResponse<ApiProductListData>;
   if (!typed.success)
-    throw new Error(typed.message || "Failed to load products");
+    return {
+      products: [],
+      total: 0,
+      limit: 0,
+      offset: 0,
+      filters: {},
+    };
+  // throw new Error(typed.message || "Failed to load products");
 
   return {
     products: typed.data.products.map(normalizeProduct),
