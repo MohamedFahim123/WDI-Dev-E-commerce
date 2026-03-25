@@ -1,5 +1,5 @@
-import { MY_RETURN_ORDERS } from "@/src/components/Request-Returns/MyReturnsData";
-import MySingleReturnDetails from "@/src/components/Request-Returns/ReturnStatusDetailsPage/MySingleReturnDetails";
+import { MY_RETURN_ORDERS } from "@/src/features/returns/components/Request-Returns/MyReturnsData";
+import MySingleReturnDetails from "@/src/features/returns/components/Request-Returns/ReturnStatusDetailsPage/MySingleReturnDetails";
 import { withBlockSeller } from "@/src/hoc/roleGuards";
 import { Metadata } from "next";
 
@@ -34,3 +34,4 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default withBlockSeller(MyReturnDetailsRoute, {
   redirectTo: (lang: string) => `/${lang}`,
 });
+

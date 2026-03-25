@@ -1,16 +1,16 @@
 "use client";
-import HeroSection from "@/src/components/HeroSection/HeroSection";
+import HeroSection from "@/src/features/home/components/HeroSection/HeroSection";
 import FeaturesSectionSkeleton from "@/src/components/Skeletons/FeaturesSectionSkeleton/FeaturesSectionSkeleton";
 import FlashDealsSkeleton from "@/src/components/Skeletons/FlashDealsSkeleton/FlashDealsSkeleton";
 import ImagesBannerSkeleton from "@/src/components/Skeletons/ImagesBannerSkeleton/ImagesBannerSkeleton";
 import SuperOfferSkeleton from "@/src/components/Skeletons/SuperOfferSkeleton/SuperOfferSkeleton";
 import { useRouteLang } from "@/src/hooks/useLang";
-import { useAuthStore } from "@/src/stores/authStore";
+import { useAuthStore } from "@/src/features/auth/stores/authStore";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 
 const FeaturesSection = dynamic(
-  () => import("@/src/components/FeaturesSection/FeaturesSection"),
+  () => import("@/src/features/home/components/FeaturesSection/FeaturesSection"),
   {
     ssr: false,
     loading: () => <FeaturesSectionSkeleton />,
@@ -18,7 +18,7 @@ const FeaturesSection = dynamic(
 );
 
 const ImagesBanner = dynamic(
-  () => import("@/src/components/ImagesBanner/ImagesBanner"),
+  () => import("@/src/features/home/components/ImagesBanner/ImagesBanner"),
   {
     ssr: false,
     loading: () => <ImagesBannerSkeleton />,
@@ -26,7 +26,7 @@ const ImagesBanner = dynamic(
 );
 
 const FlashDeals = dynamic(
-  () => import("@/src/components/FlashDeals/FlashDeals"),
+  () => import("@/src/features/home/components/FlashDeals/FlashDeals"),
   {
     ssr: false,
     loading: () => <FlashDealsSkeleton />,
@@ -34,7 +34,7 @@ const FlashDeals = dynamic(
 );
 
 const SuperOffer = dynamic(
-  () => import("@/src/components/SuperOffer/SuperOffer"),
+  () => import("@/src/features/home/components/SuperOffer/SuperOffer"),
 
   {
     ssr: false,
@@ -61,3 +61,4 @@ export default function HomePage() {
     </>
   );
 }
+

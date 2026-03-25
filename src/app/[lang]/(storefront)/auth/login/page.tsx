@@ -1,4 +1,4 @@
-import LoginForm from "@/src/components/Auth/LoginForm/LoginForm";
+import LoginForm from "@/src/features/auth/components/LoginForm/LoginForm";
 import { Metadata } from "next";
 
 export const metadata: Metadata ={
@@ -8,3 +8,4 @@ export const metadata: Metadata ={
 export default function LoginPage() {
   return <LoginForm />;
 }
+

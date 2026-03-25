@@ -1,4 +1,4 @@
-import OverviewMetrics from "@/src/components/Dashboard/Seller/OverviewMetrics/OverviewMetrics";
+import OverviewMetrics from "@/src/features/dashboard/components/Seller/OverviewMetrics/OverviewMetrics";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -7,3 +7,4 @@ export const metadata: Metadata = {
 export default function PayoutPageDashobard() {
   return <OverviewMetrics />;
 }
+

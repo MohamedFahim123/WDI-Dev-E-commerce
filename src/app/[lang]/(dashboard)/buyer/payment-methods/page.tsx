@@ -1,4 +1,4 @@
-import PaymentMethods from "@/src/components/Dashboard/Buyer/PaymentMethods/PaymentMethods";
+import PaymentMethods from "@/src/features/dashboard/components/Buyer/PaymentMethods/PaymentMethods";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -13,3 +13,4 @@ export default function BuyerPaymentMethodsPage() {
     </div>
   );
 }
+

@@ -1,5 +1,5 @@
 import React from "react";
-import Panel from "../../CreaetStore/Common/Panel";
+import Panel from "@/src/features/store-creation/components/CreaetStore/Common/Panel";
 
 function KycFormSkeleton() {
   return (
@@ -80,3 +80,4 @@ function KycFormSkeleton() {
   );
 }
 export default React.memo(KycFormSkeleton);
+

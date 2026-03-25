@@ -1,4 +1,4 @@
-import { ResetPasswordForm } from "@/src/components/Auth/ResetPasswordForm/ResetPasswordForm";
+import { ResetPasswordForm } from "@/src/features/auth/components/ResetPasswordForm/ResetPasswordForm";
 import { getResetEmailFromCookieServer } from "@/src/lib/authCookies";
 import { redirect } from "next/navigation";
 
@@ -14,3 +14,4 @@ export default async function ResetPasswordPage({
 
   return <ResetPasswordForm />;
 }
+

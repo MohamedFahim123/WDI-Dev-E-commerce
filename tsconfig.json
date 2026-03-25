@@ -19,6 +19,203 @@
       }
     ],
     "paths": {
+      "@/src/actions/notifications.actions": [
+        "./src/features/notifications/actions/notifications.actions"
+      ],
+      "@/src/components/AppClientHydrator/*": [
+        "./src/features/products/components/AppClientHydrator/*"
+      ],
+      "@/src/components/Auth/*": ["./src/features/auth/components/*"],
+      "@/src/components/CartFullPage/*": [
+        "./src/features/cart/components/CartFullPage/*"
+      ],
+      "@/src/components/Checkout/*": [
+        "./src/features/checkout/components/Checkout/*"
+      ],
+      "@/src/components/CreaetStore/*": [
+        "./src/features/store-creation/components/CreaetStore/*"
+      ],
+      "@/src/components/Dashboard/*": [
+        "./src/features/dashboard/components/*"
+      ],
+      "@/src/components/FeaturesSection/*": [
+        "./src/features/home/components/FeaturesSection/*"
+      ],
+      "@/src/components/Filters/*": ["./src/features/shop/components/Filters/*"],
+      "@/src/components/FlashDeals/*": [
+        "./src/features/home/components/FlashDeals/*"
+      ],
+      "@/src/components/FlashDealsFullContent/*": [
+        "./src/features/home/components/FlashDealsFullContent/*"
+      ],
+      "@/src/components/HeroSection/*": [
+        "./src/features/home/components/HeroSection/*"
+      ],
+      "@/src/components/ImagesBanner/*": [
+        "./src/features/home/components/ImagesBanner/*"
+      ],
+      "@/src/components/Notifications/*": [
+        "./src/features/notifications/components/Notifications/*"
+      ],
+      "@/src/components/Order-Placed-Successfully/*": [
+        "./src/features/orders/components/Order-Placed-Successfully/*"
+      ],
+      "@/src/components/Orders/*": [
+        "./src/features/orders/components/Orders/*"
+      ],
+      "@/src/components/ProductCard/*": [
+        "./src/features/products/components/ProductCard/*"
+      ],
+      "@/src/components/ProductDetailsFullPage/*": [
+        "./src/features/products/components/ProductDetailsFullPage/*"
+      ],
+      "@/src/components/ProductsGrid/*": [
+        "./src/features/products/components/ProductsGrid/*"
+      ],
+      "@/src/components/Request-Returns/*": [
+        "./src/features/returns/components/Request-Returns/*"
+      ],
+      "@/src/components/ShopProducts/*": [
+        "./src/features/shop/components/ShopProducts/*"
+      ],
+      "@/src/components/StoreHydrator/*": [
+        "./src/features/stores/components/StoreHydrator/*"
+      ],
+      "@/src/components/StoreProfileView/*": [
+        "./src/features/stores/components/StoreProfileView/*"
+      ],
+      "@/src/components/StoresView/*": [
+        "./src/features/stores/components/StoresView/*"
+      ],
+      "@/src/components/SuperOffer/*": [
+        "./src/features/home/components/SuperOffer/*"
+      ],
+      "@/src/components/WishlistFullPage/*": [
+        "./src/features/wishlist/components/WishlistFullPage/*"
+      ],
+      "@/src/hooks/useCreateStoreWizard": [
+        "./src/features/store-creation/hooks/useCreateStoreWizard"
+      ],
+      "@/src/hooks/useForgotPassword": [
+        "./src/features/auth/hooks/useForgotPassword"
+      ],
+      "@/src/hooks/useNotificationsMenuData": [
+        "./src/features/notifications/hooks/useNotificationsMenuData"
+      ],
+      "@/src/hooks/usePaginatedProducts": [
+        "./src/features/shop/hooks/usePaginatedProducts"
+      ],
+      "@/src/hooks/useReviews": ["./src/features/products/hooks/useReviews"],
+      "@/src/hooks/useShopProducts": [
+        "./src/features/shop/hooks/useShopProducts"
+      ],
+      "@/src/lib/ShareProduct": ["./src/features/products/lib/ShareProduct"],
+      "@/src/lib/api/mappers/store.mapper": [
+        "./src/features/stores/api/mappers/store.mapper"
+      ],
+      "@/src/lib/api/stores": ["./src/features/stores/api/stores"],
+      "@/src/lib/createStoreWizard": [
+        "./src/features/store-creation/lib/createStoreWizard"
+      ],
+      "@/src/lib/features/parseShopSearchParams": [
+        "./src/features/shop/lib/parseShopSearchParams"
+      ],
+      "@/src/lib/notifications/mapToUi": [
+        "./src/features/notifications/lib/mapToUi"
+      ],
+      "@/src/services/auth.service": [
+        "./src/features/auth/services/auth.service"
+      ],
+      "@/src/services/authService": [
+        "./src/features/auth/services/authService"
+      ],
+      "@/src/services/cart.service": [
+        "./src/features/cart/services/cart.service"
+      ],
+      "@/src/services/createStoreAction": [
+        "./src/features/store-creation/services/createStoreAction"
+      ],
+      "@/src/services/createStoreService": [
+        "./src/features/store-creation/services/createStoreService"
+      ],
+      "@/src/services/filter.service": [
+        "./src/features/shop/services/filter.service"
+      ],
+      "@/src/services/notifications.service": [
+        "./src/features/notifications/services/notifications.service"
+      ],
+      "@/src/services/product.service": [
+        "./src/features/products/services/product.service"
+      ],
+      "@/src/services/productFilterService": [
+        "./src/features/shop/services/productFilterService"
+      ],
+      "@/src/services/profile.service": [
+        "./src/features/auth/services/profile.service"
+      ],
+      "@/src/services/reviewService": [
+        "./src/features/products/services/reviewService"
+      ],
+      "@/src/services/wishlist.service": [
+        "./src/features/wishlist/services/wishlist.service"
+      ],
+      "@/src/stores/StepsCreateStore": [
+        "./src/features/store-creation/stores/StepsCreateStore"
+      ],
+      "@/src/stores/authStore": ["./src/features/auth/stores/authStore"],
+      "@/src/stores/cartStore": ["./src/features/cart/stores/cartStore"],
+      "@/src/stores/catalogSeedStore": [
+        "./src/features/products/stores/catalogSeedStore"
+      ],
+      "@/src/stores/notificationsStore": [
+        "./src/features/notifications/stores/notificationsStore"
+      ],
+      "@/src/stores/products": ["./src/features/products/stores/products"],
+      "@/src/stores/productsStore": [
+        "./src/features/products/stores/productsStore"
+      ],
+      "@/src/stores/shopStore": ["./src/features/shop/stores/shopStore"],
+      "@/src/stores/wishlistStore": [
+        "./src/features/wishlist/stores/wishlistStore"
+      ],
+      "@/src/types/api/store.api.types": [
+        "./src/features/stores/types/api/store.api.types"
+      ],
+      "@/src/types/auth": ["./src/features/auth/types/auth"],
+      "@/src/types/createStore.types": [
+        "./src/features/store-creation/types/createStore.types"
+      ],
+      "@/src/types/notification.types": [
+        "./src/features/notifications/types/notification.types"
+      ],
+      "@/src/types/product.types": [
+        "./src/features/products/types/product.types"
+      ],
+      "@/src/types/store.types": ["./src/features/stores/types/store.types"],
+      "@/src/validation/CheckoutSchema": [
+        "./src/features/checkout/validation/CheckoutSchema"
+      ],
+      "@/src/validation/CreateStoreSchemas": [
+        "./src/features/store-creation/validation/CreateStoreSchemas"
+      ],
+      "@/src/validation/ForgotPasswordSchemas": [
+        "./src/features/auth/validation/ForgotPasswordSchemas"
+      ],
+      "@/src/validation/LoginSchema": [
+        "./src/features/auth/validation/LoginSchema"
+      ],
+      "@/src/validation/ProductSchema": [
+        "./src/features/products/validation/ProductSchema"
+      ],
+      "@/src/validation/RegisterSchemas": [
+        "./src/features/auth/validation/RegisterSchemas"
+      ],
+      "@/src/validation/Review.schema": [
+        "./src/features/products/validation/Review.schema"
+      ],
+      "@/src/validation/createStoreWizardClientSchemas": [
+        "./src/features/store-creation/validation/createStoreWizardClientSchemas"
+      ],
       "@/*": ["./*"]
     }
   },

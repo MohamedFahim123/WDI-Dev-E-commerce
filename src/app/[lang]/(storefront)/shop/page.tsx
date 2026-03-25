@@ -1,7 +1,7 @@
-import ShopProducts from "@/src/components/ShopProducts/ShopProducts";
-import { parseShopSearchParams } from "@/src/lib/features/parseShopSearchParams";
-import { getFilters } from "@/src/services/filter.service";
-import { getProductsList } from "@/src/services/product.service";
+import ShopProducts from "@/src/features/shop/components/ShopProducts/ShopProducts";
+import { parseShopSearchParams } from "@/src/features/shop/lib/parseShopSearchParams";
+import { getFilters } from "@/src/features/shop/services/filter.service";
+import { getProductsList } from "@/src/features/products/services/product.service";
 
 type SearchParams = Record<string, string | string[] | undefined>;
 type Awaitable<T> = T | Promise<T>;
@@ -75,3 +75,4 @@ async function ProductsPage({ params, searchParams }: Props) {
 }
 
 export default ProductsPage;
+

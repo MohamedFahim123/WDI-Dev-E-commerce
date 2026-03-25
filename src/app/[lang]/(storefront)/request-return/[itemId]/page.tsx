@@ -1,5 +1,5 @@
-import ReturnedItemRequestSection from "@/src/components/Request-Returns/ReturnItemRequestPage/ReturnedItemRequestSection";
-import { RETURN_ITEMS } from "@/src/components/Request-Returns/ReturnRequestData";
+import ReturnedItemRequestSection from "@/src/features/returns/components/Request-Returns/ReturnItemRequestPage/ReturnedItemRequestSection";
+import { RETURN_ITEMS } from "@/src/features/returns/components/Request-Returns/ReturnRequestData";
 import { withBlockSeller } from "@/src/hoc/roleGuards";
 import { Metadata } from "next";
 
@@ -36,3 +36,4 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default withBlockSeller(ReturnItemPage, {
   redirectTo: (lang: string) => `/${lang}`,
 });
+

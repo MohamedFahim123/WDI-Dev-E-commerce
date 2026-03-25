@@ -1,5 +1,6 @@
-import NotificationsPreferencesPage from "@/src/components/Dashboard/Buyer/NotificationsPreferences/NotificationsPreferencesPage";
+import NotificationsPreferencesPage from "@/src/features/dashboard/components/Buyer/NotificationsPreferences/NotificationsPreferencesPage";
 
 export default function NotficationsPage() {
   return <NotificationsPreferencesPage />;
 }
+

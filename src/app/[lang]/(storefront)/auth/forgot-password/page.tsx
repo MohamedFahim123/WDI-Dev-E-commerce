@@ -1,4 +1,4 @@
-import { ForgotPasswordForm } from "@/src/components/Auth/ForgotPasswordForm/ForgotPasswordForm";
+import { ForgotPasswordForm } from "@/src/features/auth/components/ForgotPasswordForm/ForgotPasswordForm";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -8,3 +8,4 @@ export const metadata: Metadata = {
 export default function ForgetPasswordPage() {
   return <ForgotPasswordForm />;
 }
+

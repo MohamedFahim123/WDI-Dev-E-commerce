@@ -1,5 +1,5 @@
 import React from "react";
-import Panel from "../../CreaetStore/Common/Panel";
+import Panel from "@/src/features/store-creation/components/CreaetStore/Common/Panel";
 
 function AddressFormSkeleton() {
   return (
@@ -55,3 +55,4 @@ function AddressFormSkeleton() {
   );
 }
 export default React.memo(AddressFormSkeleton);
+

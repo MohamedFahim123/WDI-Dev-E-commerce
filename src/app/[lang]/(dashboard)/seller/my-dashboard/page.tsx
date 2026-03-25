@@ -1,4 +1,4 @@
-import SellerDashboardPage from "@/src/components/Dashboard/Seller/MyDashboard/SellerDashboardPage";
+import SellerDashboardPage from "@/src/features/dashboard/components/Seller/MyDashboard/SellerDashboardPage";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -9,3 +9,4 @@ export const metadata: Metadata = {
 export default function MyDashbaordSellerPage() {
   return <SellerDashboardPage />;
 }
+

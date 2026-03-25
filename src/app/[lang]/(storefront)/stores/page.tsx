@@ -1,6 +1,6 @@
-import StoresView from "@/src/components/StoresView/StoresView";
-import { mapApiStoresToStores } from "@/src/lib/api/mappers/store.mapper";
-import { fetchStoresList } from "@/src/lib/api/stores";
+import StoresView from "@/src/features/stores/components/StoresView/StoresView";
+import { mapApiStoresToStores } from "@/src/features/stores/api/mappers/store.mapper";
+import { fetchStoresList } from "@/src/features/stores/api/stores";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -56,3 +56,4 @@ async function StoresPage({
   );
 }
 export default StoresPage;
+

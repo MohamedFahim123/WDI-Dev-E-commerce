@@ -1,4 +1,4 @@
-import MyReturnsSection from "@/src/components/Request-Returns/MyReturnsPage/MyReturnsSection";
+import MyReturnsSection from "@/src/features/returns/components/Request-Returns/MyReturnsPage/MyReturnsSection";
 import { withBlockSeller } from "@/src/hoc/roleGuards";
 import { Metadata } from "next";
 
@@ -13,3 +13,4 @@ function MyReturnsRoutePage() {
 export default withBlockSeller(MyReturnsRoutePage, {
   redirectTo: (lang: string) => `/${lang}`,
 });
+

@@ -1,13 +1,13 @@
 import Container from "@/src/components/Container/Container";
-import { Notifications } from "@/src/components/Notifications/Notifications";
-import type { NotificationItemProps } from "@/src/components/Notifications/NotificationItem/NotificationItem";
+import { Notifications } from "@/src/features/notifications/components/Notifications/Notifications";
+import type { NotificationItemProps } from "@/src/features/notifications/components/Notifications/NotificationItem/NotificationItem";
 import { Metadata } from "next";
 
 import {
   getNotificationsServer,
   getUnreadCountServer,
-} from "@/src/services/notifications.service";
-import { mapBackendToItem } from "@/src/lib/notifications/mapToUi";
+} from "@/src/features/notifications/services/notifications.service";
+import { mapBackendToItem } from "@/src/features/notifications/lib/mapToUi";
 
 export const metadata: Metadata = {
   title: "WDI - Notifications",
@@ -64,3 +64,4 @@ export default async function NotificationsPage({
     </section>
   );
 }
+

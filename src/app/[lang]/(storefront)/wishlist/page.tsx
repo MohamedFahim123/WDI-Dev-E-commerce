@@ -1,4 +1,4 @@
-import WishlistFullPage from "@/src/components/WishlistFullPage/WishlistFullPage";
+import WishlistFullPage from "@/src/features/wishlist/components/WishlistFullPage/WishlistFullPage";
 import { withBlockSeller } from "@/src/hoc/roleGuards";
 import type { Metadata } from "next";
 
@@ -14,3 +14,4 @@ function WishlistPage() {
 export default withBlockSeller(WishlistPage, {
   redirectTo: (lang: string) => `/${lang}`,
 });
+
