@@ -3,7 +3,6 @@
 import { fetchApi } from "@/src/lib/fetchApi";
 import { AuthUser } from "@/src/types/auth";
 import { LoginInput } from "@/src/validation/LoginSchema";
-import { RegisterFormValues } from "../components/Auth/RegisterForm/RegisterForm";
 
 import {
   clearAuthCookieServer,
@@ -17,6 +16,7 @@ import {
   getResetEmailFromCookieServer,
   clearResetEmailCookieServer,
 } from "@/src/lib/authCookies";
+import { RegisterFormValues } from "../components/RegisterForm/RegisterForm";
 
 export const clearAllCookies = async () => {
   await clearAuthTokenCookieServer();
