@@ -3,9 +3,9 @@ import type { Metadata } from "next";
 import {
   notificationsListAction,
   notificationsUnreadCountAction,
-} from "@/src/actions/notifications.actions";
-import NotificationsDashboardClient from "@/src/components/Notifications/NotificationsDashboardClient";
-import { mapBackendToUiItem } from "@/src/lib/notifications/mapToUi";
+} from "@/src/features/notifications/actions/notifications.actions";
+import NotificationsDashboardClient from "@/src/features/notifications/components/Notifications/NotificationsDashboardClient";
+import { mapBackendToUiItem } from "@/src/features/notifications/lib/mapToUi";
 
 export const metadata: Metadata = {
   title: "WDI - Dashboard Notifications",
@@ -70,3 +70,4 @@ export default async function NotificationsDashboardPage({
     </section>
   );
 }
+

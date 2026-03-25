@@ -1,4 +1,4 @@
-import { SellerLayoutShell } from "@/src/components/Dashboard/Seller/SellerrLayoutShell/SellerLayoutShell";
+import { SellerLayoutShell } from "@/src/features/dashboard/components/Seller/SellerrLayoutShell/SellerLayoutShell";
 import {
   getAuthTokenFromCookieServer,
   getRoleFromCookieServer,
@@ -28,3 +28,4 @@ export default async function BuyerLayout({
     </SellerLayoutShell>
   );
 }
+

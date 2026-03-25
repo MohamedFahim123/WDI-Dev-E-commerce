@@ -1,6 +1,6 @@
 import Container from "@/src/components/Container/Container";
-import MyOrders from "@/src/components/Orders/MyOrders";
-import { type Order } from "@/src/components/Orders/OrdersSection";
+import MyOrders from "@/src/features/orders/components/Orders/MyOrders";
+import { type Order } from "@/src/features/orders/components/Orders/OrdersSection";
 
 import { PageHeader } from "@/src/components/PageHeader/PageHeader";
 import type { Metadata } from "next";
@@ -71,3 +71,4 @@ export default async function MyOrdersPage({ params }: MyOrdersPageProps) {
     </section>
   );
 }
+

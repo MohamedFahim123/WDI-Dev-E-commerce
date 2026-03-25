@@ -1,7 +1,7 @@
-import StoresView from "@/src/components/StoresView/StoresView";
+import StoresView from "@/src/features/stores/components/StoresView/StoresView";
 import { withSellerOnly } from "@/src/hoc/roleGuards";
-import { mapApiStoresToStores } from "@/src/lib/api/mappers/store.mapper";
-import { fetchStoresList } from "@/src/lib/api/stores";
+import { mapApiStoresToStores } from "@/src/features/stores/api/mappers/store.mapper";
+import { fetchStoresList } from "@/src/features/stores/api/stores";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -58,3 +58,4 @@ async function MyStores({
 export default withSellerOnly(MyStores, {
   redirectTo: (lang: string) => `/${lang}`,
 });
+

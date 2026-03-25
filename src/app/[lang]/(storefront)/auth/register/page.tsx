@@ -1,4 +1,4 @@
-import RegisterForm from "@/src/components/Auth/RegisterForm/RegisterForm";
+import RegisterForm from "@/src/features/auth/components/RegisterForm/RegisterForm";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -9,3 +9,4 @@ export const metadata: Metadata = {
 export default function RegisterPage() {
   return <RegisterForm />;
 }
+

@@ -1,5 +1,5 @@
 import { MetadataRoute } from "next";
-import { products } from "@/src/stores/products";
+import { products } from "@/src/features/products/stores/products";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://wdi-dev-e-commerce.vercel.app";
@@ -33,3 +33,4 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...productUrls,
   ];
 }
+

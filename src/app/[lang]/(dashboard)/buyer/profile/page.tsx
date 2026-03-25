@@ -1,4 +1,4 @@
-import ProfileSection from "@/src/components/Dashboard/Buyer/ProfileSection/ProfileSection";
+import ProfileSection from "@/src/features/dashboard/components/Buyer/ProfileSection/ProfileSection";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -13,3 +13,4 @@ export default function BuyerProfilePage() {
     </div>
   );
 }
+

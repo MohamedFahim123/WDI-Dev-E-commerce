@@ -1,4 +1,4 @@
-import StoreSettings from "@/src/components/Dashboard/Seller/Settings/StoreSettings";
+import StoreSettings from "@/src/features/dashboard/components/Seller/Settings/StoreSettings";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -8,3 +8,4 @@ export const metadata: Metadata = {
 export default function OurStoreSettingsPage() {
   return <StoreSettings />;
 }
+

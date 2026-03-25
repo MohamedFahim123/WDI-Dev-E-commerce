@@ -1,4 +1,4 @@
-import StoreProfileView from "@/src/components/StoreProfileView/StoreProfileView";
+import StoreProfileView from "@/src/features/stores/components/StoreProfileView/StoreProfileView";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -13,4 +13,5 @@ export default async function StorePage({ params }: { params: Promise<{ store: s
 
   return <StoreProfileView />;
 }
+
 

@@ -1,0 +1,5 @@
+Authentication (Login, Register, Forget-Password, Verify-Account, Logout), View All Stores, Products (Shop) With Its Pagination and URL Params Note: Rebuilt.
+
+Seller => Create-Store, Profile, Edit Profile, Notifications With It's Actions (Mark As Read...) And Filtrations, View My Stores With Filtrations.
+
+Buyer => Add To Cart Note: Rebuilt, Add To Wishlist Note: Rebuilt, Profile, Edit Profile, Notifications With It's Actions (Mark As Read...) And Filtrations.

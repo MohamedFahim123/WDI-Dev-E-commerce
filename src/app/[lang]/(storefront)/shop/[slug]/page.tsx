@@ -1,7 +1,7 @@
 import Container from "@/src/components/Container/Container";
-import { ProductDetailsFullPage } from "@/src/components/ProductDetailsFullPage/ProductDetailsFullPage";
+import { ProductDetailsFullPage } from "@/src/features/products/components/ProductDetailsFullPage/ProductDetailsFullPage";
 import { withBlockSeller } from "@/src/hoc/roleGuards";
-import { getProductDetails } from "@/src/services/product.service";
+import { getProductDetails } from "@/src/features/products/services/product.service";
 import type { Metadata } from "next";
 
 type Props = {
@@ -51,3 +51,4 @@ async function ProductPage({ params }: Props) {
 export default withBlockSeller(ProductPage, {
   redirectTo: (lang: string) => `/${lang}`,
 });
+
